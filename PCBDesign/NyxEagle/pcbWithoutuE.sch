@@ -20071,13 +20071,6 @@ type RDH, grid 15 mm</description>
 <label x="15.24" y="93.98" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
-<net name="NFAULT\" class="0">
-<segment>
-<pinref part="R1" gate="G$1" pin="1"/>
-<wire x1="53.34" y1="99.06" x2="43.18" y2="99.06" width="0.1524" layer="91"/>
-<label x="43.18" y="96.52" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="NFAULT" class="0">
 <segment>
 <pinref part="IC1" gate="G$1" pin="NFAULT"/>
@@ -20088,6 +20081,11 @@ type RDH, grid 15 mm</description>
 <pinref part="JP1" gate="G$1" pin="3"/>
 <wire x1="-10.16" y1="116.84" x2="-10.16" y2="111.76" width="0.1524" layer="91"/>
 <label x="-10.16" y="101.6" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="R1" gate="G$1" pin="1"/>
+<wire x1="53.34" y1="99.06" x2="43.18" y2="99.06" width="0.1524" layer="91"/>
+<label x="43.18" y="96.52" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SDO" class="0">
