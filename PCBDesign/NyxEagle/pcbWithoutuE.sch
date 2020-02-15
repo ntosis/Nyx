@@ -19761,6 +19761,21 @@ type RDH, grid 15 mm</description>
 <description>&lt;b&gt;Single Pads&lt;/b&gt;&lt;p&gt;
 &lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
 <packages>
+<package name="3,17/1,3" urn="urn:adsk.eagle:footprint:30815/1" library_version="1">
+<description>&lt;b&gt;THROUGH-HOLE PAD&lt;/b&gt;</description>
+<wire x1="1.524" y1="-1.016" x2="1.524" y2="-1.524" width="0.1524" layer="21"/>
+<wire x1="1.524" y1="-1.524" x2="1.016" y2="-1.524" width="0.1524" layer="21"/>
+<wire x1="-1.016" y1="-1.524" x2="-1.524" y2="-1.524" width="0.1524" layer="21"/>
+<wire x1="-1.524" y1="-1.524" x2="-1.524" y2="-1.016" width="0.1524" layer="21"/>
+<wire x1="-1.524" y1="1.016" x2="-1.524" y2="1.524" width="0.1524" layer="21"/>
+<wire x1="-1.524" y1="1.524" x2="-1.016" y2="1.524" width="0.1524" layer="21"/>
+<wire x1="1.016" y1="1.524" x2="1.524" y2="1.524" width="0.1524" layer="21"/>
+<wire x1="1.524" y1="1.524" x2="1.524" y2="1.016" width="0.1524" layer="21"/>
+<circle x="0" y="0" radius="1.27" width="0.1524" layer="51"/>
+<pad name="1" x="0" y="0" drill="1.3208" diameter="3.175" shape="octagon"/>
+<text x="-1.524" y="1.905" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="0" y="1.2" size="0.0254" layer="27">&gt;VALUE</text>
+</package>
 <package name="SMD1,27-2,54" urn="urn:adsk.eagle:footprint:30822/1" library_version="1">
 <description>&lt;b&gt;SMD PAD&lt;/b&gt;</description>
 <smd name="1" x="0" y="0" dx="1.27" dy="2.54" layer="1"/>
@@ -19769,6 +19784,12 @@ type RDH, grid 15 mm</description>
 </package>
 </packages>
 <packages3d>
+<package3d name="3,17/1,3" urn="urn:adsk.eagle:package:30833/1" type="box" library_version="1">
+<description>THROUGH-HOLE PAD</description>
+<packageinstances>
+<packageinstance name="3,17/1,3"/>
+</packageinstances>
+</package3d>
 <package3d name="SMD1,27-2,54" urn="urn:adsk.eagle:package:30839/1" type="box" library_version="1">
 <description>SMD PAD</description>
 <packageinstances>
@@ -19786,6 +19807,25 @@ type RDH, grid 15 mm</description>
 </symbol>
 </symbols>
 <devicesets>
+<deviceset name="3,17/1,3" urn="urn:adsk.eagle:component:30852/1" prefix="PAD" uservalue="yes" library_version="1">
+<description>&lt;b&gt;THROUGH-HOLE PAD&lt;/b&gt;</description>
+<gates>
+<gate name="1" symbol="PAD" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="3,17/1,3">
+<connects>
+<connect gate="1" pin="P" pad="1"/>
+</connects>
+<package3dinstances>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:30833/1"/>
+</package3dinstances>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 <deviceset name="SMD2" urn="urn:adsk.eagle:component:30857/1" prefix="PAD" uservalue="yes" library_version="1">
 <description>&lt;b&gt;SMD PAD&lt;/b&gt;</description>
 <gates>
@@ -19855,7 +19895,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="IC1" library="SamacSys_Parts2" deviceset="DRV8304SRHAR" device=""/>
 <part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805K" package3d_urn="urn:adsk.eagle:package:23681/2" value="22nF"/>
 <part name="C2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805K" package3d_urn="urn:adsk.eagle:package:23681/2" value="1uF 16V"/>
-<part name="C3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="CPOL-EU" device="E2,5-6E" package3d_urn="urn:adsk.eagle:package:23430/1" value="47uF 50V"/>
+<part name="C3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="CPOL-EU" device="E7.5-16" package3d_urn="urn:adsk.eagle:package:23382/2" value="47uF 50V"/>
 <part name="C4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805K" package3d_urn="urn:adsk.eagle:package:23681/2" value="0,1 uF 50V"/>
 <part name="R1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:23553/2" value="5.1k"/>
 <part name="+3V1" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+3V3" device=""/>
@@ -19887,8 +19927,8 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="OUT1" library="wirepad" library_urn="urn:adsk.eagle:library:412" deviceset="SMD2" device="" package3d_urn="urn:adsk.eagle:package:30839/1"/>
 <part name="OUT2" library="wirepad" library_urn="urn:adsk.eagle:library:412" deviceset="SMD2" device="" package3d_urn="urn:adsk.eagle:package:30839/1"/>
 <part name="OUT3" library="wirepad" library_urn="urn:adsk.eagle:library:412" deviceset="SMD2" device="" package3d_urn="urn:adsk.eagle:package:30839/1"/>
-<part name="INPUT" library="wirepad" library_urn="urn:adsk.eagle:library:412" deviceset="SMD2" device="" package3d_urn="urn:adsk.eagle:package:30839/1"/>
-<part name="GND" library="wirepad" library_urn="urn:adsk.eagle:library:412" deviceset="SMD2" device="" package3d_urn="urn:adsk.eagle:package:30839/1"/>
+<part name="INPUT" library="wirepad" library_urn="urn:adsk.eagle:library:412" deviceset="3,17/1,3" device="" package3d_urn="urn:adsk.eagle:package:30833/1"/>
+<part name="GND" library="wirepad" library_urn="urn:adsk.eagle:library:412" deviceset="3,17/1,3" device="" package3d_urn="urn:adsk.eagle:package:30833/1"/>
 <part name="SUPPLY1" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="AGND" device=""/>
 <part name="SUPPLY2" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="AGND" device=""/>
 <part name="SUPPLY3" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="AGND" device=""/>
@@ -19908,6 +19948,9 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="R9" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0201" package3d_urn="urn:adsk.eagle:package:23593/1"/>
 <part name="R10" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0201" package3d_urn="urn:adsk.eagle:package:23593/1"/>
 <part name="GND7" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
+<part name="GND8" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
+<part name="GND9" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
+<part name="GND10" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -19982,6 +20025,9 @@ In this library the device names are the same as the pin names of the symbols, t
 <instance part="R9" gate="G$1" x="121.92" y="2.54" rot="R180"/>
 <instance part="R10" gate="G$1" x="142.24" y="2.54" rot="R180"/>
 <instance part="GND7" gate="1" x="-7.62" y="109.22"/>
+<instance part="GND8" gate="1" x="38.1" y="109.22"/>
+<instance part="GND9" gate="1" x="35.56" y="109.22"/>
+<instance part="GND10" gate="1" x="43.18" y="15.24"/>
 </instances>
 <busses>
 </busses>
@@ -20106,6 +20152,21 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="JP1" gate="G$1" pin="4"/>
 <wire x1="-7.62" y1="116.84" x2="-7.62" y2="111.76" width="0.1524" layer="91"/>
 <pinref part="GND7" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="IN1" gate="G$1" pin="4"/>
+<wire x1="38.1" y1="116.84" x2="38.1" y2="111.76" width="0.1524" layer="91"/>
+<pinref part="GND8" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="IN1" gate="G$1" pin="3"/>
+<wire x1="35.56" y1="116.84" x2="35.56" y2="111.76" width="0.1524" layer="91"/>
+<pinref part="GND9" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="ADCO" gate="G$1" pin="4"/>
+<wire x1="43.18" y1="22.86" x2="43.18" y2="17.78" width="0.1524" layer="91"/>
+<pinref part="GND10" gate="1" pin="GND"/>
 </segment>
 </net>
 <net name="+3V3" class="0">
@@ -20422,18 +20483,6 @@ In this library the device names are the same as the pin names of the symbols, t
 <label x="17.78" y="104.14" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
-<net name="N$6" class="0">
-<segment>
-<pinref part="IN1" gate="G$1" pin="3"/>
-<wire x1="35.56" y1="116.84" x2="35.56" y2="111.76" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$8" class="0">
-<segment>
-<pinref part="IN1" gate="G$1" pin="4"/>
-<wire x1="38.1" y1="116.84" x2="38.1" y2="111.76" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="SPA" class="0">
 <segment>
 <pinref part="IC1" gate="G$1" pin="SPA"/>
@@ -20549,12 +20598,6 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="ADCO" gate="G$1" pin="3"/>
 <wire x1="40.64" y1="22.86" x2="40.64" y2="17.78" width="0.1524" layer="91"/>
 <label x="40.64" y="15.24" size="1.778" layer="95" rot="R90"/>
-</segment>
-</net>
-<net name="N$10" class="0">
-<segment>
-<pinref part="ADCO" gate="G$1" pin="4"/>
-<wire x1="43.18" y1="22.86" x2="43.18" y2="17.78" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="AGND" class="0">
