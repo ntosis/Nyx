@@ -3474,6 +3474,18 @@ Please make sure your boards conform to these design rules.
 <wire x1="52.9684" y1="22.5966" x2="52.9684" y2="23.6982" width="0.3048" layer="1"/>
 <wire x1="66.8274" y1="10.287" x2="58.6994" y2="10.5156" width="1.27" layer="16"/>
 <wire x1="58.6994" y1="10.5156" x2="55.245" y2="20.32" width="1.27" layer="16"/>
+<polygon width="0.0762" layer="16">
+<vertex x="76.6064" y="24.9174"/>
+<vertex x="76.6064" y="33.1978"/>
+<vertex x="76.835" y="33.4264"/>
+<vertex x="98.5012" y="33.4264"/>
+<vertex x="99.1616" y="32.766"/>
+<vertex x="99.1616" y="25.0444"/>
+<vertex x="99.1616" y="24.3078"/>
+<vertex x="98.425" y="23.5712"/>
+<vertex x="76.6318" y="23.5712"/>
+<vertex x="76.6064" y="23.5458"/>
+</polygon>
 <wire x1="81.01" y1="75.565" x2="81.52" y2="75.743" width="0" layer="19" extent="1-1"/>
 <wire x1="77.343" y1="68.4276" x2="77.4192" y2="68.4276" width="0" layer="19" extent="16-16"/>
 <wire x1="77.4192" y1="48.0822" x2="77.4954" y2="48.006" width="0" layer="19" extent="16-16"/>
