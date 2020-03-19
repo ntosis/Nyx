@@ -25,7 +25,7 @@
 #include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */     
+/* USER CODE BEGIN Includes */
 #include "portmacro.h"
 #include "tim.h"
 /* USER CODE END Includes */
@@ -49,11 +49,8 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-typedef StaticTask_t osStaticThreadDef_t;
 osThreadId_t defaultTaskHandle;
 osThreadId_t ComputationINTHandle;
-uint32_t ComputationINTBuffer[ 128 ];
-osStaticThreadDef_t ComputationINTControlBlock;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -104,11 +101,8 @@ osKernelInitialize();
   /* definition and creation of ComputationINT */
   const osThreadAttr_t ComputationINT_attributes = {
     .name = "ComputationINT",
-    .stack_mem = &ComputationINTBuffer[0],
-    .stack_size = sizeof(ComputationINTBuffer),
-    .cb_mem = &ComputationINTControlBlock,
-    .cb_size = sizeof(ComputationINTControlBlock),
-    .priority = (osPriority_t) osPriorityLow,
+    .priority = (osPriority_t) osPriorityNormal,
+    .stack_size = 128
   };
   ComputationINTHandle = osThreadNew(ComputationINTfunc, NULL, &ComputationINT_attributes);
 
@@ -154,6 +148,7 @@ void ComputationINTfunc(void *argument)
 	  ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
 	  HAL_GPIO_WritePin(TestPinC13_GPIO_Port, TestPinC13_Pin, GPIO_PIN_SET);
 	  for(int i=0;i<10;i++) asm("nop");
+	  volatile uint16_t a = adcBuffer[1];
 	  HAL_GPIO_WritePin(TestPinC13_GPIO_Port, TestPinC13_Pin, GPIO_PIN_RESET);
   }
   /* USER CODE END ComputationINTfunc */

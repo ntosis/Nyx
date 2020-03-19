@@ -37,7 +37,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+extern uint16_t adcBuffer[3];
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -60,6 +60,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define TestPinC13_Pin GPIO_PIN_13
 #define TestPinC13_GPIO_Port GPIOC
+#define SOA_AI_Pin GPIO_PIN_0
+#define SOA_AI_GPIO_Port GPIOA
+#define SOB_AI_Pin GPIO_PIN_1
+#define SOB_AI_GPIO_Port GPIOA
+#define SOC_AI_Pin GPIO_PIN_2
+#define SOC_AI_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
