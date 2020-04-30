@@ -23,12 +23,13 @@
 #include "cmsis_os.h"
 #include "adc.h"
 #include "dma.h"
+#include "spi.h"
 #include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "drv8304.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,11 +95,11 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM3_Init();
   MX_ADC1_Init();
-
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADCEx_Calibration_Start(&hadc1);
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*) adcBuffer, 3); // Start ADC in DMA mode and declare the buffer where store the results
-
+  MX_DRV8304_Init();
   /* HAL_TIM_Base_Start_IT(&htim3); Moved to FreeRTOS Task*/
   /* USER CODE END 2 */
 
