@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */     
 #include "portmacro.h"
 #include "tim.h"
+#include "drv8304.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -150,6 +151,8 @@ void ComputationINTfunc(void *argument)
 	  for(int i=0;i<10;i++) asm("nop");
 	  volatile uint16_t a = adcBuffer[1];
 	  HAL_GPIO_WritePin(TestPinC13_GPIO_Port, TestPinC13_Pin, GPIO_PIN_RESET);
+	  volatile uint16_t intermediateVar[2]={0,0};
+	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
   }
   /* USER CODE END ComputationINTfunc */
 }

@@ -4620,6 +4620,8 @@ Please make sure your boards conform to these design rules.
 <via x="43.688" y="53.594" extent="1-16" drill="0.35"/>
 <wire x1="43.688" y1="53.594" x2="40.513" y2="56.769" width="0.2032" layer="16" curve="90"/>
 <wire x1="40.513" y1="56.769" x2="33.528" y2="56.769" width="0.2032" layer="16"/>
+<contactref element="IC1" pad="31"/>
+<wire x1="14.482" y1="16.946" x2="45.208" y2="44.479" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SDO">
 <contactref element="IC5" pad="26"/>
@@ -4860,8 +4862,6 @@ Please make sure your boards conform to these design rules.
 <contactref element="OUT3" pad="1"/>
 <wire x1="47.908" y1="42.279" x2="47.92" y2="42.291" width="0.2032" layer="1" curve="-90"/>
 <wire x1="47.92" y1="42.291" x2="51.562" y2="42.291" width="0.2032" layer="1"/>
-<polygon width="0.0762" layer="1" isolate="1.016">
-</polygon>
 <wire x1="51.562" y1="42.291" x2="51.6382" y2="42.3672" width="0.3048" layer="1"/>
 <wire x1="58.928" y1="42.3672" x2="59.2582" y2="42.6974" width="0.3048" layer="1" curve="90"/>
 <wire x1="59.2582" y1="42.6974" x2="59.2582" y2="56.261" width="0.3048" layer="1"/>
@@ -4946,6 +4946,8 @@ Please make sure your boards conform to these design rules.
 <wire x1="39.37" y1="53.721" x2="38.989" y2="54.102" width="0.2032" layer="16" curve="90"/>
 <wire x1="38.989" y1="54.102" x2="33.655" y2="54.102" width="0.2032" layer="16"/>
 <wire x1="33.655" y1="54.102" x2="33.528" y2="54.229" width="0.2032" layer="16" curve="-90"/>
+<contactref element="IC1" pad="30"/>
+<wire x1="14.982" y1="16.946" x2="41.021" y2="44.45" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="NSCS">
 <contactref element="SPI" pad="1"/>

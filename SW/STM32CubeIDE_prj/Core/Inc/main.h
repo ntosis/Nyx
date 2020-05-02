@@ -66,8 +66,12 @@ void Error_Handler(void);
 #define SOB_AI_GPIO_Port GPIOA
 #define SOC_AI_Pin GPIO_PIN_2
 #define SOC_AI_GPIO_Port GPIOA
+#define DRV_CS_Pin GPIO_PIN_4
+#define DRV_CS_GPIO_Port GPIOA
 #define DRV_ENABLE_Pin GPIO_PIN_9
 #define DRV_ENABLE_GPIO_Port GPIOA
+#define DRV_NFAULT_Pin GPIO_PIN_10
+#define DRV_NFAULT_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

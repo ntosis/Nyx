@@ -44,14 +44,18 @@ void MX_DRV8304_Init(void){
 	// AUTOCAL
 	hdrv8304.Init.SEN_LVL = OCP0_25V; /* don't clear*/
 
-
 	LL_DRV8304_Init(&hdrv8304);
 }
 DRVErrorStatus LL_DRV8304_Init(DRV8304_HandleTypeDef *hdrv8304){
 
 
-	uint8_t pRxData[(sizeof(hdrv8304->Instance)/sizeof(uint8_t))];
-	uint8_t lengthOfRegisterSruct = (sizeof(hdrv8304->Instance)/sizeof(uint8_t));
+	uint16_t pRxData[1] = {0};
+
+	uint8_t lengthOfRegisterSruct = (sizeof(hdrv8304->Instance)/sizeof(uint16_t));
+
+	uint8_t *pTxBuffPtr;
+
+	pTxBuffPtr  = (uint8_t *)hdrv8304;
 
 	/* Set the DRV8304 in active mode.*/
 	LL_DRV8304_ActiveMode(hdrv8304);
@@ -109,40 +113,60 @@ DRVErrorStatus LL_DRV8304_Init(DRV8304_HandleTypeDef *hdrv8304){
 
 	}
 
-	if(HAL_SPI_TransmitReceive(&hspi1, &(hdrv8304->Instance), pRxData,lengthOfRegisterSruct,50)!=HAL_OK)
-			{
-				/* Lock the registers again */
-				if((LL_DRV8304_LockUnlock(hdrv8304,LockRegisters)!=DRV_OK))
+	while(lengthOfRegisterSruct>0) {
+
+
+		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_RESET);
+
+		if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t *)pTxBuffPtr, (uint8_t *)pRxData,1,50)!=HAL_OK)
+		{
+			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
+			/* Lock the registers again */
+			if((LL_DRV8304_LockUnlock(hdrv8304,LockRegisters)!=DRV_OK))
 				{
 
 					return DRV_ERROR;
 
 				}
 
-				return DRV_ERROR;
-
-			}
-			else
-			{
-
-				/* Lock the registers again */
-				if((LL_DRV8304_LockUnlock(hdrv8304,LockRegisters)!=DRV_OK))
-				{
-
-				 	return DRV_ERROR;
+					return DRV_ERROR;
 
 				}
 
-				return DRV_OK;
+		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
 
-			}
+		pTxBuffPtr += sizeof(uint16_t);
+
+		lengthOfRegisterSruct --;
+
+	}
+
+	 /*Lock the registers again*/
+	if((LL_DRV8304_LockUnlock(hdrv8304,LockRegisters)!=DRV_OK))
+	{
+
+			return DRV_ERROR;
+
+	}
+	else
+	{
+
+			return DRV_OK;
+
+	}
 
 }
 
 DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegisterState Option){
 
 	uint16_t RegValueTmp=0;
-	uint8_t pTxData[2],pRxData[2];
+	uint16_t pRxData[2];
+
+	if((MX_DRV8304_ReadLockRegister(hdrv8304))==DRV_UndefinedStatus){
+
+		return UnlockFailed;
+
+	}
 
 	/* Check lock/unlock argument*/
 	if((Option!=UnlockRegisters)&&(Option!=LockRegisters))
@@ -164,14 +188,11 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 				|Gate_Drive_HS_Adr << DRV_ADDR_REG_Pos\
 				|UnlockRegisters << DRV_LOCK_Pos));
 
-		pTxData[0] = (uint8_t)(RegValueTmp >> 8);
-
-		pTxData[1] = (uint8_t)(RegValueTmp & 0x00FF);
-
-		if(HAL_SPI_TransmitReceive(&hspi1, pTxData, pRxData,2,50)!=HAL_OK)
+		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_RESET);
+		if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
 		{
 			hdrv8304->Lock=DRV_Locked;
-
+			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
 			return UnlockFailed;
 
 		}
@@ -179,7 +200,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 		{
 
 			hdrv8304->Lock=DRV_Unlocked;
-
+			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
 			return DRV_OK;
 
 		}
@@ -198,14 +219,11 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 				|Gate_Drive_HS_Adr << DRV_ADDR_REG_Pos\
 				|LockRegisters << DRV_LOCK_Pos));
 
-		pTxData[0] = (uint8_t)(RegValueTmp >> 8);
-
-		pTxData[1] = (uint8_t)(RegValueTmp & 0x00FF);
-
-		if(HAL_SPI_TransmitReceive(&hspi1, pTxData, pRxData,2,50)!=HAL_OK)
+		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_RESET);
+		if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
 		{
 			hdrv8304->Lock=DRV_Unlocked;
-
+			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
 			return LockFailed;
 
 		}
@@ -213,7 +231,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 		{
 
 			hdrv8304->Lock=DRV_Locked;
-
+			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
 			return DRV_OK;
 
 		}
@@ -237,3 +255,82 @@ static void LL_DRV8304_SleepMode(DRV8304_HandleTypeDef *hdrv8304){
 	HAL_GPIO_WritePin(DRV_ENABLE_GPIO_Port, DRV_ENABLE_Pin, GPIO_PIN_RESET);
 
 }
+
+static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_RegAddress RegisterAddr){
+
+	uint16_t RegValueTmp=0;
+	uint16_t pRxData[1] = {0};
+
+	/* Read the Fault_Status1 register */
+	CREATE_SPI_REG(RegValueTmp,(\
+					 DRV_Read << DRV_R_W_CMND_Pos\
+					|RegisterAddr << DRV_ADDR_REG_Pos));
+
+	HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_RESET);
+
+	if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
+	{
+		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
+
+		return 0xFFFFU;
+
+	}
+	else
+	{
+		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
+
+		return pRxData[0];
+
+	}
+
+}
+void MX_DRV8304_Request_Status(uint16_t intermediateVar[2],DRV8304_HandleTypeDef *hdrv8304){
+
+	intermediateVar[0] = LL_DRV8304_ReadRegister(hdrv8304,Fault_Status1_Adr);
+
+	intermediateVar[1] = LL_DRV8304_ReadRegister(hdrv8304,VGS_Status2_Adr);
+
+}
+
+static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304){
+
+	uint16_t RegValueTmp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
+
+	uint8_t ValTmp = (uint8_t)((RegValueTmp&DRV_LOCK_Msk)>>DRV_LOCK_Pos);
+
+	if(RegValueTmp==(0xFFFFU))
+	{
+
+		hdrv8304->Lock=DRV_UndefinedStatus;
+
+		return DRV_UndefinedStatus;
+
+	}
+	else if(ValTmp==UnlockRegisters)
+	{
+
+		hdrv8304->Lock=DRV_Unlocked;
+
+		return DRV_Unlocked;
+
+	}
+	else if(ValTmp==LockRegisters)
+	{
+
+		hdrv8304->Lock=DRV_Locked;
+
+		return DRV_Locked;
+
+	}
+	else
+	{
+
+		hdrv8304->Lock=DRV_UndefinedStatus;
+
+		return DRV_UndefinedStatus;
+
+	}
+
+
+}
+

@@ -23861,6 +23861,20 @@ Source: &lt;a href="https://www.ti.com/lit/gpn/DRV8304"&gt; Datasheet &lt;/a&gt;
 <pinref part="7-35V" gate="A" pin="2"/>
 </segment>
 </net>
+<net name="ENABLE" class="0">
+<segment>
+<pinref part="IC1" gate="PORTA_H" pin="PA9"/>
+<wire x1="17.78" y1="86.36" x2="10.16" y2="86.36" width="0.1524" layer="91"/>
+<label x="2.54" y="86.36" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="NFAULT" class="0">
+<segment>
+<pinref part="IC1" gate="PORTA_H" pin="PA10"/>
+<wire x1="17.78" y1="83.82" x2="10.16" y2="83.82" width="0.1524" layer="91"/>
+<label x="2.54" y="83.82" size="1.778" layer="95"/>
+</segment>
+</net>
 </nets>
 </sheet>
 <sheet>

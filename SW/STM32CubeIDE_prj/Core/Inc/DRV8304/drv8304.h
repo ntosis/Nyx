@@ -14,7 +14,8 @@
 typedef enum
 {
   DRV_Unlocked = 0x00U,
-  DRV_Locked   = 0x01U
+  DRV_Locked   = 0x01U,
+  DRV_UndefinedStatus = 0x02U
 } DRV8304_LockTypeDef;
 
 /* DRV_8304 Register address value*/
@@ -496,12 +497,15 @@ typedef struct __DRV8304_HandleTypeDef
 
 #define CREATE_SPI_REG(VIRTUAL_REG, VAL)   ((VIRTUAL_REG) = (uint16_t)(VAL))
 
+extern DRV8304_HandleTypeDef hdrv8304;
 
 void MX_DRV8304_Init(void);
 DRVErrorStatus LL_DRV8304_Init(DRV8304_HandleTypeDef *hdrv8304);
 DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegisterState Option);
 static void LL_DRV8304_ActiveMode(DRV8304_HandleTypeDef *hdrv8304);
 static void LL_DRV8304_SleepMode(DRV8304_HandleTypeDef *hdrv8304);
-
+static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_RegAddress RegisterAddr);
+void MX_DRV8304_Request_Status(uint16_t intermediateVar[2],DRV8304_HandleTypeDef *hdrv8304);
+static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304);
 
 #endif /* INC_DRV8304_DRV8304_H_ */
