@@ -32,12 +32,15 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "cmsis_os.h"
+#include "FreeRTOS.h"
+#include "task.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 extern uint16_t adcBuffer[3];
+extern osThreadId_t ComputationINTHandle;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -68,10 +71,22 @@ void Error_Handler(void);
 #define SOC_AI_GPIO_Port GPIOA
 #define DRV_CS_Pin GPIO_PIN_4
 #define DRV_CS_GPIO_Port GPIOA
+#define DRV_INHA_Pin GPIO_PIN_0
+#define DRV_INHA_GPIO_Port GPIOB
+#define DRV_INLA_Pin GPIO_PIN_1
+#define DRV_INLA_GPIO_Port GPIOB
+#define DRV_INHB_Pin GPIO_PIN_2
+#define DRV_INHB_GPIO_Port GPIOB
 #define DRV_ENABLE_Pin GPIO_PIN_9
 #define DRV_ENABLE_GPIO_Port GPIOA
 #define DRV_NFAULT_Pin GPIO_PIN_10
 #define DRV_NFAULT_GPIO_Port GPIOA
+#define DRV_INLB_Pin GPIO_PIN_3
+#define DRV_INLB_GPIO_Port GPIOB
+#define DRV_INHC_Pin GPIO_PIN_4
+#define DRV_INHC_GPIO_Port GPIOB
+#define DRV_INLC_Pin GPIO_PIN_5
+#define DRV_INLC_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

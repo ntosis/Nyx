@@ -38,7 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define __PWM1 0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,6 +52,7 @@
 /* USER CODE END Variables */
 osThreadId_t defaultTaskHandle;
 osThreadId_t ComputationINTHandle;
+osThreadId_t testTask500msHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -60,6 +61,7 @@ osThreadId_t ComputationINTHandle;
 
 void StartDefaultTask(void *argument);
 void ComputationINTfunc(void *argument);
+void testTask500msFunc(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -106,6 +108,14 @@ osKernelInitialize();
     .stack_size = 128
   };
   ComputationINTHandle = osThreadNew(ComputationINTfunc, NULL, &ComputationINT_attributes);
+
+  /* definition and creation of testTask500ms */
+  const osThreadAttr_t testTask500ms_attributes = {
+    .name = "testTask500ms",
+    .priority = (osPriority_t) osPriorityHigh,
+    .stack_size = 512
+  };
+  testTask500msHandle = osThreadNew(testTask500msFunc, NULL, &testTask500ms_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -155,6 +165,44 @@ void ComputationINTfunc(void *argument)
 	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
   }
   /* USER CODE END ComputationINTfunc */
+}
+
+/* USER CODE BEGIN Header_testTask500msFunc */
+/**
+* @brief Function implementing the testTask500ms thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_testTask500msFunc */
+void testTask500msFunc(void *argument)
+{
+  /* USER CODE BEGIN testTask500msFunc */
+  HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
+
+  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint16_t)0);
+  portTickType xLastWakeTime;
+  const portTickType xDelay = 500 / portTICK_RATE_MS;
+  // Initialise the xLastWakeTime variable with the current time.
+  xLastWakeTime = xTaskGetTickCount ();
+  /* Infinite loop */
+  for(;;)
+  {
+	  uint16_t intermediateVar[2]={0,0};
+	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
+#if __PWM1==0
+	  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint16_t)700);
+	  HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //INLA connected
+	  HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_RESET); //INLB connected
+	  HAL_GPIO_TogglePin(GPIOB,DRV_INHC_Pin); //INHB Connected
+#else
+	  HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET); //INLB connected
+	  HAL_GPIO_TogglePin(GPIOB,DRV_INHC_Pin); //INHB Connected
+#endif
+	  // Wait for the next cycle.
+	  vTaskDelayUntil( &xLastWakeTime, xDelay );
+
+  }
+  /* USER CODE END testTask500msFunc */
 }
 
 /* Private application code --------------------------------------------------*/

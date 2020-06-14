@@ -57,8 +57,8 @@ typedef enum
 
 typedef enum
 {
-  Sycronous = 0x00U,
-  ASycronous = 0x01U
+  Synchronous = 0x00U,
+  Asynchronous = 0x01U
 } RectificationState;
 
 typedef enum
@@ -149,7 +149,7 @@ typedef enum
 /*VDS_OCP for the LS Mosfet is measured across SHx to Sxx*/
 typedef enum
 {
-  SHx_SPx = 0x00U, /*(unidirectional mode)*/
+  SHx_SPx = 0x00U,
   SHx_SNx = 0x01U
 } VDS_OCPLowSideMeasuredState;
 
@@ -496,6 +496,7 @@ typedef struct __DRV8304_HandleTypeDef
 
 
 #define CREATE_SPI_REG(VIRTUAL_REG, VAL)   ((VIRTUAL_REG) = (uint16_t)(VAL))
+#define MERGE_SPI_LOCK_REG(VIRTUAL_REG, VAL) ((VIRTUAL_REG) = ((uint16_t)(VAL)|(VIRTUAL_REG&(0xffU))))
 
 extern DRV8304_HandleTypeDef hdrv8304;
 
@@ -505,7 +506,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 static void LL_DRV8304_ActiveMode(DRV8304_HandleTypeDef *hdrv8304);
 static void LL_DRV8304_SleepMode(DRV8304_HandleTypeDef *hdrv8304);
 static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_RegAddress RegisterAddr);
-void MX_DRV8304_Request_Status(uint16_t intermediateVar[2],DRV8304_HandleTypeDef *hdrv8304);
-static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304);
+void MX_DRV8304_Request_Status(uint16_t *intermediateVar,DRV8304_HandleTypeDef *hdrv8304);
+static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304, uint16_t *RegValue);
 
 #endif /* INC_DRV8304_DRV8304_H_ */

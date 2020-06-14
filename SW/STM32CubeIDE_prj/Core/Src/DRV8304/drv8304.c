@@ -24,25 +24,25 @@ void MX_DRV8304_Init(void){
 	hdrv8304.Init.DIS_CPUV = DRV_Enable;
 	hdrv8304.Init.DIS_GDF = DRV_Enable;
 	hdrv8304.Init.OTW_REP = DRV_Disable;
-	hdrv8304.Init.PWM_MODE = IndependetMode;
-	hdrv8304.Init.PWM_COM1 = Sycronous;
-	hdrv8304.Init.IDRIVEP_HS = IP15mA;
-	hdrv8304.Init.IDRIVEN_HS = IN30mA;
-	hdrv8304.Init.TDRIVE = T4000ns;
-	hdrv8304.Init.IDRIVEP_LS = IP15mA;
-	hdrv8304.Init.IDRIVEN_LS = IN30mA;
+	hdrv8304.Init.PWM_MODE = X1Mode;
+	hdrv8304.Init.PWM_COM1 = Asynchronous;
+	hdrv8304.Init.IDRIVEP_HS = IP135mA;
+	hdrv8304.Init.IDRIVEN_HS = IN120mA;
+	hdrv8304.Init.TDRIVE = T1000ns;
+	hdrv8304.Init.IDRIVEP_LS = IP135mA;
+	hdrv8304.Init.IDRIVEN_LS = IN120mA;
 	hdrv8304.Init.TRETRY = T4ms;
 	hdrv8304.Init.DEAD_TIME = T100ns;
 	hdrv8304.Init.OCP_MODE = AUTRTR;
 	hdrv8304.Init.OCP_ACT = AllShutdown;
-	hdrv8304.Init.VDS_LVL = V0_15V;
+	hdrv8304.Init.VDS_LVL = V0_90V;
 	hdrv8304.Init.VREF_DIV = VREF;
-	hdrv8304.Init.LS_REF= SHx_SNx; /* Don't use shunt resistor in the first tests*/
-	hdrv8304.Init.CSA_GAIN = G10V_V;
+	hdrv8304.Init.LS_REF= SHx_SPx;
+	hdrv8304.Init.CSA_GAIN = G40V_V;
 	hdrv8304.Init.DIS_SEN = DRV_Disable;
 	hdrv8304.Init.SPI_CAL = DRV_Enable;
 	// AUTOCAL
-	hdrv8304.Init.SEN_LVL = OCP0_25V; /* don't clear*/
+	hdrv8304.Init.SEN_LVL = OCP1V; /* don't clear*/
 
 	LL_DRV8304_Init(&hdrv8304);
 }
@@ -162,7 +162,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 	uint16_t RegValueTmp=0;
 	uint16_t pRxData[2];
 
-	if((MX_DRV8304_ReadLockRegister(hdrv8304))==DRV_UndefinedStatus){
+	if((MX_DRV8304_ReadLockRegister(hdrv8304,&RegValueTmp))==DRV_UndefinedStatus){
 
 		return UnlockFailed;
 
@@ -183,7 +183,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 	else if((hdrv8304->Lock==DRV_Locked)&&(Option==UnlockRegisters))
 	{ /* Unlock registers */
 
-		CREATE_SPI_REG(RegValueTmp,(\
+		MERGE_SPI_LOCK_REG(RegValueTmp,(\
 				 DRV_Write << DRV_R_W_CMND_Pos\
 				|Gate_Drive_HS_Adr << DRV_ADDR_REG_Pos\
 				|UnlockRegisters << DRV_LOCK_Pos));
@@ -214,7 +214,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 	else if((hdrv8304->Lock==DRV_Unlocked)&&(Option==LockRegisters))
 	{ /* Lock registers */
 
-		CREATE_SPI_REG(RegValueTmp,(\
+		MERGE_SPI_LOCK_REG(RegValueTmp,(\
 				 DRV_Write << DRV_R_W_CMND_Pos\
 				|Gate_Drive_HS_Adr << DRV_ADDR_REG_Pos\
 				|LockRegisters << DRV_LOCK_Pos));
@@ -284,21 +284,21 @@ static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_
 	}
 
 }
-void MX_DRV8304_Request_Status(uint16_t intermediateVar[2],DRV8304_HandleTypeDef *hdrv8304){
+void MX_DRV8304_Request_Status(uint16_t *intermediateVar,DRV8304_HandleTypeDef *hdrv8304){
 
 	intermediateVar[0] = LL_DRV8304_ReadRegister(hdrv8304,Fault_Status1_Adr);
 
-	intermediateVar[1] = LL_DRV8304_ReadRegister(hdrv8304,VGS_Status2_Adr);
+	intermediateVar[1] = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
 
 }
 
-static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304){
+static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304,uint16_t *RegValue){
 
-	uint16_t RegValueTmp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
+	*RegValue = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
 
-	uint8_t ValTmp = (uint8_t)((RegValueTmp&DRV_LOCK_Msk)>>DRV_LOCK_Pos);
+	uint8_t ValTmp = (uint8_t)((*RegValue&DRV_LOCK_Msk)>>DRV_LOCK_Pos);
 
-	if(RegValueTmp==(0xFFFFU))
+	if(*RegValue==(0xFFFFU))
 	{
 
 		hdrv8304->Lock=DRV_UndefinedStatus;
