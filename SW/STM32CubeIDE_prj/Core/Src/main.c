@@ -97,6 +97,7 @@ int main(void)
   MX_ADC1_Init();
   MX_SPI1_Init();
   MX_TIM4_Init();
+  //
   /* USER CODE BEGIN 2 */
   HAL_ADCEx_Calibration_Start(&hadc1);
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*) adcBuffer, 3); // Start ADC in DMA mode and declare the buffer where store the results
