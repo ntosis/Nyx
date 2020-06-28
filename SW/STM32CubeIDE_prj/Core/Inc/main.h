@@ -63,20 +63,18 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define TestPinC13_Pin GPIO_PIN_13
 #define TestPinC13_GPIO_Port GPIOC
-#define SOA_AI_Pin GPIO_PIN_0
+#define SOA_AI_Pin GPIO_PIN_1
 #define SOA_AI_GPIO_Port GPIOA
-#define SOB_AI_Pin GPIO_PIN_1
+#define SOB_AI_Pin GPIO_PIN_2
 #define SOB_AI_GPIO_Port GPIOA
-#define SOC_AI_Pin GPIO_PIN_2
+#define SOC_AI_Pin GPIO_PIN_3
 #define SOC_AI_GPIO_Port GPIOA
 #define DRV_CS_Pin GPIO_PIN_4
 #define DRV_CS_GPIO_Port GPIOA
-#define DRV_INHA_Pin GPIO_PIN_0
-#define DRV_INHA_GPIO_Port GPIOB
+#define DRV_INHB_Pin GPIO_PIN_0
+#define DRV_INHB_GPIO_Port GPIOB
 #define DRV_INLA_Pin GPIO_PIN_1
 #define DRV_INLA_GPIO_Port GPIOB
-#define DRV_INHB_Pin GPIO_PIN_2
-#define DRV_INHB_GPIO_Port GPIOB
 #define DRV_ENABLE_Pin GPIO_PIN_9
 #define DRV_ENABLE_GPIO_Port GPIOA
 #define DRV_NFAULT_Pin GPIO_PIN_10
@@ -87,6 +85,8 @@ void Error_Handler(void);
 #define DRV_INHC_GPIO_Port GPIOB
 #define DRV_INLC_Pin GPIO_PIN_5
 #define DRV_INLC_GPIO_Port GPIOB
+#define DRV_INHA_Pin GPIO_PIN_9
+#define DRV_INHA_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

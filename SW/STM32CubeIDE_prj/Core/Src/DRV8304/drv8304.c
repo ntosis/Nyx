@@ -13,6 +13,56 @@
 
 DRV8304_HandleTypeDef hdrv8304;
 
+const uint8_t DRV_INx_MASK = 0x0B; /* PB: 00001011 */
+const uint8_t DRV_INx_Pos = 0;
+
+const uint8_t DRV_Commutation_Vector[8][4] = \
+{
+	/* AB AC BC BA CA CB*/
+	/* INHC is always LOW (direction)*/
+	/* State , INLA , INHB , INLB */
+	{    1   ,  1   ,  1   ,   0  } , /* BC */
+	{    2   ,  1   ,  0   ,   0  } , /* AC */
+	{    3   ,  1   ,  0   ,   1  } , /* AB */
+	{    4   ,  0   ,  0   ,   1  } , /* CB */
+	{    5   ,  0   ,  1   ,   1  } , /* CA */
+	{    6   ,  0   ,  1   ,   0  } , /* BA */
+	{    7   ,  0   ,  0   ,   0  } , /* stop  */
+	{    8   ,  1   ,  1   ,   1  }   /* align */
+};
+
+const uint8_t GPIO_bit_Commutation_Vector[8][2] = \
+{
+	/* AB AC BC BA CA CB*/
+	/* INHC is always LOW (direction)*/
+	/* State , INLB , x , INLA , INHB */
+	{    1  ,  0b1010  } , /* AB */
+	{    2  ,  0b0010  } , /* AC */
+	{    3  ,  0b0011  } , /* BC */
+	{    4  ,  0b0001  } , /* BA */
+	{    5  ,  0b1001  } , /* CA */
+	{    6  ,  0b1000  } , /* CB */
+	{    7  ,  0b0000  } , /* stop  */
+	{    8  ,  0b1011  }   /* align */
+};
+
+/* HAL Sensors fake
+const uint8_t GPIO_bit_Commutation_Vector[8][2] = \
+{
+	 AB AC BC BA CA CB
+	 INHC is always LOW (direction)
+	 State , INLB , x , INLA , INHB
+	{    1  ,  0b1010  } ,  AB
+	{    2  ,  0b0010  } ,  AC
+	{    3  ,  0b0011  } ,  BC
+	{    4  ,  0b0001  } ,  BA
+	{    5  ,  0b1001  } ,  CA
+	{    6  ,  0b1000  } ,  CB
+	{    7  ,  0b0000  } ,  stop
+	{    8  ,  0b1011  }    align
+};
+*/
+
 void MX_DRV8304_Init(void){
 
 //	hdrv8304.Instance = _DRV;
@@ -23,7 +73,7 @@ void MX_DRV8304_Init(void){
 	/* configure the parameters of drv8304*/
 	hdrv8304.Init.DIS_CPUV = DRV_Enable;
 	hdrv8304.Init.DIS_GDF = DRV_Enable;
-	hdrv8304.Init.OTW_REP = DRV_Disable;
+	hdrv8304.Init.OTW_REP = NotReported;
 	hdrv8304.Init.PWM_MODE = X1Mode;
 	hdrv8304.Init.PWM_COM1 = Asynchronous;
 	hdrv8304.Init.IDRIVEP_HS = IP135mA;
@@ -35,7 +85,7 @@ void MX_DRV8304_Init(void){
 	hdrv8304.Init.DEAD_TIME = T100ns;
 	hdrv8304.Init.OCP_MODE = AUTRTR;
 	hdrv8304.Init.OCP_ACT = AllShutdown;
-	hdrv8304.Init.VDS_LVL = V0_90V;
+	hdrv8304.Init.VDS_LVL = V0_15V;
 	hdrv8304.Init.VREF_DIV = VREF;
 	hdrv8304.Init.LS_REF= SHx_SPx;
 	hdrv8304.Init.CSA_GAIN = G40V_V;
@@ -44,7 +94,7 @@ void MX_DRV8304_Init(void){
 	// AUTOCAL
 	hdrv8304.Init.SEN_LVL = OCP1V; /* don't clear*/
 
-	LL_DRV8304_Init(&hdrv8304);
+	hdrv8304.ErrorCode = LL_DRV8304_Init(&hdrv8304);
 }
 DRVErrorStatus LL_DRV8304_Init(DRV8304_HandleTypeDef *hdrv8304){
 
@@ -171,6 +221,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 	/* Check lock/unlock argument*/
 	if((Option!=UnlockRegisters)&&(Option!=LockRegisters))
 	{
+
 		 return BadArgument;
 	}
 	/* Lock/Unlock state machine*/
@@ -193,6 +244,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 		{
 			hdrv8304->Lock=DRV_Locked;
 			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
+
 			return UnlockFailed;
 
 		}
@@ -224,6 +276,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 		{
 			hdrv8304->Lock=DRV_Unlocked;
 			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
+
 			return LockFailed;
 
 		}
@@ -246,6 +299,9 @@ static void LL_DRV8304_ActiveMode(DRV8304_HandleTypeDef *hdrv8304){
 	hdrv8304->State = ActiveMode;
 
 	HAL_GPIO_WritePin(DRV_ENABLE_GPIO_Port, DRV_ENABLE_Pin, GPIO_PIN_SET);
+
+	/* wait short time to be sure that DRV is active */
+	HAL_Delay(5);
 
 }
 static void LL_DRV8304_SleepMode(DRV8304_HandleTypeDef *hdrv8304){
@@ -286,9 +342,21 @@ static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_
 }
 void MX_DRV8304_Request_Status(uint16_t *intermediateVar,DRV8304_HandleTypeDef *hdrv8304){
 
-	intermediateVar[0] = LL_DRV8304_ReadRegister(hdrv8304,Fault_Status1_Adr);
+	volatile uint16_t temp =0;
 
-	intermediateVar[1] = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
+	temp = LL_DRV8304_ReadRegister(hdrv8304,Fault_Status1_Adr);
+
+	temp= LL_DRV8304_ReadRegister(hdrv8304,VGS_Status2_Adr);
+
+	temp= LL_DRV8304_ReadRegister(hdrv8304,Driver_Control_Adr);
+
+	temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
+
+	temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_LS_Adr);
+
+	temp = LL_DRV8304_ReadRegister(hdrv8304,OCP_Control_Adr);
+
+	temp = LL_DRV8304_ReadRegister(hdrv8304,CSA_Control_Adr);
 
 }
 
@@ -332,5 +400,44 @@ static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hd
 	}
 
 
+}
+
+DRVErrorStatus MX_Change_Commutation_State(){
+
+	uint32_t tempGPIOB = GPIOB->ODR; /* Read the actual ODR Register values. */
+	//volatile static uint32_t temp4=0;
+	uint8_t *pvector = &GPIO_bit_Commutation_Vector;
+
+	uint8_t CommutationVal;
+
+	if(actual_commutation_state==6) {
+
+		actual_commutation_state=1;
+
+	}
+	else if(actual_commutation_state==0)
+	{
+
+		return DRV_ERROR;
+
+	}
+	else
+	{
+
+		actual_commutation_state++;
+
+	}
+
+
+	CommutationVal = GPIO_bit_Commutation_Vector[actual_commutation_state-1][1];//(uint8_t)*((pvector + actual_commutation_state + 2) - 1);
+/*	volatile uint8_t temp1 = (CommutationVal<<DRV_INx_Pos);
+	volatile uint8_t temp2 = (CommutationVal<<DRV_INx_Pos) & DRV_INx_MASK;
+	volatile uint8_t temp3 = (tempGPIOB & ~DRV_INx_MASK);
+	volatile uint8_t temp4 = ((tempGPIOB & ~DRV_INx_MASK) | ((CommutationVal<<DRV_INx_Pos) & DRV_INx_MASK));*/
+	//temp4 |= (uint32_t)((tempGPIOB & ~DRV_INx_MASK) | ((CommutationVal<<DRV_INx_Pos) & DRV_INx_MASK));
+	/* Update the ODR Register of the GPIOB with the new values of the pins */
+    (GPIOB->ODR) = (uint32_t)((tempGPIOB & ~DRV_INx_MASK) | ((CommutationVal<<DRV_INx_Pos) & DRV_INx_MASK));
+
+    return DRV_OK;
 }
 

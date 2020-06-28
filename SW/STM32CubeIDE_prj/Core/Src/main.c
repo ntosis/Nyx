@@ -95,7 +95,6 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM3_Init();
   MX_ADC1_Init();
-  MX_DMA_Init();
   MX_SPI1_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
@@ -194,9 +193,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 1 */
   if(htim->Instance==TIM3)
   {
-	  //BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-	  //vTaskNotifyGiveFromISR(ComputationINTHandle,&xHigherPriorityTaskWoken);
-	  //portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	  vTaskNotifyGiveFromISR(ComputationINTHandle,&xHigherPriorityTaskWoken);
+	  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
   /* USER CODE END Callback 1 */
 }

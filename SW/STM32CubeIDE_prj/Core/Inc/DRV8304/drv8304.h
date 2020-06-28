@@ -8,6 +8,8 @@
 #ifndef INC_DRV8304_DRV8304_H_
 #define INC_DRV8304_DRV8304_H_
 
+
+//#define configASSERTDRV( ( x ) )     if( ( x ) == 0 ) { for( ;; ); }
 /**
   * @brief  DRV8304 Lock structures definition
   */
@@ -181,11 +183,11 @@ typedef enum
 /*DRV8304 Error Status*/
 typedef enum
 {
+  DRV_OK = 0x00U,
   LockFailed = 0x01U,
   UnlockFailed = 0x02U,
   BadArgument = 0x03U,
-  DRV_OK = 0x04U,
-  DRV_ERROR = 0x05U
+  DRV_ERROR = 0x04U
 } DRVErrorStatus;
 
 /* DRV8304 State Type Definition*/
@@ -500,6 +502,16 @@ typedef struct __DRV8304_HandleTypeDef
 
 extern DRV8304_HandleTypeDef hdrv8304;
 
+static uint8_t actual_commutation_state = 1;
+
+const uint8_t DRV_INx_MASK;
+const uint8_t DRV_INx_Pos;
+
+const uint8_t DRV_Commutation_Vector[8][4] ;
+
+const uint8_t GPIO_bit_Commutation_Vector[8][2];
+
+
 void MX_DRV8304_Init(void);
 DRVErrorStatus LL_DRV8304_Init(DRV8304_HandleTypeDef *hdrv8304);
 DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegisterState Option);
@@ -508,5 +520,5 @@ static void LL_DRV8304_SleepMode(DRV8304_HandleTypeDef *hdrv8304);
 static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_RegAddress RegisterAddr);
 void MX_DRV8304_Request_Status(uint16_t *intermediateVar,DRV8304_HandleTypeDef *hdrv8304);
 static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304, uint16_t *RegValue);
-
+DRVErrorStatus MX_Change_Commutation_State();
 #endif /* INC_DRV8304_DRV8304_H_ */

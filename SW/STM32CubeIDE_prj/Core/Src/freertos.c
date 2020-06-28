@@ -152,17 +152,22 @@ void ComputationINTfunc(void *argument)
 {
   /* USER CODE BEGIN ComputationINTfunc */
 	HAL_TIM_Base_Start_IT(&htim3);
+	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_4);
+	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)0);
   /* Infinite loop */
   for(;;)
   {
 	  /* Will be woken up by timer interrupt*/
 	  ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
-	  HAL_GPIO_WritePin(TestPinC13_GPIO_Port, TestPinC13_Pin, GPIO_PIN_SET);
+	  /*HAL_GPIO_WritePin(TestPinC13_GPIO_Port, TestPinC13_Pin, GPIO_PIN_SET);
 	  for(int i=0;i<10;i++) asm("nop");
 	  volatile uint16_t a = adcBuffer[1];
 	  HAL_GPIO_WritePin(TestPinC13_GPIO_Port, TestPinC13_Pin, GPIO_PIN_RESET);
 	  volatile uint16_t intermediateVar[2]={0,0};
-	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
+	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);*/
+	  HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //Remove Brake
+	  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)100);
+	  MX_Change_Commutation_State();
   }
   /* USER CODE END ComputationINTfunc */
 }
@@ -177,9 +182,6 @@ void ComputationINTfunc(void *argument)
 void testTask500msFunc(void *argument)
 {
   /* USER CODE BEGIN testTask500msFunc */
-  HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
-
-  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint16_t)0);
   portTickType xLastWakeTime;
   const portTickType xDelay = 500 / portTICK_RATE_MS;
   // Initialise the xLastWakeTime variable with the current time.
@@ -189,8 +191,12 @@ void testTask500msFunc(void *argument)
   {
 	  uint16_t intermediateVar[2]={0,0};
 	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
+	  //HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET); //INLB connected
+
+	 /* uint16_t intermediateVar[2]={0,0};
+	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
 #if __PWM1==0
-	  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint16_t)700);
+	  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)700);
 	  HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //INLA connected
 	  HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_RESET); //INLB connected
 	  HAL_GPIO_TogglePin(GPIOB,DRV_INHC_Pin); //INHB Connected
@@ -198,7 +204,7 @@ void testTask500msFunc(void *argument)
 	  HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET); //INLB connected
 	  HAL_GPIO_TogglePin(GPIOB,DRV_INHC_Pin); //INHB Connected
 #endif
-	  // Wait for the next cycle.
+*/	  // Wait for the next cycle.
 	  vTaskDelayUntil( &xLastWakeTime, xDelay );
 
   }
