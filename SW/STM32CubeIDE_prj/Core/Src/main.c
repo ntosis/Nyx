@@ -103,6 +103,7 @@ int main(void)
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*) adcBuffer, 3); // Start ADC in DMA mode and declare the buffer where store the results
   MX_DRV8304_Init();
   /* HAL_TIM_Base_Start_IT(&htim3); Moved to FreeRTOS Task*/
+  MotorControlLibNEWFixedP_FULL19b_initialize();
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

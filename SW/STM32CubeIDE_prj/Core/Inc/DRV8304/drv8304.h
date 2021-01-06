@@ -276,6 +276,14 @@ typedef struct __DRV8304_HandleTypeDef
 
 }DRV8304_HandleTypeDef;
 
+/* Structure definition */
+struct table_1d {
+    uint8_t x_length;
+
+    float *x_values;
+    float *y_values;
+};
+
 //#define _DRV (uint16_t)0x00U /*Base Address*/
 
 /********************  Bit definition for Fault Status register 1  ********************/
@@ -494,23 +502,28 @@ typedef struct __DRV8304_HandleTypeDef
 
 #define DRV_ADDR_REG_Pos                         (11U)
 #define DRV_R_W_CMND_Pos                         (15U)
-
+#define DRV_V_REF							     (3.3F)
+#define UNIDIRECTMODE							 (1U)
+#define SHUNT_RESISTOR							 ((1.0f/1000.0f)) // 1 mOhm
 
 
 #define CREATE_SPI_REG(VIRTUAL_REG, VAL)   ((VIRTUAL_REG) = (uint16_t)(VAL))
 #define MERGE_SPI_LOCK_REG(VIRTUAL_REG, VAL) ((VIRTUAL_REG) = ((uint16_t)(VAL)|(VIRTUAL_REG&(0xffU))))
+
 
 extern DRV8304_HandleTypeDef hdrv8304;
 
 static uint8_t actual_commutation_state = 1;
 
 const uint8_t DRV_INx_MASK;
+
 const uint8_t DRV_INx_Pos;
 
 const uint8_t DRV_Commutation_Vector[8][4] ;
 
 const uint8_t GPIO_bit_Commutation_Vector[8][2];
 
+extern uint16_t adcBuffer[3];
 
 void MX_DRV8304_Init(void);
 DRVErrorStatus LL_DRV8304_Init(DRV8304_HandleTypeDef *hdrv8304);
@@ -521,4 +534,7 @@ static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_
 void MX_DRV8304_Request_Status(uint16_t *intermediateVar,DRV8304_HandleTypeDef *hdrv8304);
 static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304, uint16_t *RegValue);
 DRVErrorStatus MX_Change_Commutation_State();
+void MX_DRV8304_CalculateIabc(DRV8304_HandleTypeDef *hdrv8304);
+float interpolate_segment(float x0, float y0, float x1, float y1, float x);
+float interpolate_table_1d(struct table_1d *table, float x);
 #endif /* INC_DRV8304_DRV8304_H_ */
