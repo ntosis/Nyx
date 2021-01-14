@@ -11,6 +11,7 @@
 #include "drv8304.h"
 #include "spi.h"
 #include "adc.h"
+#include "tim.h"
 
 
 DRV8304_HandleTypeDef hdrv8304;
@@ -556,11 +557,24 @@ void MX_DRV8304_CalculateIabc(DRV8304_HandleTypeDef *hdrv8304){
 }
 void set_PWM_A_DT(uint8_t a){
 
+	uint32_t tmp = 10UL * a; // multiply the duty cycle because in Matlab is converted to 0~100%
+
+	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,tmp);
+
 }
 void set_PWM_B_DT(uint8_t a){
+
+	uint32_t tmp = 10UL * a;
+
+	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)tmp);
 
 }
 void set_PWM_C_DT(uint8_t a){
 
+	uint32_t tmp = 10UL * a;
+
+	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)tmp);
+
 }
+
 unsigned short VphMax = 0;

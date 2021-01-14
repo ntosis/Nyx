@@ -61,14 +61,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define TestPinC13_Pin GPIO_PIN_13
-#define TestPinC13_GPIO_Port GPIOC
 #define SOA_AI_Pin GPIO_PIN_1
 #define SOA_AI_GPIO_Port GPIOA
 #define SOB_AI_Pin GPIO_PIN_2
 #define SOB_AI_GPIO_Port GPIOA
-#define SOC_AI_Pin GPIO_PIN_3
-#define SOC_AI_GPIO_Port GPIOA
 #define DRV_CS_Pin GPIO_PIN_4
 #define DRV_CS_GPIO_Port GPIOA
 #define DRV_INHB_Pin GPIO_PIN_0
@@ -79,8 +75,8 @@ void Error_Handler(void);
 #define DRV_ENABLE_GPIO_Port GPIOA
 #define DRV_NFAULT_Pin GPIO_PIN_10
 #define DRV_NFAULT_GPIO_Port GPIOA
-#define DRV_INLB_Pin GPIO_PIN_3
-#define DRV_INLB_GPIO_Port GPIOB
+#define PWM_2_Pin GPIO_PIN_15
+#define PWM_2_GPIO_Port GPIOA
 #define DRV_INHC_Pin GPIO_PIN_4
 #define DRV_INHC_GPIO_Port GPIOB
 #define DRV_INLC_Pin GPIO_PIN_5

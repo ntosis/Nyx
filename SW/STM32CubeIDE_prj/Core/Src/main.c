@@ -30,6 +30,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "drv8304.h"
+#include "MotorControlLibNEWFixedP_FULL19b.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,12 +96,14 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM3_Init();
   MX_ADC1_Init();
+
   MX_SPI1_Init();
   MX_TIM4_Init();
-  //
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADCEx_Calibration_Start(&hadc1);
-  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) adcBuffer, 3); // Start ADC in DMA mode and declare the buffer where store the results
+  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) adcBuffer, 1); // Start ADC in DMA mode and declare the buffer where store the results
+  HAL_ADCEx_InjectedStart(&hadc1);
   MX_DRV8304_Init();
   /* HAL_TIM_Base_Start_IT(&htim3); Moved to FreeRTOS Task*/
   MotorControlLibNEWFixedP_FULL19b_initialize();

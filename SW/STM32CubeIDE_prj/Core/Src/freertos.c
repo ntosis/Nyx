@@ -30,6 +30,7 @@
 #include "tim.h"
 #include "drv8304.h"
 #include "MotorControlLibNEWFixedP_FULL19b.h"
+#include "adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -173,9 +174,13 @@ void ComputationINTfunc(void *argument)
 	uint32_t tempGPIOB = GPIOB->ODR; /* Read the actual ODR Register values. */
 
 	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_4);
+	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
 	uint8_t temp;
 	 HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //Remove Brake
 	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)100);
+	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint16_t)100);
+	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint16_t)100);
 	temp = GPIO_bit_Commutation_Vector[8 - 1][1];//(uint8_t)*((pvector + actual_commutation_state + 2) - 1);
 
 	(GPIOB->ODR) = (uint32_t)((tempGPIOB & ~DRV_INx_MASK) | ((temp<<DRV_INx_Pos) & DRV_INx_MASK));
@@ -196,6 +201,8 @@ void ComputationINTfunc(void *argument)
 	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);*/
 	  HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //Remove Brake
 	  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)100);
+
+	  adcBuffer[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
 
 	  //MX_Change_Commutation_State();
 	  	//__disable_irq(); //cmsis Code
