@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'MotorControlLibNEWFixedP_FULL19b'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.12
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Tue Dec 29 14:13:06 2020
+ * C/C++ source code generated on : Fri Jan 22 15:30:32 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -19,7 +19,7 @@
 #include "multiword_types.h"
 
 /* Includes for objects with custom storage classes. */
-//#include "InterfaceBswApp.h"
+#include "InterfaceBswApp.h"
 #ifndef UCHAR_MAX
 #include <limits.h>
 #endif
@@ -69,26 +69,27 @@ preprocessor word size checks.
 #endif
 
 extern const int16_T rtCP_pooled_s8cmtSV5mIIg[502];
-extern const int16_T rtCP_pooled_AmmRxwP1dU5l[3];
+extern const uint16_T rtCP_pooled_6w9J1O0OtQSF[3];
+extern const boolean_T rtCP_pooled_h9SS684EhrQx[16];
 
 #define rtCP_sine_table_values_Value   rtCP_pooled_s8cmtSV5mIIg  /* Computed Parameter: rtCP_sine_table_values_Value
-                                                                  * Referenced by: '<S9>/sine_table_values'
+                                                                  * Referenced by: '<S10>/sine_table_values'
                                                                   */
-#define rtCP_uDLookupTable1_tableData  rtCP_pooled_AmmRxwP1dU5l  /* Computed Parameter: rtCP_uDLookupTable1_tableData
-                                                                  * Referenced by: '<S5>/1-D Lookup Table1'
-                                                                  */
-#define rtCP_uDLookupTable2_tableData  rtCP_pooled_AmmRxwP1dU5l  /* Computed Parameter: rtCP_uDLookupTable2_tableData
-                                                                  * Referenced by: '<S5>/1-D Lookup Table2'
-                                                                  */
-#define rtCP_uDLookupTable_tableData   rtCP_pooled_AmmRxwP1dU5l  /* Computed Parameter: rtCP_uDLookupTable_tableData
+#define rtCP_uDLookupTable_tableData   rtCP_pooled_6w9J1O0OtQSF  /* Computed Parameter: rtCP_uDLookupTable_tableData
                                                                   * Referenced by: '<S5>/1-D Lookup Table'
                                                                   */
-
-/* Imported (extern) block parameters */
-extern int16_T VphMax;                 /* Variable: VphMax
-                                        * Referenced by: '<Root>/Constant3'
-                                        */
-
+#define rtCP_uDLookupTable1_tableData  rtCP_pooled_6w9J1O0OtQSF  /* Computed Parameter: rtCP_uDLookupTable1_tableData
+                                                                  * Referenced by: '<S5>/1-D Lookup Table1'
+                                                                  */
+#define rtCP_uDLookupTable2_tableData  rtCP_pooled_6w9J1O0OtQSF  /* Computed Parameter: rtCP_uDLookupTable2_tableData
+                                                                  * Referenced by: '<S5>/1-D Lookup Table2'
+                                                                  */
+#define rtCP_Logic_table               rtCP_pooled_h9SS684EhrQx  /* Computed Parameter: rtCP_Logic_table
+                                                                  * Referenced by: '<S213>/Logic'
+                                                                  */
+#define rtCP_Logic_table_m             rtCP_pooled_h9SS684EhrQx  /* Computed Parameter: rtCP_Logic_table_m
+                                                                  * Referenced by: '<S214>/Logic'
+                                                                  */
 #endif              /* RTW_HEADER_MotorControlLibNEWFixedP_FULL19b_private_h_ */
 
 /*

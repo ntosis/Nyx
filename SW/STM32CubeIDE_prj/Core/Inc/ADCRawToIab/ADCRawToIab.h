@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'ADCRawToIab'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.4
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Tue Dec 29 13:39:40 2020
+ * C/C++ source code generated on : Sun Jan 24 11:53:12 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -22,25 +22,8 @@
 
 #include "ADCRawToIab_types.h"
 
-/* Exported data define */
-
-/* Definition for custom storage class: Define */
-#define ADC_RES                        16384                     /* Referenced by:
-                                                                  * '<Root>/Constant'
-                                                                  * '<Root>/Constant3'
-                                                                  */
-#define DRV_GAIN                       80                        /* Referenced by:
-                                                                  * '<Root>/Constant1'
-                                                                  * '<Root>/Constant4'
-                                                                  */
-#define DRV_SHUNTR_OHM                 33                        /* Referenced by:
-                                                                  * '<Root>/Constant2'
-                                                                  * '<Root>/Constant5'
-                                                                  */
-#define DRV_V_REF                      106                       /* Referenced by:
-                                                                  * '<Root>/Gain'
-                                                                  * '<Root>/Gain1'
-                                                                  */
+/* Includes for objects with custom storage classes. */
+#include "ConstParams.h"
 
 /* Real-time Model Data Structure */
 struct tag_RTM_ADCRawToIab_T {
@@ -55,19 +38,6 @@ typedef struct {
 extern void ADCRawToIab_initialize(const char_T **rt_errorStatus,
   RT_MODEL_ADCRawToIab_T *const ADCRawToIab_M);
 extern void ADCRawToIab(int16_T *rty_Ia, int16_T *rty_Ib);
-
-/* Exported data declaration */
-
-/* Const memory section */
-/* Declaration for custom storage class: Const */
-extern const int16_T ComparatorBrkPnt[3];/* Referenced by:
-                                          * '<Root>/1-D Lookup Table'
-                                          * '<Root>/1-D Lookup Table1'
-                                          */
-extern const int16_T VoltageOut[3];    /* Referenced by:
-                                        * '<Root>/1-D Lookup Table'
-                                        * '<Root>/1-D Lookup Table1'
-                                        */
 
 /*-
  * The generated code includes comments that allow you to trace directly

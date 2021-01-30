@@ -31,6 +31,7 @@
 /* USER CODE BEGIN Includes */
 #include "drv8304.h"
 #include "MotorControlLibNEWFixedP_FULL19b.h"
+#include "InterfaceBswApp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +45,11 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+#define  ARM_CM_DEMCR      (*(uint32_t *)0xE000EDFC)
 
+#define  ARM_CM_DWT_CTRL   (*(uint32_t *)0xE0001000)
+
+#define  ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004)
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -146,7 +151,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL4;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL8;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -157,10 +162,10 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -198,9 +203,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 1 */
   if(htim->Instance==TIM3)
   {
-	  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	  volatile uint32_t start=0,stop=0;
+	  countInteruptsinOut++;
+/*	  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	  vTaskNotifyGiveFromISR(ComputationINTHandle,&xHigherPriorityTaskWoken);
-	  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);*/
+
+	  adcBuffer[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+
+	  //MX_Change_Commutation_State();
+	  	//__disable_irq(); //cmsis Code
+	  	start = ARM_CM_DWT_CYCCNT;
+	  	MotorControlLibNEWFixedP_FULL19b_step();
+	  	//HAL_GPIO_TogglePin(GPIOB,DRV_INLC_Pin);
+	  	stop = ARM_CM_DWT_CYCCNT;
+	  	//__enable_irq();
+	  	clocksNeededOfMAtlabFunc = stop - start;
+	  	countInteruptsinOut--;
   }
   /* USER CODE END Callback 1 */
 }

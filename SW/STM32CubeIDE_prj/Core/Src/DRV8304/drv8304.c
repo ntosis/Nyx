@@ -56,7 +56,7 @@ const uint8_t GPIO_bit_Commutation_Vector[8][2] = \
 /* These coordinates correspond to the points illustrated in the above graph */
 #ifdef UNIDIRECTMODE
 
-static float comparator_value[] = {0.0, DRV_V_REF/2.0F, DRV_V_REF };
+//static float comparator_value[] = {0.0, DRV_V_REF/2.0F, DRV_V_REF };
 static float voltage[] = {0.3, 0.00, -0.3  };
 
 #else
@@ -66,11 +66,11 @@ static float sine_y[] = {0.0, 0.24, 0.6,  0.87, 1.00, 1.00};
 
 #endif
 
-static struct table_1d comparator_tables = {
-    3,      /* Number of data points */
-	comparator_value, /* Array of x-coordinates */
-	voltage  /* Array of y-coordinates */
-};
+/*static struct table_1d comparator_tables = {
+    3,       Number of data points
+	comparator_value,  Array of x-coordinates
+	voltage   Array of y-coordinates
+};*/
 
 
 /* HAL Sensors fake
@@ -101,7 +101,7 @@ void MX_DRV8304_Init(void){
 	hdrv8304.Init.DIS_CPUV = DRV_Enable;
 	hdrv8304.Init.DIS_GDF = DRV_Enable;
 	hdrv8304.Init.OTW_REP = NotReported;
-	hdrv8304.Init.PWM_MODE = X1Mode;
+	hdrv8304.Init.PWM_MODE = X3Mode;
 	hdrv8304.Init.PWM_COM1 = Synchronous;
 	hdrv8304.Init.IDRIVEP_HS = IP105mA;
 	hdrv8304.Init.IDRIVEN_HS = IN120mA;
@@ -110,12 +110,12 @@ void MX_DRV8304_Init(void){
 	hdrv8304.Init.IDRIVEN_LS = IN120mA;
 	hdrv8304.Init.TRETRY = T4ms;
 	hdrv8304.Init.DEAD_TIME = T100ns;
-	hdrv8304.Init.OCP_MODE = AUTRTR;
+	hdrv8304.Init.OCP_MODE = ONLRPRT;
 	hdrv8304.Init.OCP_ACT = AllShutdown;
 	hdrv8304.Init.VDS_LVL = V0_15V;
 	hdrv8304.Init.VREF_DIV = VREF;
 	hdrv8304.Init.LS_REF= SHx_SPx;
-	hdrv8304.Init.CSA_GAIN = G40V_V;
+	hdrv8304.Init.CSA_GAIN = G10V_V;
 	hdrv8304.Init.DIS_SEN = DRV_Disable;
 	hdrv8304.Init.SPI_CAL = DRV_Enable;
 	// AUTOCAL
@@ -367,15 +367,15 @@ static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_
 	}
 
 }
-void MX_DRV8304_Request_Status(uint16_t *intermediateVar,DRV8304_HandleTypeDef *hdrv8304){
+void MX_DRV8304_Report_Fault(uint16_t *faultReg1,uint16_t *faultReg2,DRV8304_HandleTypeDef *hdrv8304) {
 
-	volatile uint16_t temp =0;
 
-	temp = LL_DRV8304_ReadRegister(hdrv8304,Fault_Status1_Adr);
 
-	temp= LL_DRV8304_ReadRegister(hdrv8304,VGS_Status2_Adr);
+	*faultReg1 = LL_DRV8304_ReadRegister(hdrv8304,Fault_Status1_Adr);
 
-	temp= LL_DRV8304_ReadRegister(hdrv8304,Driver_Control_Adr);
+	*faultReg2 = LL_DRV8304_ReadRegister(hdrv8304,VGS_Status2_Adr);
+
+	/*temp= LL_DRV8304_ReadRegister(hdrv8304,Driver_Control_Adr);
 
 	temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
 
@@ -383,7 +383,7 @@ void MX_DRV8304_Request_Status(uint16_t *intermediateVar,DRV8304_HandleTypeDef *
 
 	temp = LL_DRV8304_ReadRegister(hdrv8304,OCP_Control_Adr);
 
-	temp = LL_DRV8304_ReadRegister(hdrv8304,CSA_Control_Adr);
+	temp = LL_DRV8304_ReadRegister(hdrv8304,CSA_Control_Adr);*/
 
 }
 
@@ -555,26 +555,6 @@ void MX_DRV8304_CalculateIabc(DRV8304_HandleTypeDef *hdrv8304){
 	__enable_irq();
 	delta = stop - start;*/
 }
-void set_PWM_A_DT(uint8_t a){
 
-	uint32_t tmp = 10UL * a; // multiply the duty cycle because in Matlab is converted to 0~100%
 
-	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,tmp);
 
-}
-void set_PWM_B_DT(uint8_t a){
-
-	uint32_t tmp = 10UL * a;
-
-	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)tmp);
-
-}
-void set_PWM_C_DT(uint8_t a){
-
-	uint32_t tmp = 10UL * a;
-
-	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)tmp);
-
-}
-
-unsigned short VphMax = 0;

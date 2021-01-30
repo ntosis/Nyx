@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'ADCRawToIab'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.6
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Tue Dec 29 13:39:40 2020
+ * C/C++ source code generated on : Sun Jan 24 13:10:49 2021
  */
 
 #include "rtwtypes.h"

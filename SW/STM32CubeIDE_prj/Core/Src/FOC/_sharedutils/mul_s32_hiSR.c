@@ -1,5 +1,5 @@
 /*
- * File: sMultiWordMul.h
+ * File: mul_s32_hiSR.c
  *
  * Code generated for Simulink model 'MotorControlLibNEWFixedP_FULL19b'.
  *
@@ -8,14 +8,17 @@
  * C/C++ source code generated on : Sun Jan 24 13:11:13 2021
  */
 
-#ifndef SHARE_sMultiWordMul
-#define SHARE_sMultiWordMul
 #include "rtwtypes.h"
+#include "mul_wide_s32.h"
+#include "mul_s32_hiSR.h"
 
-extern void sMultiWordMul(const uint32_T u1[], int32_T n1, const uint32_T u2[],
-  int32_T n2, uint32_T y[], int32_T n);
-
-#endif
+int32_T mul_s32_hiSR(int32_T a, int32_T b, uint32_T aShift)
+{
+  uint32_T u32_chi;
+  uint32_T u32_clo;
+  mul_wide_s32(a, b, &u32_chi, &u32_clo);
+  return (int32_T)u32_chi >> aShift;
+}
 
 /*
  * File trailer for generated code.

@@ -1,5 +1,5 @@
 /*
- * File: sMultiWordMul.h
+ * File: look1_is16lu32n16tu16_binlcse.h
  *
  * Code generated for Simulink model 'MotorControlLibNEWFixedP_FULL19b'.
  *
@@ -8,12 +8,12 @@
  * C/C++ source code generated on : Sun Jan 24 13:11:13 2021
  */
 
-#ifndef SHARE_sMultiWordMul
-#define SHARE_sMultiWordMul
+#ifndef SHARE_look1_is16lu32n16tu16_binlcse
+#define SHARE_look1_is16lu32n16tu16_binlcse
 #include "rtwtypes.h"
 
-extern void sMultiWordMul(const uint32_T u1[], int32_T n1, const uint32_T u2[],
-  int32_T n2, uint32_T y[], int32_T n);
+extern uint16_T look1_is16lu32n16tu16_binlcse(int16_T u0, const int16_T bp0[],
+  const uint16_T table[], uint32_T maxIndex);
 
 #endif
 

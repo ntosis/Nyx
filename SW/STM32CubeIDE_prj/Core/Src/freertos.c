@@ -31,6 +31,7 @@
 #include "drv8304.h"
 #include "MotorControlLibNEWFixedP_FULL19b.h"
 #include "adc.h"
+#include "InterfaceBswApp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -121,7 +122,7 @@ osKernelInitialize();
   /* definition and creation of testTask500ms */
   const osThreadAttr_t testTask500ms_attributes = {
     .name = "testTask500ms",
-    .priority = (osPriority_t) osPriorityHigh,
+    .priority = (osPriority_t) osPriorityRealtime,
     .stack_size = 512
   };
   testTask500msHandle = osThreadNew(testTask500msFunc, NULL, &testTask500ms_attributes);
@@ -160,7 +161,7 @@ void StartDefaultTask(void *argument)
 void ComputationINTfunc(void *argument)
 {
   /* USER CODE BEGIN ComputationINTfunc */
-
+ //Called in HAL_TIM_PeriodElapsedCallback
 	  if (ARM_CM_DWT_CTRL != 0) {  // See if DWT is available
 
 	  	 ARM_CM_DEMCR |= 1 << 24; // Set bit 24
@@ -176,41 +177,39 @@ void ComputationINTfunc(void *argument)
 	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_4);
 	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
-	uint8_t temp;
-	 HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //Remove Brake
-	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)100);
-	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint16_t)100);
-	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint16_t)100);
-	temp = GPIO_bit_Commutation_Vector[8 - 1][1];//(uint8_t)*((pvector + actual_commutation_state + 2) - 1);
 
-	(GPIOB->ODR) = (uint32_t)((tempGPIOB & ~DRV_INx_MASK) | ((temp<<DRV_INx_Pos) & DRV_INx_MASK));
 	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)0);
+	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint16_t)0);
+	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint16_t)0);
+
+	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)0);
+
+	HAL_GPIO_WritePin(GPIOB,DRV_INLA_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET);
+
 	HAL_TIM_Base_Start_IT(&htim3);
-	// HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_RESET); //Set Brake
+
   /* Infinite loop */
   for(;;)
   {
-	  volatile uint32_t start=0,stop=0,delta = 0;
+	  volatile uint32_t start=0,stop=0;
 	  /* Will be woken up by timer interrupt*/
 	  ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
-	  /*HAL_GPIO_WritePin(TestPinC13_GPIO_Port, TestPinC13_Pin, GPIO_PIN_SET);
-	  for(int i=0;i<10;i++) asm("nop");
-	  volatile uint16_t a = adcBuffer[1];
-	  HAL_GPIO_WritePin(TestPinC13_GPIO_Port, TestPinC13_Pin, GPIO_PIN_RESET);
-	  volatile uint16_t intermediateVar[2]={0,0};
-	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);*/
-	  HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //Remove Brake
-	  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)100);
+
 
 	  adcBuffer[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
 
 	  //MX_Change_Commutation_State();
 	  	//__disable_irq(); //cmsis Code
-	  	//start = ARM_CM_DWT_CYCCNT;
+	  	start = ARM_CM_DWT_CYCCNT;
 	  	MotorControlLibNEWFixedP_FULL19b_step();
-	  	//stop = ARM_CM_DWT_CYCCNT;
+	  	//HAL_GPIO_TogglePin(GPIOB,DRV_INLC_Pin);
+	  	stop = ARM_CM_DWT_CYCCNT;
 	  	//__enable_irq();
-	  	//delta = stop - start;
+	  	clocksNeededOfMAtlabFunc = stop - start;
+	  	countInteruptsinOut--;
+
 
 
   }
@@ -235,11 +234,11 @@ void testTask500msFunc(void *argument)
   for(;;)
   {
 	  uint16_t intermediateVar[2]={0,0};
-	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
+	  //MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
 	  //HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET); //INLB connected
-	  MX_DRV8304_CalculateIabc(&hdrv8304);
+	  //MX_DRV8304_CalculateIabc(&hdrv8304);
 	 /* uint16_t intermediateVar[2]={0,0};
-	  MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
+
 #if __PWM1==0
 	  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)700);
 	  HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //INLA connected
@@ -249,7 +248,11 @@ void testTask500msFunc(void *argument)
 	  HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET); //INLB connected
 	  HAL_GPIO_TogglePin(GPIOB,DRV_INHC_Pin); //INHB Connected
 #endif
-*/	  // Wait for the next cycle.
+*/
+	  NfaultState = HAL_GPIO_ReadPin(DRV_NFAULT_GPIO_Port,DRV_NFAULT_Pin);
+	  NfaultStateRunningCnt++;
+	  MX_DRV8304_Report_Fault(&faultRegister1Value,&faultRegister2Value,&hdrv8304);
+	  // Wait for the next cycle.
 	  vTaskDelayUntil( &xLastWakeTime, xDelay );
 
   }

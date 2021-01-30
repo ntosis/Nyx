@@ -33,7 +33,7 @@
 extern ADC_HandleTypeDef hadc1;
 
 /* USER CODE BEGIN Private defines */
-#define ADC_RES 4096.0F
+//#define ADC_RES 4096.0F
 /* USER CODE END Private defines */
 
 void MX_ADC1_Init(void);

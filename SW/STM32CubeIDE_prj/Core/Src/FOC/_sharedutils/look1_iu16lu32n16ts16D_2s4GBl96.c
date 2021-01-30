@@ -1,27 +1,25 @@
 /*
- * File: look1_is16bs16p8lu32n1_8EtRrfdo.c
+ * File: look1_iu16lu32n16ts16D_2s4GBl96.c
  *
  * Code generated for Simulink model 'ADCRawToIab'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.6
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Tue Dec 29 13:39:40 2020
+ * C/C++ source code generated on : Sun Jan 24 13:10:49 2021
  */
 
 #include "rtwtypes.h"
-#include "div_nzp_repeat_u32.h"
-#include "look1_is16bs16p8lu32n1_8EtRrfdo.h"
+#include "look1_iu16lu32n16ts16D_2s4GBl96.h"
 
-int16_T look1_is16bs16p8lu32n1_8EtRrfdo(int16_T u0, const int16_T bp0[], const
+int16_T look1_iu16lu32n16ts16D_2s4GBl96(uint16_T u0, const uint16_T bp0[], const
   int16_T table[], uint32_T maxIndex)
 {
   uint32_T frac;
-  int16_T uCast;
   uint32_T iRght;
   uint32_T iLeft;
 
   /* Column-major Lookup 1-D
-     Canonical function name: look1_is16bs16p8lu32n16ts16Ds32_binlcs
+     Canonical function name: look1_iu16lu32n16ts16Ds32_binlcs
      Search method: 'binary'
      Use previous index: 'off'
      Interpolation method: 'Linear point-slope'
@@ -38,17 +36,16 @@ int16_T look1_is16bs16p8lu32n1_8EtRrfdo(int16_T u0, const int16_T bp0[], const
      Remove protection against out-of-range input in generated code: 'off'
      Rounding mode: 'simplest'
    */
-  uCast = (int16_T)(u0 >> 8);
-  if (u0 < (bp0[0U] << 8)) {
+  if (u0 <= bp0[0U]) {
     iLeft = 0U;
     frac = 0U;
-  } else if (uCast < bp0[maxIndex]) {
+  } else if (u0 < bp0[maxIndex]) {
     /* Binary Search */
     frac = maxIndex >> 1U;
     iLeft = 0U;
     iRght = maxIndex;
     while (iRght - iLeft > 1U) {
-      if (uCast < bp0[frac]) {
+      if (u0 < bp0[frac]) {
         iRght = frac;
       } else {
         iLeft = frac;
@@ -57,8 +54,8 @@ int16_T look1_is16bs16p8lu32n1_8EtRrfdo(int16_T u0, const int16_T bp0[], const
       frac = (iRght + iLeft) >> 1U;
     }
 
-    frac = div_nzp_repeat_u32(u0 - ((uint32_T)bp0[iLeft] << 8), (uint16_T)
-      (bp0[iLeft + 1U] - bp0[iLeft]), 8U);
+    frac = ((uint32_T)(uint16_T)((uint32_T)u0 - bp0[iLeft]) << 16) / (uint16_T)
+      ((uint32_T)bp0[iLeft + 1U] - bp0[iLeft]);
   } else {
     iLeft = maxIndex - 1U;
     frac = 65536U;

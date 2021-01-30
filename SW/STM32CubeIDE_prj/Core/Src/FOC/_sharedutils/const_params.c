@@ -3,14 +3,24 @@
  *
  * Code generation for model "MotorControlLibNEWFixedP_FULL19b".
  *
- * Model version              : 1.1
+ * Model version              : 1.13
  * Simulink Coder version : 9.2 (R2019b) 18-Jul-2019
- * C source code generated on : Tue Dec 29 14:13:06 2020
+ * C source code generated on : Sun Jan 24 13:11:13 2021
  */
 #include "rtwtypes.h"
 
-extern const int16_T rtCP_pooled_AmmRxwP1dU5l[3];
-const int16_T rtCP_pooled_AmmRxwP1dU5l[3] = { 0, 128, 256 } ;
+extern const uint16_T rtCP_pooled_6w9J1O0OtQSF[3];
+const uint16_T rtCP_pooled_6w9J1O0OtQSF[3] = { 0U, 500U, 1000U } ;
+
+extern const int16_T rtCP_pooled_bqgxaasbfOxy[2];
+const int16_T rtCP_pooled_bqgxaasbfOxy[2] = { 0, 3379 } ;
+
+extern const boolean_T rtCP_pooled_h9SS684EhrQx[16];
+const boolean_T rtCP_pooled_h9SS684EhrQx[16] = { 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1,
+  1, 0, 0, 0, 0 } ;
+
+extern const uint16_T rtCP_pooled_kvvxyW9ttTmC[2];
+const uint16_T rtCP_pooled_kvvxyW9ttTmC[2] = { 0U, 4096U } ;
 
 extern const int16_T rtCP_pooled_s8cmtSV5mIIg[502];
 const int16_T rtCP_pooled_s8cmtSV5mIIg[502] = { 0, 4, 8, 12, 16, 20, 24, 28, 32,

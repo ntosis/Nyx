@@ -1,5 +1,5 @@
 /*
- * File: div_nzp_repeat_u32.h
+ * File: look1_is16bs16n2lu32n1_UXA9sfNQ.h
  *
  * Code generated for Simulink model 'ADCRawToIab'.
  *
@@ -8,12 +8,12 @@
  * C/C++ source code generated on : Sun Jan 24 13:10:49 2021
  */
 
-#ifndef SHARE_div_nzp_repeat_u32
-#define SHARE_div_nzp_repeat_u32
+#ifndef SHARE_look1_is16bs16n2lu32n1_UXA9sfNQ
+#define SHARE_look1_is16bs16n2lu32n1_UXA9sfNQ
 #include "rtwtypes.h"
 
-extern uint32_T div_nzp_repeat_u32(uint32_T numerator, uint32_T denominator,
-  uint32_T nRepeatSub);
+extern int16_T look1_is16bs16n2lu32n1_UXA9sfNQ(int16_T u0, const int16_T bp0[],
+  const int16_T table[], uint32_T maxIndex);
 
 #endif
 
