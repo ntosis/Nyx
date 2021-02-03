@@ -34,6 +34,8 @@ extern const int8_T DRV_V_REF;
 
 /* fixdt(1,8,2^-5,0) */
 extern const int32_T EMFobsLdGain;
+extern const int32_T  Ld;
+extern const int32_T  Rs;
 
 /* fixdt(1,32,2^-22,0) */
 extern const int16_T EMFobsRS;

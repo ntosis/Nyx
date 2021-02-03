@@ -122,7 +122,7 @@ osKernelInitialize();
   /* definition and creation of testTask500ms */
   const osThreadAttr_t testTask500ms_attributes = {
     .name = "testTask500ms",
-    .priority = (osPriority_t) osPriorityRealtime,
+    .priority = (osPriority_t) osPriorityHigh,
     .stack_size = 512
   };
   testTask500msHandle = osThreadNew(testTask500msFunc, NULL, &testTask500ms_attributes);
@@ -202,10 +202,10 @@ void ComputationINTfunc(void *argument)
 
 	  //MX_Change_Commutation_State();
 	  	//__disable_irq(); //cmsis Code
-	  	start = ARM_CM_DWT_CYCCNT;
+	  	start = rCpuClocks();
 	  	MotorControlLibNEWFixedP_FULL19b_step();
 	  	//HAL_GPIO_TogglePin(GPIOB,DRV_INLC_Pin);
-	  	stop = ARM_CM_DWT_CYCCNT;
+	  	stop = rCpuClocks();
 	  	//__enable_irq();
 	  	clocksNeededOfMAtlabFunc = stop - start;
 	  	countInteruptsinOut--;
@@ -249,9 +249,11 @@ void testTask500msFunc(void *argument)
 	  HAL_GPIO_TogglePin(GPIOB,DRV_INHC_Pin); //INHB Connected
 #endif
 */
+	  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_SET);
 	  NfaultState = HAL_GPIO_ReadPin(DRV_NFAULT_GPIO_Port,DRV_NFAULT_Pin);
 	  NfaultStateRunningCnt++;
 	  MX_DRV8304_Report_Fault(&faultRegister1Value,&faultRegister2Value,&hdrv8304);
+	  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_RESET);
 	  // Wait for the next cycle.
 	  vTaskDelayUntil( &xLastWakeTime, xDelay );
 

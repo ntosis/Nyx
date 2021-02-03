@@ -208,18 +208,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 /*	  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	  vTaskNotifyGiveFromISR(ComputationINTHandle,&xHigherPriorityTaskWoken);
 	  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);*/
-
+	  if(StepFunctionisStillRunning==0) {
+		  portDISABLE_INTERRUPTS(); //cmsis Code
+		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13,GPIO_PIN_SET);
+		  StepFunctionisStillRunning = 1;
 	  adcBuffer[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
 
 	  //MX_Change_Commutation_State();
-	  	//__disable_irq(); //cmsis Code
-	  	start = ARM_CM_DWT_CYCCNT;
+
+	  	start = rCpuClocks();
 	  	MotorControlLibNEWFixedP_FULL19b_step();
 	  	//HAL_GPIO_TogglePin(GPIOB,DRV_INLC_Pin);
-	  	stop = ARM_CM_DWT_CYCCNT;
-	  	//__enable_irq();
+	  	stop = rCpuClocks();
+	  	//
 	  	clocksNeededOfMAtlabFunc = stop - start;
 	  	countInteruptsinOut--;
+	  	StepFunctionisStillRunning = 0;
+	  	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13,GPIO_PIN_RESET);
+	  	portENABLE_INTERRUPTS();
+	  }
   }
   /* USER CODE END Callback 1 */
 }

@@ -14,6 +14,14 @@ void set_PWM_A_DT(uint16_t a);
 void set_PWM_B_DT(uint16_t a);
 void set_PWM_C_DT(uint16_t a);
 
+#define  ARM_CM_DEMCR      (*(uint32_t *)0xE000EDFC)
+
+#define  ARM_CM_DWT_CTRL   (*(uint32_t *)0xE0001000)
+
+#define  ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004)
+
+uint32_t rCpuClocks(void);
+
 uint16_t adcBuffer[3];
 
 uint32_t pwm_set_a_m;
@@ -26,6 +34,21 @@ extern volatile uint16_t faultRegister1Value;
 extern volatile uint16_t faultRegister2Value;
 
 extern uint8_t countInteruptsinOut;
+extern uint8_t StepFunctionisStillRunning;
 extern volatile uint32_t clocksNeededOfMAtlabFunc;
 
+struct CPU_clocks {
+  uint32_t StepFunctionClocks;
+  uint32_t FluxObserverClocks;
+  uint32_t Step1;
+  uint32_t Step2;
+  uint32_t Step3;
+  uint32_t Step4;
+  uint32_t Step5;
+  uint32_t Step6;
+  uint32_t Step7;
+  uint32_t Step8;
+  uint32_t Step9;
+};
+extern volatile struct CPU_clocks CPU_clocks_ins;
 #endif /* INC_INTERFACE_INTERFACEBSWAPP_H_ */

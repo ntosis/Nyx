@@ -40,9 +40,11 @@ const int8_T DRV_V_REF = 106;
 
 /* fixdt(1,8,2^-5,0) */
 const int32_T EMFobsLdGain = 42;
+const int32_T  Ld = 42;
 
 /* fixdt(1,32,2^-22,0) */
 const int16_T EMFobsRS = 179;
+const int32_T  Rs = 2933;
 
 /* fixdt(1,16,2^-8,0) */
 const int8_T MaxBckEMFVol_sat_neg = -24;
