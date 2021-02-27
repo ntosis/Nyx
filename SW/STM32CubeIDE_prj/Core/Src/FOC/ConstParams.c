@@ -33,7 +33,7 @@ const int16_T ComparatorBrkPnt[3] = { 0, 6758, 13517  } ;
 const int8_T DRV_GAIN = 20;
 
 /* fixdt(1,8,2^-1,0) */
-const int16_T DRV_SHUNTR_OHM = 33;
+const int16_T DRV_SHUNTR_OHM = 229; //7 mOhm  33; //1 mOhm
 
 /* fixdt(1,16,2^-15,0) */
 const int8_T DRV_V_REF = 106;

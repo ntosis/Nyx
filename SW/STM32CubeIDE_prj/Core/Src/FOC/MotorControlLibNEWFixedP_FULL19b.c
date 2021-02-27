@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'MotorControlLibNEWFixedP_FULL19b'.
  *
- * Model version                  : 1.18
+ * Model version                  : 1.19
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Sun Jan 31 14:34:47 2021
+ * C/C++ source code generated on : Wed Feb  3 12:55:42 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -19,7 +19,6 @@
 #include "look1_is16lu32n16tu16_binlcse.h"
 #include "mul_s32_hiSR.h"
 #include "rt_atan2f_snf.h"
-#include "rt_sqrt_Us32En14_Ys32E_OVqLloIL.h"
 
 /* Exported block signals */
 boolean_T enableFluxobs;               /* '<Root>/Inport2' */
@@ -28,18 +27,16 @@ int16_T Sig_theta_el_m;                /* '<Root>/Delay' */
 int16_T Sig_Ia_m;                      /* '<Root>/ADCRAwToCurrent(Iabc)' */
 int16_T Sig_Ib_m;                      /* '<Root>/ADCRAwToCurrent(Iabc)' */
 int16_T Sig_Ibeta_m;                   /* '<S1>/one_by_sqrt3' */
-int16_T Sig_dAxis_m;                   /* '<Root>/Gain2' */
-int16_T Sig_dAxis_errorSum_m;          /* '<S5>/Add' */
 int16_T Sig_qAxis_m;                   /* '<Root>/Gain3' */
 int16_T Sig_qAxis_errorSum_m;          /* '<S5>/Add1' */
-int16_T Sig_Vqsatu_m;                  /* '<S9>/Multiport Switch1' */
-int16_T Sig_Vdsatu_m;                  /* '<S9>/Multiport Switch' */
-int16_T constantAngle;                 /* '<S120>/Discrete-Time Integrator' */
+int16_T Sig_dAxis_m;                   /* '<Root>/Gain2' */
+int16_T Sig_dAxis_errorSum_m;          /* '<S5>/Add' */
+int16_T constantAngle;                 /* '<S119>/Discrete-Time Integrator' */
 int16_T Sig_Va_m;                      /* '<Root>/Gain' */
 int16_T Sig_Vb_m;                      /* '<Root>/Gain1' */
-int16_T FluxObsAngle;                  /* '<S16>/PositionGain' */
-int16_T Sig_dAxis_PI_out;              /* '<S109>/Saturation' */
-int16_T Sig_qAxis_PI_out;              /* '<S65>/Saturation' */
+int16_T FluxObsAngle;                  /* '<S15>/PositionGain' */
+int16_T Sig_qAxis_PI_out;              /* '<S64>/Saturation' */
+int16_T Sig_dAxis_PI_out;              /* '<S108>/Saturation' */
 
 /* Exported block parameters */
 int16_T Ki_dAxis = 0;                  /* Variable: Ki_dAxis
@@ -62,15 +59,6 @@ int8_T qSoll = 26;                     /* Variable: qSoll
                                         * Referenced by: '<Root>/q Soll'
                                         * fixdt(1,8,2^-7,0)
                                         */
-
-/* Exported data definition */
-
-/* Const memory section */
-/* Definition for custom storage class: Const */
-const int16_T VphMax = 1772;
-
-/* fixdt(1,16,2^-8,0)
-   Val = Vnom*(1/sqrt(3)) */
 
 /* Block signals (default storage) */
 B_MotorControlLibNEWFixedP_FU_T MotorControlLibNEWFixedP_FULL_B;
@@ -104,40 +92,13 @@ void MotorControlLibNEW_FluxObsAngle(boolean_T rtu_Enable, int16_T rtu_In1,
    *  EnablePort: '<S3>/Enable'
    */
   if (rtu_Enable) {
-    /* Delay: '<S19>/Delay' */
+    /* Delay: '<S18>/Delay' */
     if ((localZCE->Delay_Reset_ZCE == POS_ZCSIG) && (localZCE->Delay_Reset_ZCE
          != UNINITIALIZED_ZCSIG)) {
       localDW->Delay_DSTATE = 0;
     }
 
     localZCE->Delay_Reset_ZCE = 0U;
-
-    /* Gain: '<S25>/ScalingR' */
-    if (EMFobsRS > 127) {
-      rtb_DataTypeConversion = MAX_int16_T;
-    } else if (EMFobsRS <= -128) {
-      rtb_DataTypeConversion = MIN_int16_T;
-    } else {
-      rtb_DataTypeConversion = (int16_T)(EMFobsRS << 8);
-    }
-
-    /* Sum: '<S19>/Sum' incorporates:
-     *  Delay: '<S19>/Delay'
-     *  Gain: '<S19>/Gain'
-     *  Gain: '<S25>/ScalingR'
-     *  Sum: '<S19>/Sum3'
-     */
-    localDW->Delay_DSTATE = (int16_T)((((int16_T)(rtu_In2 -
-      ((rtb_DataTypeConversion * rtu_In4) >> 16)) * 16777) >> 22) +
-      localDW->Delay_DSTATE);
-
-    /* Delay: '<S18>/Delay' */
-    if ((localZCE->Delay_Reset_ZCE_o == POS_ZCSIG) &&
-        (localZCE->Delay_Reset_ZCE_o != UNINITIALIZED_ZCSIG)) {
-      localDW->Delay_DSTATE_e = 0;
-    }
-
-    localZCE->Delay_Reset_ZCE_o = 0U;
 
     /* Gain: '<S24>/ScalingR' */
     if (EMFobsRS > 127) {
@@ -154,14 +115,41 @@ void MotorControlLibNEW_FluxObsAngle(boolean_T rtu_Enable, int16_T rtu_In1,
      *  Gain: '<S24>/ScalingR'
      *  Sum: '<S18>/Sum3'
      */
+    localDW->Delay_DSTATE = (int16_T)((((int16_T)(rtu_In2 -
+      ((rtb_DataTypeConversion * rtu_In4) >> 16)) * 16777) >> 22) +
+      localDW->Delay_DSTATE);
+
+    /* Delay: '<S17>/Delay' */
+    if ((localZCE->Delay_Reset_ZCE_o == POS_ZCSIG) &&
+        (localZCE->Delay_Reset_ZCE_o != UNINITIALIZED_ZCSIG)) {
+      localDW->Delay_DSTATE_e = 0;
+    }
+
+    localZCE->Delay_Reset_ZCE_o = 0U;
+
+    /* Gain: '<S23>/ScalingR' */
+    if (EMFobsRS > 127) {
+      rtb_DataTypeConversion = MAX_int16_T;
+    } else if (EMFobsRS <= -128) {
+      rtb_DataTypeConversion = MIN_int16_T;
+    } else {
+      rtb_DataTypeConversion = (int16_T)(EMFobsRS << 8);
+    }
+
+    /* Sum: '<S17>/Sum' incorporates:
+     *  Delay: '<S17>/Delay'
+     *  Gain: '<S17>/Gain'
+     *  Gain: '<S23>/ScalingR'
+     *  Sum: '<S17>/Sum3'
+     */
     localDW->Delay_DSTATE_e = (int16_T)((((int16_T)(rtu_In1 -
       ((rtb_DataTypeConversion * rtu_In3) >> 16)) * 16777) >> 22) +
       localDW->Delay_DSTATE_e);
 
-    /* Gain: '<S25>/ScalingL' incorporates:
-     *  Gain: '<S24>/ScalingL'
+    /* Gain: '<S24>/ScalingL' incorporates:
+     *  Gain: '<S23>/ScalingL'
+     *  Switch: '<S17>/Switch'
      *  Switch: '<S18>/Switch'
-     *  Switch: '<S19>/Switch'
      */
     if (EMFobsLdGain > 63) {
       rtb_DataTypeConversion = MAX_int16_T;
@@ -174,19 +162,19 @@ void MotorControlLibNEW_FluxObsAngle(boolean_T rtu_Enable, int16_T rtu_In1,
       tmp_0 = (int16_T)(EMFobsLdGain << 9);
     }
 
-    /* Outputs for Atomic SubSystem: '<S16>/atan2' */
-    /* DataTypeConversion: '<S17>/Data Type Conversion' incorporates:
-     *  DataTypeConversion: '<S17>/Data Type Conversion1'
-     *  DataTypeConversion: '<S17>/Data Type Conversion2'
+    /* Outputs for Atomic SubSystem: '<S15>/atan2' */
+    /* DataTypeConversion: '<S16>/Data Type Conversion' incorporates:
+     *  DataTypeConversion: '<S16>/Data Type Conversion1'
+     *  DataTypeConversion: '<S16>/Data Type Conversion2'
+     *  Delay: '<S17>/Delay'
      *  Delay: '<S18>/Delay'
-     *  Delay: '<S19>/Delay'
+     *  Gain: '<S23>/ScalingL'
      *  Gain: '<S24>/ScalingL'
-     *  Gain: '<S25>/ScalingL'
+     *  Sum: '<S17>/Sum1'
      *  Sum: '<S18>/Sum1'
-     *  Sum: '<S19>/Sum1'
+     *  Switch: '<S17>/Switch'
      *  Switch: '<S18>/Switch'
-     *  Switch: '<S19>/Switch'
-     *  Trigonometry: '<S17>/Atan2'
+     *  Trigonometry: '<S16>/Atan2'
      */
     tmp = floorf(rt_atan2f_snf((real32_T)(int16_T)(localDW->Delay_DSTATE -
       (((rtb_DataTypeConversion * rtu_In4) >> 31) << 4)) * 0.000244140625F,
@@ -201,43 +189,43 @@ void MotorControlLibNEW_FluxObsAngle(boolean_T rtu_Enable, int16_T rtu_In1,
     rtb_DataTypeConversion = (int16_T)(tmp < 0.0F ? (int32_T)(int16_T)-(int16_T)
       (uint16_T)-tmp : (int32_T)(int16_T)(uint16_T)tmp);
 
-    /* End of DataTypeConversion: '<S17>/Data Type Conversion' */
+    /* End of DataTypeConversion: '<S16>/Data Type Conversion' */
 
-    /* Outputs for Enabled SubSystem: '<S17>/If Action Subsystem' incorporates:
-     *  EnablePort: '<S22>/Enable'
+    /* Outputs for Enabled SubSystem: '<S16>/If Action Subsystem' incorporates:
+     *  EnablePort: '<S21>/Enable'
      */
     if (localC->Compare) {
-      /* Inport: '<S22>/In1' */
+      /* Inport: '<S21>/In1' */
       localB->Merge = rtb_DataTypeConversion;
     }
 
-    /* End of Outputs for SubSystem: '<S17>/If Action Subsystem' */
+    /* End of Outputs for SubSystem: '<S16>/If Action Subsystem' */
 
-    /* Outputs for Enabled SubSystem: '<S17>/per Uint' incorporates:
-     *  EnablePort: '<S23>/Enable'
+    /* Outputs for Enabled SubSystem: '<S16>/per Uint' incorporates:
+     *  EnablePort: '<S22>/Enable'
      */
     if (localC->Compare_l) {
-      /* Gain: '<S23>/Gain' */
+      /* Gain: '<S22>/Gain' */
       localB->Merge = (int16_T)((20861 * rtb_DataTypeConversion) >> 17);
 
-      /* Switch: '<S23>/Switch' incorporates:
-       *  Bias: '<S23>/Bias'
+      /* Switch: '<S22>/Switch' incorporates:
+       *  Bias: '<S22>/Bias'
        */
       if (localB->Merge < 0) {
         localB->Merge = (int16_T)(localB->Merge + 4096);
       }
 
-      /* End of Switch: '<S23>/Switch' */
+      /* End of Switch: '<S22>/Switch' */
     }
 
-    /* End of Outputs for SubSystem: '<S17>/per Uint' */
+    /* End of Outputs for SubSystem: '<S16>/per Uint' */
 
-    /* Gain: '<S16>/PositionGain' incorporates:
-     *  AlgorithmDescriptorDelegate generated from: '<S17>/a16'
+    /* Gain: '<S15>/PositionGain' incorporates:
+     *  AlgorithmDescriptorDelegate generated from: '<S16>/a16'
      */
     *rty_FluxObsAngle = (int16_T)((3217 * localB->Merge) >> 13);
 
-    /* End of Outputs for SubSystem: '<S16>/atan2' */
+    /* End of Outputs for SubSystem: '<S15>/atan2' */
   }
 
   /* End of Outputs for SubSystem: '<Root>/FluxObsAngle' */
@@ -251,113 +239,109 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
   uint16_T rtb_uDLookupTable2;
   boolean_T rtb_Uk1_c;
   boolean_T rtb_NotEqual;
-  int16_T rtb_SignPreSat_o;
+  int16_T rtb_SignPreSat_e;
   int16_T rtb_convert_pu;
   int16_T rtb_Sum6;
+  int16_T rtb_Sum4;
   int16_T rtb_sum_alpha;
-  int16_T rtb_SignChange_p;
   int16_T rtb_add_c;
-  int32_T rtb_Sqrt;
   uint32_T rtb_Sum_idx_3;
-  int32_T tmp;
-  //CPU_clocks_ins.Step1 = rCpuClocks();
-  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_SET);
+
   /* Delay: '<Root>/Delay' */
   Sig_theta_el_m = MotorControlLibNEWFixedP_FULL_Y.Position;
 
-  /* Gain: '<S12>/convert_pu' */
+  /* Gain: '<S11>/convert_pu' */
   rtb_convert_pu = (int16_T)((20861 * Sig_theta_el_m) >> 17);
 
-  /* Outputs for IfAction SubSystem: '<S12>/If Action Subsystem' incorporates:
-   *  ActionPort: '<S14>/Action Port'
+  /* Outputs for IfAction SubSystem: '<S11>/If Action Subsystem' incorporates:
+   *  ActionPort: '<S13>/Action Port'
    */
-  /* If: '<S12>/If' incorporates:
-   *  DataTypeConversion: '<S14>/Convert_back'
-   *  DataTypeConversion: '<S14>/Convert_uint16'
-   *  Sum: '<S14>/Sum'
+  /* If: '<S11>/If' incorporates:
+   *  DataTypeConversion: '<S13>/Convert_back'
+   *  DataTypeConversion: '<S13>/Convert_uint16'
+   *  Sum: '<S13>/Sum'
    */
   rtb_convert_pu = (int16_T)(rtb_convert_pu - ((rtb_convert_pu >> 8) << 8));
 
-  /* End of Outputs for SubSystem: '<S12>/If Action Subsystem' */
+  /* End of Outputs for SubSystem: '<S11>/If Action Subsystem' */
 
-  /* Gain: '<S10>/indexing' */
+  /* Gain: '<S9>/indexing' */
   rtb_Sum6 = (int16_T)(100 * rtb_convert_pu);
 
-  /* DataTypeConversion: '<S10>/Get_Integer' */
+  /* DataTypeConversion: '<S9>/Get_Integer' */
   rtb_uDLookupTable2 = (uint16_T)(rtb_Sum6 >> 6);
 
-  /* Sum: '<S10>/Sum' */
+  /* Sum: '<S9>/Sum' */
   rtb_Sum_idx_3 = rtb_uDLookupTable2 + 100U;
 
-  /* CombinatorialLogic: '<S125>/Logic' incorporates:
+  /* CombinatorialLogic: '<S124>/Logic' incorporates:
    *  Constant: '<Root>/q Soll'
-   *  Memory: '<S125>/Memory'
-   *  RelationalOperator: '<S121>/Compare'
-   *  UnitDelay: '<S119>/Unit Delay'
+   *  Memory: '<S124>/Memory'
+   *  RelationalOperator: '<S120>/Compare'
+   *  UnitDelay: '<S118>/Unit Delay'
    */
   rowIdx = (int32_T)(((((uint32_T)(qSoll == 0) << 1) +
                        MotorControlLibNEWFixedP_FUL_DW.UnitDelay_DSTATE) << 1) +
                      MotorControlLibNEWFixedP_FUL_DW.Memory_PreviousInput);
-  //CPU_clocks_ins.Step2 = rCpuClocks();
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
-  /* UnitDelay: '<S122>/Delay Input1'
+
+  /* UnitDelay: '<S121>/Delay Input1'
    *
-   * Block description for '<S122>/Delay Input1':
+   * Block description for '<S121>/Delay Input1':
    *
    *  Store in Global RAM
    */
   rtb_Uk1_c = MotorControlLibNEWFixedP_FUL_DW.DelayInput1_DSTATE;
 
-  /* UnitDelay: '<S119>/Unit Delay1' incorporates:
-   *  UnitDelay: '<S122>/Delay Input1'
+  /* UnitDelay: '<S118>/Unit Delay1' incorporates:
+   *  UnitDelay: '<S121>/Delay Input1'
    *
-   * Block description for '<S122>/Delay Input1':
+   * Block description for '<S121>/Delay Input1':
    *
    *  Store in Global RAM
    */
   MotorControlLibNEWFixedP_FUL_DW.DelayInput1_DSTATE =
     MotorControlLibNEWFixedP_FUL_DW.UnitDelay1_DSTATE_m;
 
-  /* Outputs for Enabled SubSystem: '<S119>/Enabled Subsystem' incorporates:
-   *  EnablePort: '<S123>/Enable'
+  /* Outputs for Enabled SubSystem: '<S118>/Enabled Subsystem' incorporates:
+   *  EnablePort: '<S122>/Enable'
    */
-  /* CombinatorialLogic: '<S125>/Logic' */
+  /* CombinatorialLogic: '<S124>/Logic' */
   if (rtCP_Logic_table[(uint32_T)rowIdx]) {
-    /* RelationalOperator: '<S127>/FixPt Relational Operator' incorporates:
+    /* RelationalOperator: '<S126>/FixPt Relational Operator' incorporates:
      *  Constant: '<Root>/q Soll'
-     *  UnitDelay: '<S127>/Delay Input1'
+     *  UnitDelay: '<S126>/Delay Input1'
      *
-     * Block description for '<S127>/Delay Input1':
+     * Block description for '<S126>/Delay Input1':
      *
      *  Store in Global RAM
      */
     MotorControlLibNEWFixedP_FULL_B.FixPtRelationalOperator = (qSoll !=
       MotorControlLibNEWFixedP_FUL_DW.DelayInput1_DSTATE_h);
 
-    /* Update for UnitDelay: '<S127>/Delay Input1' incorporates:
+    /* Update for UnitDelay: '<S126>/Delay Input1' incorporates:
      *  Constant: '<Root>/q Soll'
      *
-     * Block description for '<S127>/Delay Input1':
+     * Block description for '<S126>/Delay Input1':
      *
      *  Store in Global RAM
      */
     MotorControlLibNEWFixedP_FUL_DW.DelayInput1_DSTATE_h = qSoll;
   }
 
-  /* End of Outputs for SubSystem: '<S119>/Enabled Subsystem' */
+  /* End of Outputs for SubSystem: '<S118>/Enabled Subsystem' */
 
-  /* Memory: '<S126>/Memory' incorporates:
-   *  UnitDelay: '<S119>/Unit Delay'
+  /* Memory: '<S125>/Memory' incorporates:
+   *  UnitDelay: '<S118>/Unit Delay'
    */
   MotorControlLibNEWFixedP_FUL_DW.UnitDelay_DSTATE =
     MotorControlLibNEWFixedP_FUL_DW.Memory_PreviousInput_b;
 
-  /* CombinatorialLogic: '<S126>/Logic' incorporates:
-   *  RelationalOperator: '<S122>/FixPt Relational Operator'
-   *  UnitDelay: '<S119>/Unit Delay'
-   *  UnitDelay: '<S122>/Delay Input1'
+  /* CombinatorialLogic: '<S125>/Logic' incorporates:
+   *  RelationalOperator: '<S121>/FixPt Relational Operator'
+   *  UnitDelay: '<S118>/Unit Delay'
+   *  UnitDelay: '<S121>/Delay Input1'
    *
-   * Block description for '<S122>/Delay Input1':
+   * Block description for '<S121>/Delay Input1':
    *
    *  Store in Global RAM
    */
@@ -369,29 +353,26 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
   /* ModelReference: '<Root>/ADCRAwToCurrent(Iabc)' incorporates:
    *  Inport: '<Root>/Inport'
    */
-  //CPU_clocks_ins.Step3 = rCpuClocks();
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
   ADCRawToIab(&Sig_Ia_m, &Sig_Ib_m);
-  //CPU_clocks_ins.Step4 = rCpuClocks();
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
-  /* DataTypeConversion: '<S10>/Get_FractionVal' incorporates:
-   *  DataTypeConversion: '<S10>/Data Type Conversion1'
-   *  Sum: '<S10>/Sum2'
+
+  /* DataTypeConversion: '<S9>/Get_FractionVal' incorporates:
+   *  DataTypeConversion: '<S9>/Data Type Conversion1'
+   *  Sum: '<S9>/Sum2'
    */
-  rtb_sum_alpha = (int16_T)((int16_T)(rtb_Sum6 - (int16_T)((int16_T)
+  rtb_Sum4 = (int16_T)((int16_T)(rtb_Sum6 - (int16_T)((int16_T)
     rtb_uDLookupTable2 << 6)) << 2);
 
-  /* Sum: '<S11>/Sum6' incorporates:
-   *  Constant: '<S10>/sine_table_values'
-   *  Product: '<S11>/Product1'
-   *  Selector: '<S10>/Lookup'
-   *  Sum: '<S10>/Sum'
-   *  Sum: '<S11>/Sum5'
+  /* Sum: '<S10>/Sum6' incorporates:
+   *  Constant: '<S9>/sine_table_values'
+   *  Product: '<S10>/Product1'
+   *  Selector: '<S9>/Lookup'
+   *  Sum: '<S10>/Sum5'
+   *  Sum: '<S9>/Sum'
    */
   rtb_Sum6 = (int16_T)((int16_T)(((int16_T)(rtCP_sine_table_values_Value
     [(int32_T)(rtb_uDLookupTable2 + 101U)] - rtCP_sine_table_values_Value
-    [(int32_T)rtb_Sum_idx_3]) * rtb_sum_alpha) >> 8) +
-                       rtCP_sine_table_values_Value[(int32_T)rtb_Sum_idx_3]);
+    [(int32_T)rtb_Sum_idx_3]) * rtb_Sum4) >> 8) + rtCP_sine_table_values_Value
+                       [(int32_T)rtb_Sum_idx_3]);
 
   /* Gain: '<S1>/one_by_sqrt3' incorporates:
    *  Sum: '<S1>/a_plus_2b'
@@ -399,66 +380,17 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
   Sig_Ibeta_m = (int16_T)(((int16_T)((int16_T)(Sig_Ia_m + Sig_Ib_m) + Sig_Ib_m) *
     18919) >> 15);
 
-  /* Sum: '<S11>/Sum4' incorporates:
-   *  Constant: '<S10>/sine_table_values'
-   *  Product: '<S11>/Product'
-   *  Selector: '<S10>/Lookup'
-   *  Sum: '<S10>/Sum'
-   *  Sum: '<S11>/Sum3'
+  /* Sum: '<S10>/Sum4' incorporates:
+   *  Constant: '<S9>/sine_table_values'
+   *  Product: '<S10>/Product'
+   *  Selector: '<S9>/Lookup'
+   *  Sum: '<S10>/Sum3'
+   *  Sum: '<S9>/Sum'
    */
-  rtb_sum_alpha = (int16_T)((int16_T)(((int16_T)(rtCP_sine_table_values_Value
+  rtb_Sum4 = (int16_T)((int16_T)(((int16_T)(rtCP_sine_table_values_Value
     [(int32_T)(rtb_uDLookupTable2 + 1U)] -
-    rtCP_sine_table_values_Value[rtb_uDLookupTable2]) * rtb_sum_alpha) >> 8) +
-    rtCP_sine_table_values_Value[rtb_uDLookupTable2]);
-
-  /* Gain: '<Root>/Gain2' incorporates:
-   *  Product: '<S7>/acos'
-   *  Product: '<S7>/bsin'
-   *  Sum: '<S7>/sum_Ds'
-   */
-  Sig_dAxis_m = (int16_T)((int16_T)((Sig_Ia_m * rtb_Sum6) >> 8) + (int16_T)
-    ((Sig_Ibeta_m * rtb_sum_alpha) >> 8));
-
-  /* Sum: '<S5>/Add' incorporates:
-   *  Constant: '<Root>/d Soll'
-   */
-  Sig_dAxis_errorSum_m = (int16_T)((dSoll << 8) - Sig_dAxis_m);
-
-  /* Sum: '<S111>/Sum' incorporates:
-   *  Constant: '<S5>/Constant6'
-   *  DiscreteIntegrator: '<S102>/Integrator'
-   *  Product: '<S107>/PProd Out'
-   */
-  rtb_convert_pu = (int16_T)((int16_T)((Sig_dAxis_errorSum_m * Kp_dAxis) >> 6) +
-    MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE);
-  //CPU_clocks_ins.Step5 = rCpuClocks();
- // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
-  /* Saturate: '<S109>/Saturation' */
-  if (d_q_Voltage_Limiter_sat_neg > 4095) {
-    Sig_dAxis_PI_out = MAX_int16_T;
-  } else if (d_q_Voltage_Limiter_sat_neg <= -4096) {
-    Sig_dAxis_PI_out = MIN_int16_T;
-  } else {
-    Sig_dAxis_PI_out = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
-  }
-
-  if (d_q_Voltage_Limiter_sat_pos > 4095) {
-    rtb_SignChange_p = MAX_int16_T;
-  } else if (d_q_Voltage_Limiter_sat_pos <= -4096) {
-    rtb_SignChange_p = MIN_int16_T;
-  } else {
-    rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
-  }
-
-  if (rtb_convert_pu > rtb_SignChange_p) {
-    Sig_dAxis_PI_out = rtb_SignChange_p;
-  } else {
-    if (rtb_convert_pu >= Sig_dAxis_PI_out) {
-      Sig_dAxis_PI_out = rtb_convert_pu;
-    }
-  }
-
-  /* End of Saturate: '<S109>/Saturation' */
+    rtCP_sine_table_values_Value[rtb_uDLookupTable2]) * rtb_Sum4) >> 8) +
+                       rtCP_sine_table_values_Value[rtb_uDLookupTable2]);
 
   /* Gain: '<Root>/Gain3' incorporates:
    *  Product: '<S7>/asin'
@@ -466,7 +398,7 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
    *  Sum: '<S7>/sum_Qs'
    */
   Sig_qAxis_m = (int16_T)((int16_T)((Sig_Ibeta_m * rtb_Sum6) >> 8) - (int16_T)
-    ((Sig_Ia_m * rtb_sum_alpha) >> 8));
+    ((Sig_Ia_m * rtb_Sum4) >> 8));
 
   /* Sum: '<S5>/Add1' incorporates:
    *  Constant: '<Root>/q Soll'
@@ -475,17 +407,15 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
   Sig_qAxis_errorSum_m = (int16_T)(((int8_T)((TqToIqConst * qSoll) >> 8) << 1) -
     Sig_qAxis_m);
 
-  /* Sum: '<S67>/Sum' incorporates:
+  /* Sum: '<S66>/Sum' incorporates:
    *  Constant: '<S5>/Constant4'
-   *  DiscreteIntegrator: '<S58>/Integrator'
-   *  Product: '<S63>/PProd Out'
+   *  DiscreteIntegrator: '<S57>/Integrator'
+   *  Product: '<S62>/PProd Out'
    */
-  rtb_SignPreSat_o = (int16_T)((int16_T)((Sig_qAxis_errorSum_m * Kp_qAxis) >> 6)
-    + MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE_m);
-  //CPU_clocks_ins.Step6 = rCpuClocks();
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
+  rtb_convert_pu = (int16_T)((int16_T)((Sig_qAxis_errorSum_m * Kp_qAxis) >> 6) +
+    MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE);
 
-  /* Saturate: '<S65>/Saturation' */
+  /* Saturate: '<S64>/Saturation' */
   if (d_q_Voltage_Limiter_sat_neg > 4095) {
     Sig_qAxis_PI_out = MAX_int16_T;
   } else if (d_q_Voltage_Limiter_sat_neg <= -4096) {
@@ -495,137 +425,106 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
   }
 
   if (d_q_Voltage_Limiter_sat_pos > 4095) {
-    rtb_SignChange_p = MAX_int16_T;
+    rtb_add_c = MAX_int16_T;
   } else if (d_q_Voltage_Limiter_sat_pos <= -4096) {
-    rtb_SignChange_p = MIN_int16_T;
+    rtb_add_c = MIN_int16_T;
   } else {
-    rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
+    rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
   }
 
-  if (rtb_SignPreSat_o > rtb_SignChange_p) {
-    Sig_qAxis_PI_out = rtb_SignChange_p;
+  if (rtb_convert_pu > rtb_add_c) {
+    Sig_qAxis_PI_out = rtb_add_c;
   } else {
-    if (rtb_SignPreSat_o >= Sig_qAxis_PI_out) {
-      Sig_qAxis_PI_out = rtb_SignPreSat_o;
+    if (rtb_convert_pu >= Sig_qAxis_PI_out) {
+      Sig_qAxis_PI_out = rtb_convert_pu;
     }
   }
 
-  /* End of Saturate: '<S65>/Saturation' */
+  /* End of Saturate: '<S64>/Saturation' */
 
-  /* RelationalOperator: '<S131>/LowerRelop1' incorporates:
-   *  RelationalOperator: '<S131>/UpperRelop'
-   *  Switch: '<S128>/Switch'
-   *  Switch: '<S131>/Switch2'
-   */
-  tmp = Sig_dAxis_PI_out << 1;
+  /* Gain: '<Root>/Gain5' */
+  rtb_sum_alpha = (int16_T)(Sig_qAxis_PI_out << 1);
 
-  /* Switch: '<S131>/Switch2' incorporates:
-   *  Constant: '<Root>/Constant3'
-   *  RelationalOperator: '<S131>/LowerRelop1'
+  /* Gain: '<Root>/Gain2' incorporates:
+   *  Product: '<S7>/acos'
+   *  Product: '<S7>/bsin'
+   *  Sum: '<S7>/sum_Ds'
    */
-  if (tmp > VphMax) {
-    rtb_add_c = (int16_T)(VphMax >> 1);
+  Sig_dAxis_m = (int16_T)((int16_T)((Sig_Ia_m * rtb_Sum6) >> 8) + (int16_T)
+    ((Sig_Ibeta_m * rtb_Sum4) >> 8));
+
+  /* Sum: '<S5>/Add' incorporates:
+   *  Constant: '<Root>/d Soll'
+   */
+  Sig_dAxis_errorSum_m = (int16_T)((dSoll << 8) - Sig_dAxis_m);
+
+  /* Sum: '<S110>/Sum' incorporates:
+   *  Constant: '<S5>/Constant6'
+   *  DiscreteIntegrator: '<S101>/Integrator'
+   *  Product: '<S106>/PProd Out'
+   */
+  rtb_SignPreSat_e = (int16_T)((int16_T)((Sig_dAxis_errorSum_m * Kp_dAxis) >> 6)
+    + MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE_o);
+
+  /* Saturate: '<S108>/Saturation' */
+  if (d_q_Voltage_Limiter_sat_neg > 4095) {
+    Sig_dAxis_PI_out = MAX_int16_T;
+  } else if (d_q_Voltage_Limiter_sat_neg <= -4096) {
+    Sig_dAxis_PI_out = MIN_int16_T;
   } else {
-    /* Gain: '<S9>/Sign Change' */
-    rtb_SignChange_p = (int16_T)-VphMax;
-
-    /* Switch: '<S131>/Switch' incorporates:
-     *  RelationalOperator: '<S131>/UpperRelop'
-     *  Switch: '<S128>/Switch'
-     */
-    if (tmp < rtb_SignChange_p) {
-      rtb_add_c = (int16_T)(rtb_SignChange_p >> 1);
-    } else {
-      rtb_add_c = Sig_dAxis_PI_out;
-    }
-
-    /* End of Switch: '<S131>/Switch' */
+    Sig_dAxis_PI_out = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
   }
 
-  /* Sqrt: '<S9>/Sqrt' incorporates:
-   *  Constant: '<Root>/Constant3'
-   *  Math: '<S9>/Math Function'
-   *  Math: '<S9>/Math Function1'
-   *  Sum: '<S9>/Sum4'
-   */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_SET);
-  rtb_Sqrt = rt_sqrt_Us32En14_Ys32E_OVqLloIL(((VphMax * VphMax) >> 2) -
-    rtb_add_c * rtb_add_c);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_RESET);
-  /* RelationalOperator: '<S132>/LowerRelop1' incorporates:
-   *  RelationalOperator: '<S132>/UpperRelop'
-   *  Switch: '<S129>/Switch'
-   *  Switch: '<S132>/Switch2'
-   */
-  tmp = Sig_qAxis_PI_out << 7;
-
-  /* Switch: '<S132>/Switch2' incorporates:
-   *  RelationalOperator: '<S132>/LowerRelop1'
-   */
-  //CPU_clocks_ins.Step6 = rCpuClocks();
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
-
-  if (tmp > rtb_Sqrt) {
-    rtb_SignChange_p = (int16_T)(rtb_Sqrt >> 7);
+  if (d_q_Voltage_Limiter_sat_pos > 4095) {
+    rtb_add_c = MAX_int16_T;
+  } else if (d_q_Voltage_Limiter_sat_pos <= -4096) {
+    rtb_add_c = MIN_int16_T;
   } else {
-    /* Gain: '<S9>/Sign Change ' */
-    rtb_Sqrt = -rtb_Sqrt;
-
-    /* Switch: '<S132>/Switch' incorporates:
-     *  RelationalOperator: '<S132>/UpperRelop'
-     *  Switch: '<S129>/Switch'
-     */
-    if (tmp < rtb_Sqrt) {
-      rtb_SignChange_p = (int16_T)(rtb_Sqrt >> 7);
-    } else {
-      rtb_SignChange_p = Sig_qAxis_PI_out;
-    }
-
-    /* End of Switch: '<S132>/Switch' */
+    rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
   }
 
-  /* MultiPortSwitch: '<S9>/Multiport Switch1' */
-  Sig_Vqsatu_m = (int16_T)(rtb_SignChange_p << 1);
+  if (rtb_SignPreSat_e > rtb_add_c) {
+    Sig_dAxis_PI_out = rtb_add_c;
+  } else {
+    if (rtb_SignPreSat_e >= Sig_dAxis_PI_out) {
+      Sig_dAxis_PI_out = rtb_SignPreSat_e;
+    }
+  }
 
-  /* MultiPortSwitch: '<S9>/Multiport Switch' */
-  Sig_Vdsatu_m = (int16_T)(rtb_add_c << 1);
+  /* End of Saturate: '<S108>/Saturation' */
 
-  /* Gain: '<Root>/Gain' incorporates:
+  /* Gain: '<Root>/Gain4' */
+  rtb_add_c = (int16_T)(Sig_dAxis_PI_out << 1);
+
+  /* Switch: '<S117>/Switch' incorporates:
    *  Product: '<S4>/dcos'
-   *  Product: '<S4>/qsin'
-   *  Sum: '<S4>/sum_alpha'
-   *  Switch: '<S26>/Switch'
-   */
-  Sig_Va_m = (int16_T)((int16_T)((Sig_Vdsatu_m * rtb_Sum6) >> 8) - (int16_T)
-                       ((Sig_Vqsatu_m * rtb_sum_alpha) >> 8));
-
-  /* Gain: '<Root>/Gain1' incorporates:
    *  Product: '<S4>/dsin'
    *  Product: '<S4>/qcos'
+   *  Product: '<S4>/qsin'
+   *  Sum: '<S4>/sum_alpha'
    *  Sum: '<S4>/sum_beta'
-   *  Switch: '<S26>/Switch'
+   *  Switch: '<S25>/Switch'
    */
-  Sig_Vb_m = (int16_T)((int16_T)((Sig_Vqsatu_m * rtb_Sum6) >> 8) + (int16_T)
-                       ((Sig_Vdsatu_m * rtb_sum_alpha) >> 8));
-  //CPU_clocks_ins.Step7 = rCpuClocks();
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
+  Sig_Va_m = (int16_T)((int16_T)((rtb_add_c * rtb_Sum6) >> 8) - (int16_T)
+                       ((rtb_sum_alpha * rtb_Sum4) >> 8));
+  Sig_Vb_m = (int16_T)((int16_T)((rtb_sum_alpha * rtb_Sum6) >> 8) + (int16_T)
+                       ((rtb_add_c * rtb_Sum4) >> 8));
+
   /* Outputs for Enabled SubSystem: '<Root>/FluxObsAngle' */
   /* Inport: '<Root>/Inport2' */
-  uint32_t st  = rCpuClocks();
   MotorControlLibNEW_FluxObsAngle(enableFluxobs, Sig_Va_m, Sig_Vb_m, Sig_Ia_m,
     Sig_Ibeta_m, &FluxObsAngle, &MotorControlLibNEWFixedP_FULL_B.FluxObsAngle_k,
     &MotorControlLibNEWFixedP_ConstB.FluxObsAngle_k,
     &MotorControlLibNEWFixedP_FUL_DW.FluxObsAngle_k,
     &MotorControlLibNEWFixed_PrevZCX.FluxObsAngle_k);
-  uint32_t sp  = rCpuClocks();
+
   /* End of Outputs for SubSystem: '<Root>/FluxObsAngle' */
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
-  CPU_clocks_ins.FluxObserverClocks = sp - st;
-  /* UnitDelay: '<S120>/Unit Delay' */
+
+  /* UnitDelay: '<S119>/Unit Delay' */
   rtb_Uk1_c = MotorControlLibNEWFixedP_FUL_DW.UnitDelay_DSTATE_p;
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
-  /* DiscreteIntegrator: '<S120>/Discrete-Time Integrator' incorporates:
-   *  UnitDelay: '<S120>/Unit Delay'
+
+  /* DiscreteIntegrator: '<S119>/Discrete-Time Integrator' incorporates:
+   *  UnitDelay: '<S119>/Unit Delay'
    */
   if (MotorControlLibNEWFixedP_FUL_DW.UnitDelay_DSTATE_p &&
       (MotorControlLibNEWFixedP_FUL_DW.DiscreteTimeIntegrator_PrevRese <= 0)) {
@@ -634,7 +533,7 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
 
   constantAngle = MotorControlLibNEWFixedP_FUL_DW.DiscreteTimeIntegrator_DSTATE;
 
-  /* End of DiscreteIntegrator: '<S120>/Discrete-Time Integrator' */
+  /* End of DiscreteIntegrator: '<S119>/Discrete-Time Integrator' */
 
   /* Switch: '<Root>/Switch' incorporates:
    *  Delay: '<Root>/Delay'
@@ -648,8 +547,8 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
 
   /* End of Switch: '<Root>/Switch' */
 
-  /* RelationalOperator: '<S120>/Relational Operator' incorporates:
-   *  UnitDelay: '<S120>/Unit Delay'
+  /* RelationalOperator: '<S119>/Relational Operator' incorporates:
+   *  UnitDelay: '<S119>/Unit Delay'
    */
   MotorControlLibNEWFixedP_FUL_DW.UnitDelay_DSTATE_p = (constantAngle >= 1608);
 
@@ -659,255 +558,252 @@ void MotorControlLibNEWFixedP_FULL19b_step(void)
   set_PWM_A_DT(look1_is16lu32n16tu16_binlcse(Sig_Va_m, (&(BrkPoints[0])),
     rtCP_uDLookupTable_tableData, 2U));
 
-  /* Gain: '<S117>/one_by_two' */
-  rtb_Sum6 = (int16_T)(Sig_Va_m >> 1);
+  /* Gain: '<S116>/one_by_two' */
+  rtb_add_c = (int16_T)(Sig_Va_m >> 1);
 
-  /* Gain: '<S117>/sqrt3_by_two' */
-  rtb_SignChange_p = (int16_T)((14189 * Sig_Vb_m) >> 14);
-  //CPU_clocks_ins.Step8 = rCpuClocks();
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
+  /* Gain: '<S116>/sqrt3_by_two' */
+  rtb_Sum6 = (int16_T)((14189 * Sig_Vb_m) >> 14);
+
   /* DataTypeConversion: '<S6>/Data Type Conversion1' incorporates:
    *  Lookup_n-D: '<S6>/1-D Lookup Table1'
-   *  Sum: '<S117>/add_b'
+   *  Sum: '<S116>/add_b'
    */
-  set_PWM_B_DT(look1_is16lu32n16tu16_binlcse((int16_T)(rtb_SignChange_p -
-    rtb_Sum6), (&(BrkPoints[0])), rtCP_uDLookupTable1_tableData, 2U));
+  set_PWM_B_DT(look1_is16lu32n16tu16_binlcse((int16_T)(rtb_Sum6 - rtb_add_c),
+    (&(BrkPoints[0])), rtCP_uDLookupTable1_tableData, 2U));
 
   /* DataTypeConversion: '<S6>/Data Type Conversion2' incorporates:
    *  Lookup_n-D: '<S6>/1-D Lookup Table2'
-   *  Sum: '<S117>/add_c'
+   *  Sum: '<S116>/add_c'
    */
-  set_PWM_C_DT(look1_is16lu32n16tu16_binlcse((int16_T)(-rtb_Sum6 -
-    rtb_SignChange_p), (&(BrkPoints[0])), rtCP_uDLookupTable2_tableData, 2U));
+  set_PWM_C_DT(look1_is16lu32n16tu16_binlcse((int16_T)(-rtb_add_c - rtb_Sum6), (
+    &(BrkPoints[0])), rtCP_uDLookupTable2_tableData, 2U));
 
-  /* DeadZone: '<S51>/DeadZone' */
+  /* DeadZone: '<S94>/DeadZone' */
   if (d_q_Voltage_Limiter_sat_pos > 4095) {
-    rtb_SignChange_p = MAX_int16_T;
+    rtb_add_c = MAX_int16_T;
   } else if (d_q_Voltage_Limiter_sat_pos <= -4096) {
-    rtb_SignChange_p = MIN_int16_T;
+    rtb_add_c = MIN_int16_T;
   } else {
-    rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
+    rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
   }
 
-  if (rtb_SignPreSat_o > rtb_SignChange_p) {
+  if (rtb_SignPreSat_e > rtb_add_c) {
     if (d_q_Voltage_Limiter_sat_pos > 4095) {
-      rtb_SignChange_p = MAX_int16_T;
+      rtb_add_c = MAX_int16_T;
     } else if (d_q_Voltage_Limiter_sat_pos <= -4096) {
-      rtb_SignChange_p = MIN_int16_T;
+      rtb_add_c = MIN_int16_T;
     } else {
-      rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
+      rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
     }
 
-    rtb_SignPreSat_o -= rtb_SignChange_p;
+    rtb_SignPreSat_e -= rtb_add_c;
   } else {
     if (d_q_Voltage_Limiter_sat_neg > 4095) {
-      rtb_SignChange_p = MAX_int16_T;
+      rtb_add_c = MAX_int16_T;
     } else if (d_q_Voltage_Limiter_sat_neg <= -4096) {
-      rtb_SignChange_p = MIN_int16_T;
+      rtb_add_c = MIN_int16_T;
     } else {
-      rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
+      rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
     }
 
-    if (rtb_SignPreSat_o >= rtb_SignChange_p) {
-      rtb_SignPreSat_o = 0;
+    if (rtb_SignPreSat_e >= rtb_add_c) {
+      rtb_SignPreSat_e = 0;
     } else {
       if (d_q_Voltage_Limiter_sat_neg > 4095) {
-        rtb_SignChange_p = MAX_int16_T;
+        rtb_add_c = MAX_int16_T;
       } else if (d_q_Voltage_Limiter_sat_neg <= -4096) {
-        rtb_SignChange_p = MIN_int16_T;
+        rtb_add_c = MIN_int16_T;
       } else {
-        rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
+        rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
       }
 
-      rtb_SignPreSat_o -= rtb_SignChange_p;
+      rtb_SignPreSat_e -= rtb_add_c;
     }
   }
 
-  /* End of DeadZone: '<S51>/DeadZone' */
+  /* End of DeadZone: '<S94>/DeadZone' */
 
-  /* RelationalOperator: '<S51>/NotEqual' */
-  rtb_NotEqual = (0 != rtb_SignPreSat_o);
+  /* RelationalOperator: '<S94>/NotEqual' */
+  rtb_NotEqual = (0 != rtb_SignPreSat_e);
 
-  /* Signum: '<S51>/SignPreSat' */
-  if (rtb_SignPreSat_o < 0) {
-    rtb_SignPreSat_o = -1;
+  /* Signum: '<S94>/SignPreSat' */
+  if (rtb_SignPreSat_e < 0) {
+    rtb_SignPreSat_e = -1;
   } else {
-    rtb_SignPreSat_o = (int16_T)(rtb_SignPreSat_o > 0);
+    rtb_SignPreSat_e = (int16_T)(rtb_SignPreSat_e > 0);
   }
 
-  /* End of Signum: '<S51>/SignPreSat' */
+  /* End of Signum: '<S94>/SignPreSat' */
 
-  /* Product: '<S55>/IProd Out' incorporates:
-   *  Constant: '<S5>/Constant5'
+  /* Product: '<S98>/IProd Out' incorporates:
+   *  Constant: '<S5>/Constant7'
    */
-  rtb_Sum6 = (int16_T)((Sig_qAxis_errorSum_m * Ki_qAxis) >> 6);
+  rtb_add_c = (int16_T)((Sig_dAxis_errorSum_m * Ki_dAxis) >> 6);
 
-  /* Signum: '<S51>/SignPreIntegrator' */
-  if (rtb_Sum6 < 0) {
-    rtb_SignChange_p = -1;
+  /* Signum: '<S94>/SignPreIntegrator' */
+  if (rtb_add_c < 0) {
+    rtb_Sum6 = -1;
   } else {
-    rtb_SignChange_p = (int16_T)(rtb_Sum6 > 0);
+    rtb_Sum6 = (int16_T)(rtb_add_c > 0);
   }
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
-  /* End of Signum: '<S51>/SignPreIntegrator' */
 
-  /* Switch: '<S51>/Switch' incorporates:
-   *  Constant: '<S51>/Constant1'
-   *  DataTypeConversion: '<S51>/DataTypeConv1'
-   *  DataTypeConversion: '<S51>/DataTypeConv2'
-   *  Logic: '<S51>/AND3'
-   *  RelationalOperator: '<S51>/Equal1'
+  /* End of Signum: '<S94>/SignPreIntegrator' */
+
+  /* Switch: '<S94>/Switch' incorporates:
+   *  Constant: '<S94>/Constant1'
+   *  DataTypeConversion: '<S94>/DataTypeConv1'
+   *  DataTypeConversion: '<S94>/DataTypeConv2'
+   *  Logic: '<S94>/AND3'
+   *  RelationalOperator: '<S94>/Equal1'
    */
-  if (rtb_NotEqual && (rtb_SignPreSat_o == rtb_SignChange_p)) {
-    rtb_SignPreSat_o = 0;
+  if (rtb_NotEqual && (rtb_SignPreSat_e == rtb_Sum6)) {
+    rtb_SignPreSat_e = 0;
   } else {
-    rtb_SignPreSat_o = rtb_Sum6;
+    rtb_SignPreSat_e = rtb_add_c;
   }
 
-  /* End of Switch: '<S51>/Switch' */
+  /* End of Switch: '<S94>/Switch' */
 
-  /* DeadZone: '<S95>/DeadZone' */
+  /* DeadZone: '<S50>/DeadZone' */
   if (d_q_Voltage_Limiter_sat_pos > 4095) {
-    rtb_SignChange_p = MAX_int16_T;
+    rtb_add_c = MAX_int16_T;
   } else if (d_q_Voltage_Limiter_sat_pos <= -4096) {
-    rtb_SignChange_p = MIN_int16_T;
+    rtb_add_c = MIN_int16_T;
   } else {
-    rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
+    rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
   }
 
-  if (rtb_convert_pu > rtb_SignChange_p) {
+  if (rtb_convert_pu > rtb_add_c) {
     if (d_q_Voltage_Limiter_sat_pos > 4095) {
-      rtb_SignChange_p = MAX_int16_T;
+      rtb_add_c = MAX_int16_T;
     } else if (d_q_Voltage_Limiter_sat_pos <= -4096) {
-      rtb_SignChange_p = MIN_int16_T;
+      rtb_add_c = MIN_int16_T;
     } else {
-      rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
+      rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_pos << 3);
     }
 
-    rtb_convert_pu -= rtb_SignChange_p;
+    rtb_convert_pu -= rtb_add_c;
   } else {
     if (d_q_Voltage_Limiter_sat_neg > 4095) {
-      rtb_SignChange_p = MAX_int16_T;
+      rtb_add_c = MAX_int16_T;
     } else if (d_q_Voltage_Limiter_sat_neg <= -4096) {
-      rtb_SignChange_p = MIN_int16_T;
+      rtb_add_c = MIN_int16_T;
     } else {
-      rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
+      rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
     }
 
-    if (rtb_convert_pu >= rtb_SignChange_p) {
+    if (rtb_convert_pu >= rtb_add_c) {
       rtb_convert_pu = 0;
     } else {
       if (d_q_Voltage_Limiter_sat_neg > 4095) {
-        rtb_SignChange_p = MAX_int16_T;
+        rtb_add_c = MAX_int16_T;
       } else if (d_q_Voltage_Limiter_sat_neg <= -4096) {
-        rtb_SignChange_p = MIN_int16_T;
+        rtb_add_c = MIN_int16_T;
       } else {
-        rtb_SignChange_p = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
+        rtb_add_c = (int16_T)(d_q_Voltage_Limiter_sat_neg << 3);
       }
 
-      rtb_convert_pu -= rtb_SignChange_p;
+      rtb_convert_pu -= rtb_add_c;
     }
   }
 
-  /* End of DeadZone: '<S95>/DeadZone' */
+  /* End of DeadZone: '<S50>/DeadZone' */
 
-  /* RelationalOperator: '<S95>/NotEqual' */
+  /* RelationalOperator: '<S50>/NotEqual' */
   rtb_NotEqual = (0 != rtb_convert_pu);
 
-  /* Signum: '<S95>/SignPreSat' */
+  /* Signum: '<S50>/SignPreSat' */
   if (rtb_convert_pu < 0) {
     rtb_convert_pu = -1;
   } else {
     rtb_convert_pu = (int16_T)(rtb_convert_pu > 0);
   }
 
-  /* End of Signum: '<S95>/SignPreSat' */
+  /* End of Signum: '<S50>/SignPreSat' */
 
-  /* Product: '<S99>/IProd Out' incorporates:
-   *  Constant: '<S5>/Constant7'
+  /* Product: '<S54>/IProd Out' incorporates:
+   *  Constant: '<S5>/Constant5'
    */
-  rtb_Sum6 = (int16_T)((Sig_dAxis_errorSum_m * Ki_dAxis) >> 6);
+  rtb_add_c = (int16_T)((Sig_qAxis_errorSum_m * Ki_qAxis) >> 6);
 
-  /* Outputs for Enabled SubSystem: '<S119>/Enabled Subsystem1' incorporates:
-   *  EnablePort: '<S124>/Enable'
+  /* Outputs for Enabled SubSystem: '<S118>/Enabled Subsystem1' incorporates:
+   *  EnablePort: '<S123>/Enable'
    */
-  /* CombinatorialLogic: '<S126>/Logic' */
+  /* CombinatorialLogic: '<S125>/Logic' */
   if (rtCP_Logic_table_m[(uint32_T)rowIdx_0]) {
-    /* UnitDelay: '<S124>/Unit Delay1' */
+    /* UnitDelay: '<S123>/Unit Delay1' */
     rtb_uDLookupTable2 = MotorControlLibNEWFixedP_FUL_DW.UnitDelay1_DSTATE;
 
-    /* Sum: '<S124>/Add' incorporates:
-     *  Constant: '<S124>/Constant'
-     *  UnitDelay: '<S124>/Unit Delay1'
+    /* Sum: '<S123>/Add' incorporates:
+     *  Constant: '<S123>/Constant'
+     *  UnitDelay: '<S123>/Unit Delay1'
      */
     MotorControlLibNEWFixedP_FUL_DW.UnitDelay1_DSTATE++;
 
-    /* RelationalOperator: '<S124>/Relational Operator' incorporates:
-     *  Constant: '<S124>/Constant1'
-     *  UnitDelay: '<S119>/Unit Delay1'
+    /* RelationalOperator: '<S123>/Relational Operator' incorporates:
+     *  Constant: '<S123>/Constant1'
+     *  UnitDelay: '<S118>/Unit Delay1'
      */
     MotorControlLibNEWFixedP_FUL_DW.UnitDelay1_DSTATE_m = (rtb_uDLookupTable2 <=
       10000);
   }
 
-  /* End of Outputs for SubSystem: '<S119>/Enabled Subsystem1' */
+  /* End of Outputs for SubSystem: '<S118>/Enabled Subsystem1' */
 
-  /* Update for UnitDelay: '<S119>/Unit Delay' incorporates:
-   *  CombinatorialLogic: '<S126>/Logic'
+  /* Update for UnitDelay: '<S118>/Unit Delay' incorporates:
+   *  CombinatorialLogic: '<S125>/Logic'
    */
   MotorControlLibNEWFixedP_FUL_DW.UnitDelay_DSTATE = rtCP_Logic_table_m
     [(uint32_T)rowIdx_0];
 
-  /* Update for Memory: '<S125>/Memory' incorporates:
-   *  CombinatorialLogic: '<S125>/Logic'
+  /* Update for Memory: '<S124>/Memory' incorporates:
+   *  CombinatorialLogic: '<S124>/Logic'
    */
   MotorControlLibNEWFixedP_FUL_DW.Memory_PreviousInput = rtCP_Logic_table
     [(uint32_T)rowIdx];
 
-  /* Update for Memory: '<S126>/Memory' incorporates:
-   *  CombinatorialLogic: '<S126>/Logic'
+  /* Update for Memory: '<S125>/Memory' incorporates:
+   *  CombinatorialLogic: '<S125>/Logic'
    */
   MotorControlLibNEWFixedP_FUL_DW.Memory_PreviousInput_b = rtCP_Logic_table_m
     [(uint32_T)rowIdx_0];
 
-  /* Signum: '<S95>/SignPreIntegrator' */
-  if (rtb_Sum6 < 0) {
-    rtb_SignChange_p = -1;
+  /* Signum: '<S50>/SignPreIntegrator' */
+  if (rtb_add_c < 0) {
+    rtb_Sum6 = -1;
   } else {
-    rtb_SignChange_p = (int16_T)(rtb_Sum6 > 0);
+    rtb_Sum6 = (int16_T)(rtb_add_c > 0);
   }
 
-  /* End of Signum: '<S95>/SignPreIntegrator' */
+  /* End of Signum: '<S50>/SignPreIntegrator' */
 
-  /* Switch: '<S95>/Switch' incorporates:
-   *  Constant: '<S95>/Constant1'
-   *  DataTypeConversion: '<S95>/DataTypeConv1'
-   *  DataTypeConversion: '<S95>/DataTypeConv2'
-   *  Logic: '<S95>/AND3'
-   *  RelationalOperator: '<S95>/Equal1'
+  /* Switch: '<S50>/Switch' incorporates:
+   *  Constant: '<S50>/Constant1'
+   *  DataTypeConversion: '<S50>/DataTypeConv1'
+   *  DataTypeConversion: '<S50>/DataTypeConv2'
+   *  Logic: '<S50>/AND3'
+   *  RelationalOperator: '<S50>/Equal1'
    */
-  if (rtb_NotEqual && (rtb_convert_pu == rtb_SignChange_p)) {
-    rtb_Sum6 = 0;
+  if (rtb_NotEqual && (rtb_convert_pu == rtb_Sum6)) {
+    rtb_add_c = 0;
   }
 
-  /* End of Switch: '<S95>/Switch' */
-  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_14);
-  /* Update for DiscreteIntegrator: '<S102>/Integrator' */
+  /* End of Switch: '<S50>/Switch' */
+
+  /* Update for DiscreteIntegrator: '<S57>/Integrator' */
   MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE = (int16_T)(((16777 *
-    rtb_Sum6) >> 26) + MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE);
+    rtb_add_c) >> 26) + MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE);
 
-  /* Update for DiscreteIntegrator: '<S58>/Integrator' */
-  MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE_m = (int16_T)(((16777 *
-    rtb_SignPreSat_o) >> 26) +
-    MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE_m);
+  /* Update for DiscreteIntegrator: '<S101>/Integrator' */
+  MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE_o = (int16_T)(((16777 *
+    rtb_SignPreSat_e) >> 26) +
+    MotorControlLibNEWFixedP_FUL_DW.Integrator_DSTATE_o);
 
-  /* Update for DiscreteIntegrator: '<S120>/Discrete-Time Integrator' */
-  MotorControlLibNEWFixedP_FUL_DW.DiscreteTimeIntegrator_DSTATE += (int16_T)
-    mul_s32_hiSR(274877907, MotorControlLibNEWFixedP_ConstB.Gain, 16U);
+  /* Update for DiscreteIntegrator: '<S119>/Discrete-Time Integrator' */
+  MotorControlLibNEWFixedP_FUL_DW.DiscreteTimeIntegrator_DSTATE += ((int16_T)
+    mul_s32_hiSR(274877907, MotorControlLibNEWFixedP_ConstB.Gain, 16U));
   MotorControlLibNEWFixedP_FUL_DW.DiscreteTimeIntegrator_PrevRese = (int8_T)
     rtb_Uk1_c;
-  //CPU_clocks_ins.Step9 = rCpuClocks();
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,RESET);
 }
 
 /* Model initialize function */
@@ -926,7 +822,7 @@ void MotorControlLibNEWFixedP_FULL19b_initialize(void)
   MotorControlLibNEWFixed_PrevZCX.FluxObsAngle_k.Delay_Reset_ZCE_o =
     UNINITIALIZED_ZCSIG;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S120>/Discrete-Time Integrator' */
+  /* InitializeConditions for DiscreteIntegrator: '<S119>/Discrete-Time Integrator' */
   MotorControlLibNEWFixedP_FUL_DW.DiscreteTimeIntegrator_PrevRese = 2;
 }
 
