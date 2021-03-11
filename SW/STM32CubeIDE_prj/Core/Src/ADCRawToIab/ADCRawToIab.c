@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'ADCRawToIab'.
  *
- * Model version                  : 1.6
+ * Model version                  : 1.7
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Sun Jan 24 13:10:49 2021
+ * C/C++ source code generated on : Tue Feb 23 13:40:23 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -16,28 +16,33 @@
 #include "ADCRawToIab.h"
 #include "ADCRawToIab_private.h"
 #include "div_s32_floor.h"
-#include "look1_is16bs16n2lu32n1_UXA9sfNQ.h"
-#include "look1_iu16lu32n16ts16D_2s4GBl96.h"
 
 /* Output and update for referenced model: 'ADCRawToIab' */
 void ADCRawToIab(int16_T *rty_Ia, int16_T *rty_Ib)
 {
   int32_T tmp;
+  uint16_T tmp_0;
+
+  /* LookupNDDirect: '<Root>/Direct Lookup Table (n-D)' incorporates:
+   *  Inport: '<Root>/adcBuffer'
+   *
+   * About '<Root>/Direct Lookup Table (n-D)':
+   *  1-dimensional Direct Look-Up returning a Scalar,
+   */
+  if (adcBuffer[0] < 4096) {
+    tmp_0 = adcBuffer[0];
+  } else {
+    tmp_0 = 4096U;
+  }
 
   /* Product: '<Root>/Divide2' incorporates:
    *  Constant: '<Root>/Constant2'
-   *  Inport: '<Root>/adcBuffer'
-   *  Lookup_n-D: '<Root>/1-D Lookup Table'
-   *  Lookup_n-D: '<Root>/1-D Lookup Table3'
+   *  LookupNDDirect: '<Root>/Direct Lookup Table (n-D)'
+   *
+   * About '<Root>/Direct Lookup Table (n-D)':
+   *  1-dimensional Direct Look-Up returning a Scalar,
    */
-
-
-
-  tmp = div_s32_floor(look1_is16bs16n2lu32n1_UXA9sfNQ
-                      (look1_iu16lu32n16ts16D_2s4GBl96(adcBuffer[0],
-    rtCP_uDLookupTable3_bp01Data, rtCP_uDLookupTable3_tableData, 1U),
-                       (&(ComparatorBrkPnt[0])), (&(VoltageOut[0])), 2U) << 6,
-                      DRV_SHUNTR_OHM);
+  tmp = div_s32_floor(RShunt_table_data_out[tmp_0] << 6, DRV_SHUNTR_OHM);
   if (tmp > 32767) {
     tmp = 32767;
   } else {
@@ -63,17 +68,26 @@ void ADCRawToIab(int16_T *rty_Ia, int16_T *rty_Ib)
 
   /* End of Product: '<Root>/Divide1' */
 
+  /* LookupNDDirect: '<Root>/Direct Lookup Table (n-D)1' incorporates:
+   *  Inport: '<Root>/adcBuffer'
+   *
+   * About '<Root>/Direct Lookup Table (n-D)1':
+   *  1-dimensional Direct Look-Up returning a Scalar,
+   */
+  if (adcBuffer[1] < 4096) {
+    tmp_0 = adcBuffer[1];
+  } else {
+    tmp_0 = 4096U;
+  }
+
   /* Product: '<Root>/Divide5' incorporates:
    *  Constant: '<Root>/Constant5'
-   *  Inport: '<Root>/adcBuffer'
-   *  Lookup_n-D: '<Root>/1-D Lookup Table1'
-   *  Lookup_n-D: '<Root>/1-D Lookup Table2'
+   *  LookupNDDirect: '<Root>/Direct Lookup Table (n-D)1'
+   *
+   * About '<Root>/Direct Lookup Table (n-D)1':
+   *  1-dimensional Direct Look-Up returning a Scalar,
    */
-  tmp = div_s32_floor(look1_is16bs16n2lu32n1_UXA9sfNQ
-                      (look1_iu16lu32n16ts16D_2s4GBl96(adcBuffer[1],
-    rtCP_uDLookupTable2_bp01Data, rtCP_uDLookupTable2_tableData, 1U),
-                       (&(ComparatorBrkPnt[0])), (&(VoltageOut[0])), 2U) << 6,
-                      DRV_SHUNTR_OHM);
+  tmp = div_s32_floor(RShunt_table_data_out[tmp_0] << 6, DRV_SHUNTR_OHM);
   if (tmp > 32767) {
     tmp = 32767;
   } else {

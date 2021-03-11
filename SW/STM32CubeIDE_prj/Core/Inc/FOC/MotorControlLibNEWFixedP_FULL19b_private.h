@@ -16,7 +16,7 @@
 #ifndef RTW_HEADER_MotorControlLibNEWFixedP_FULL19b_private_h_
 #define RTW_HEADER_MotorControlLibNEWFixedP_FULL19b_private_h_
 #include "rtwtypes.h"
-#include "multiword_types.h"
+
 #include "zero_crossing_types.h"
 #include "MotorControlLibNEWFixedP_FULL19b.h"
 

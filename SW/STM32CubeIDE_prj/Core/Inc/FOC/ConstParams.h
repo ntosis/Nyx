@@ -65,6 +65,8 @@ extern const int16_T d_q_Voltage_Limiter_sat_neg;
 extern const int16_T d_q_Voltage_Limiter_sat_pos;
 
 /* fixdt(1,16,2^-4,0) */
+extern const int16_T RShunt_table_data_out[4097];
+
 #endif                                 /* RTW_HEADER_ConstParams_h_ */
 
 /*
