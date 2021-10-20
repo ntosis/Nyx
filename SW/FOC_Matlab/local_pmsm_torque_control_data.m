@@ -17,20 +17,20 @@
 % Copyright 2016-2019 The MathWorks, Inc.
 
 %% Machine Parameters
-Pmax = 35000;      % Maximum power                      [W]
-Tmax = 205;        % Maximum torque                     [N*m]
-Ld   = 0.00024368; % Stator d-axis inductance           [H]
-Lq   = 0.00029758; % Stator q-axis inductance           [H]
-L0   = 0.00012184; % Stator zero-sequence inductance    [H]
-Rs   = 0.010087;   % Stator resistance per phase        [Ohm]
-psim = 0.04366;    % Permanent magnet flux linkage      [Wb]
-p    = 8;          % Number of pole pairs
-Jm   = 0.1234;     % Rotor inertia                      [Kg*m^2]
+Pmax = 88;      % Maximum power                      [W]
+Tmax = 0.28;        % Maximum torque                     [N*m]
+Ld   = 0.193e-4; % Stator d-axis inductance           [H]
+Lq   = 0.193e-4; % Stator q-axis inductance           [H]
+L0   = 0.01e-4; % Stator zero-sequence inductance    [H]
+Rs   = 0.022;   % Stator resistance per phase        [Ohm]
+cBackEMF = 0.015;  % Back EMF Constant     [V/rad/sec]
+p    = 8/2;          % Number of pole pairs, BE CAREFUL PAIRS not Poles
+Jm   = 0.0000008;  % Rotor inertia                      [Kg*m^2]
 
 %% High-Voltage System Parameters
 Cdc  = 0.001;      % DC-link capacitor      [F]
-Vnom = 325;        % Nominal DC voltage     [V] 
-V1   = 290;        % Voltage V1(< Vnom)     [V]
+Vnom = 12;        % Nominal DC voltage     [V] 
+%V1   = 290;        % Voltage V1(< Vnom)     [V]
 AH0  = 280;        % Initial battery charge [hr*A]
 
 %% Control Parameters
@@ -50,4 +50,4 @@ numd_iq = Tsi/(Kp_iq/Ki_iq);
 dend_iq = [1 (Tsi-(Kp_iq/Ki_iq))/(Kp_iq/Ki_iq)];
 
 %% Current references
-load ee_ipmsm_35kW_ref_idq;
+%load ee_ipmsm_35kW_ref_idq;
