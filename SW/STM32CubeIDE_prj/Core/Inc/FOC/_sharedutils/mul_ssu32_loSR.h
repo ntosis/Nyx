@@ -1,5 +1,5 @@
 /*
- * File: look1_is16lu32n16tu16_binlcse.h
+ * File: mul_ssu32_loSR.h
  *
  * Code generated for Simulink model 'MotorControlLibNEWFixedP_FULL19b_new'.
  *
@@ -8,12 +8,11 @@
  * C/C++ source code generated on : Wed Sep 29 11:35:11 2021
  */
 
-#ifndef SHARE_look1_is16lu32n16tu16_binlcse
-#define SHARE_look1_is16lu32n16tu16_binlcse
+#ifndef SHARE_mul_ssu32_loSR
+#define SHARE_mul_ssu32_loSR
 #include "rtwtypes.h"
 
-extern uint16_T look1_is16lu32n16tu16_binlcse(int16_T u0, const int16_T bp0[],
-  const uint16_T table[], uint32_T maxIndex);
+extern int32_T mul_ssu32_loSR(int32_T a, uint32_T b, uint32_T aShift);
 
 #endif
 

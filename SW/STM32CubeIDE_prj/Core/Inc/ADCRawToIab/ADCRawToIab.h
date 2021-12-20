@@ -24,7 +24,7 @@
 
 /* Includes for objects with custom storage classes. */
 #include "ConstParams.h"
-
+#include "stdint.h"
 /* Real-time Model Data Structure */
 struct tag_RTM_ADCRawToIab_T {
   const char_T **errorStatus;
@@ -38,6 +38,11 @@ typedef struct {
 extern void ADCRawToIab_initialize(const char_T **rt_errorStatus,
   RT_MODEL_ADCRawToIab_T *const ADCRawToIab_M);
 extern void ADCRawToIab(int16_T *rty_Ia, int16_T *rty_Ib);
+
+extern volatile int16_t MAX_Ia;
+extern volatile int16_t MAX_Ib;
+extern volatile int16_t MIN_Ia;
+extern volatile int16_t MIN_Ib;
 
 /*-
  * The generated code includes comments that allow you to trace directly

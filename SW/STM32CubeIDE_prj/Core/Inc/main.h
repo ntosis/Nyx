@@ -40,6 +40,9 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 extern uint16_t adcBuffer[3];
+extern volatile uint16_t MAXadcBuffer[3];
+extern volatile uint16_t MINadcBuffer[3];
+
 extern osThreadId_t ComputationINTHandle;
 /* USER CODE END ET */
 

@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'ADCRawToIab'.
  *
- * Model version                  : 1.7
+ * Model version                  : 1.8
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Tue Feb 23 13:40:23 2021
+ * C/C++ source code generated on : Tue Mar 30 15:54:58 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)

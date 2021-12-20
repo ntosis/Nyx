@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'MotorControlLibNEWFixedP_FULL19b'.
  *
- * Model version                  : 1.16
+ * Model version                  : 1.10
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Sun Jan 31 10:36:33 2021
+ * C/C++ source code generated on : Fri Oct 22 10:10:23 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)

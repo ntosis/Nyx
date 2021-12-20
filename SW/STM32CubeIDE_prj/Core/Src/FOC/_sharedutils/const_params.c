@@ -3,9 +3,9 @@
  *
  * Code generation for model "MotorControlLibNEWFixedP_FULL19b".
  *
- * Model version              : 1.20
+ * Model version              : 1.37
  * Simulink Coder version : 9.2 (R2019b) 18-Jul-2019
- * C source code generated on : Tue Feb 23 13:40:45 2021
+ * C source code generated on : Mon Apr 12 13:40:35 2021
  */
 #include "rtwtypes.h"
 

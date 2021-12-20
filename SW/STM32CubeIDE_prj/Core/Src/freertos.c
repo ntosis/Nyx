@@ -252,7 +252,7 @@ void testTask500msFunc(void *argument)
 	  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_SET);
 	  NfaultState = HAL_GPIO_ReadPin(DRV_NFAULT_GPIO_Port,DRV_NFAULT_Pin);
 	  NfaultStateRunningCnt++;
-	  MX_DRV8304_Report_Fault(&faultRegister1Value,&faultRegister2Value,&hdrv8304);
+	  MX_DRV8304_Report_Fault(&faultRegister1Value,&faultRegister2Value,&DRVConRegisterValue,&hdrv8304);
 	  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_RESET);
 	  // Wait for the next cycle.
 	  vTaskDelayUntil( &xLastWakeTime, xDelay );

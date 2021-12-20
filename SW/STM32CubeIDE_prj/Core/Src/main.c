@@ -32,10 +32,12 @@
 #include "drv8304.h"
 #include "MotorControlLibNEWFixedP_FULL19b.h"
 #include "InterfaceBswApp.h"
+#include "limits.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+/* Exported block signals */
 
 /* USER CODE END PTD */
 
@@ -63,6 +65,9 @@ void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 uint16_t adcBuffer[3]; // Buffer for store the results of the ADC conversion
+volatile uint16_t MAXadcBuffer[3];
+volatile uint16_t MINadcBuffer[3]={ UINT_MAX, UINT_MAX, UINT_MAX};
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -85,7 +90,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
+  DebugCntr = ((uint32_t*) 0xE0001004);
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -101,7 +106,7 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM3_Init();
   MX_ADC1_Init();
-
+  MX_DMA_Init();
   MX_SPI1_Init();
   MX_TIM4_Init();
   MX_TIM2_Init();
@@ -181,7 +186,52 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+ /*void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+   Prevent unused argument(s) compilation warning
+  UNUSED(hadc);
+  DMA_Counter[0]++;
+   NOTE : This function should not be modified. When the callback is needed,
+            function HAL_ADC_ConvCpltCallback must be implemented in the user file.
 
+}
+
+*
+  * @brief  Conversion DMA half-transfer callback in non blocking mode
+  * @param  hadc: ADC handle
+  * @retval None
+
+ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc)
+ {
+    Prevent unused argument(s) compilation warning
+   UNUSED(hadc);
+   static uint16_t i=0;
+   DMA_Counter[3]++;
+   if(i>999) i=0;
+   ADCConversion[0][i++] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+    NOTE : This function Should not be modified, when the callback is needed,
+             the HAL_ADCEx_InjectedConvCpltCallback could be implemented in the user file
+
+ }
+ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
+{
+   Prevent unused argument(s) compilation warning
+  UNUSED(hadc);
+  DMA_Counter[1]++;
+   NOTE : This function should not be modified. When the callback is needed,
+            function HAL_ADC_ConvHalfCpltCallback must be implemented in the user file.
+
+}
+
+ void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)
+ {
+    Prevent unused argument(s) compilation warning
+   UNUSED(hadc);
+   DMA_Counter[2]++;
+    NOTE : This function should not be modified. When the callback is needed,
+             function HAL_ADC_ErrorCallback must be implemented in the user file.
+
+ }*/
 /* USER CODE END 4 */
 
 /**
@@ -212,7 +262,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  portDISABLE_INTERRUPTS(); //cmsis Code
 		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13,GPIO_PIN_SET);
 		  StepFunctionisStillRunning = 1;
-	  adcBuffer[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+	      adcBuffer[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+	      if( adcBuffer[1]>MAXadcBuffer[1])   MAXadcBuffer[1]=adcBuffer[1];
+	      if( adcBuffer[0]>MAXadcBuffer[0])   MAXadcBuffer[0]=adcBuffer[0];
+	      if( adcBuffer[1]<MINadcBuffer[1])   MINadcBuffer[1]=adcBuffer[1];
+	      if( adcBuffer[0]<MINadcBuffer[0])   MINadcBuffer[0]=adcBuffer[0];
 
 	  //MX_Change_Commutation_State();
 
@@ -225,12 +279,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  	countInteruptsinOut--;
 	  	StepFunctionisStillRunning = 0;
 	  	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13,GPIO_PIN_RESET);
+	  	if(clocksNeededOfMAtlabFunc > clocksNeededOfMAtlabFuncMAX) clocksNeededOfMAtlabFuncMAX = clocksNeededOfMAtlabFunc;
+	  	if(clocksNeededOfMAtlabFunc < clocksNeededOfMAtlabFuncMIN) clocksNeededOfMAtlabFuncMIN = clocksNeededOfMAtlabFunc;
 	  	portENABLE_INTERRUPTS();
 	  }
   }
   /* USER CODE END Callback 1 */
 }
-
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None

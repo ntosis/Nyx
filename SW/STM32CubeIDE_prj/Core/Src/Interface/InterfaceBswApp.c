@@ -7,6 +7,7 @@
 
 #include "InterfaceBswApp.h"
 #include "tim.h"
+#include "MotorControlLibNEWFixedP_FULL19b.h"
 
 uint32_t pwm_set_a_m=0;
 uint32_t pwm_set_b_m=0;
@@ -14,29 +15,64 @@ uint32_t pwm_set_c_m=0;
 uint8_t countInteruptsinOut=0;
 uint8_t StepFunctionisStillRunning=0;
 volatile uint32_t clocksNeededOfMAtlabFunc = 0;
+volatile uint32_t clocksNeededOfMAtlabFuncMAX = 0;
+volatile uint32_t clocksNeededOfMAtlabFuncMIN = UINT32_MAX;
+volatile uint32_t clocksNeededOfMAtlabFunc_1;
+volatile uint32_t clocksNeededOfMAtlabFunc_2;
+volatile uint32_t clocksNeededOfMAtlabFunc_3;
+volatile uint32_t clocksNeededOfMAtlabFunc_4;
+volatile uint32_t clocksNeededOfMAtlabFunc_5;
+volatile uint32_t clocksNeededOfMAtlabFunc_6;
+volatile uint32_t clocksNeededOfMAtlabFunc_7;
+volatile uint32_t clocksNeededOfMAtlabFunc_8;
+volatile uint32_t clocksNeededOfMAtlabFunc_9;
+volatile uint32_t clocksNeededOfMAtlabFunc_10;
+volatile uint32_t clocksNeededOfMAtlabFunc_11;
+volatile uint32_t clocksNeededOfMAtlabFunc_12;
+volatile uint32_t clocksNeededOfMAtlabFunc_13;
+volatile uint32_t clocksNeededOfTestFunction = 0;
 volatile uint8_t NfaultState=0;
 volatile uint8_t NfaultStateRunningCnt=0;
 volatile uint16_t faultRegister1Value=0;
 volatile uint16_t faultRegister2Value=0;
+volatile uint16_t DRVConRegisterValue=0;
 volatile struct CPU_clocks CPU_clocks_ins;
+
+volatile uint32_t *DebugCntr;
 
 void set_PWM_A_DT(uint16_t a){
 
-	pwm_set_a_m = (uint32_t)a;
+	if(qSoll==0) {
+		pwm_set_a_m = 500u;
+	}
+	else {
+		pwm_set_a_m = (uint32_t)a;
+	}
+
 
 	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,pwm_set_a_m);
 
 }
 void set_PWM_B_DT(uint16_t a){
 
+	if(qSoll==0) {
+		pwm_set_b_m = 500u;
+	}
+	else {
 	pwm_set_b_m = (uint32_t)a;
+		}
 
 	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)pwm_set_b_m);
 
 }
 void set_PWM_C_DT(uint16_t a){
 
+	if(qSoll==0) {
+		pwm_set_c_m = 500u;
+	}
+	else {
 	pwm_set_c_m = (uint32_t)a;
+		}
 
 	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)pwm_set_c_m);
 

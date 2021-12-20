@@ -531,7 +531,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 static void LL_DRV8304_ActiveMode(DRV8304_HandleTypeDef *hdrv8304);
 static void LL_DRV8304_SleepMode(DRV8304_HandleTypeDef *hdrv8304);
 static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_RegAddress RegisterAddr);
-void MX_DRV8304_Report_Fault(uint16_t *faultReg1,uint16_t *faultReg2,DRV8304_HandleTypeDef *hdrv8304);
+void MX_DRV8304_Report_Fault(uint16_t *faultReg1,uint16_t *faultReg2,uint16_t *faultReg3,DRV8304_HandleTypeDef *hdrv8304);
 static DRV8304_LockTypeDef MX_DRV8304_ReadLockRegister(DRV8304_HandleTypeDef *hdrv8304, uint16_t *RegValue);
 DRVErrorStatus MX_Change_Commutation_State();
 void MX_DRV8304_CalculateIabc(DRV8304_HandleTypeDef *hdrv8304);

@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'ADCRawToIab'.
  *
- * Model version                  : 1.7
+ * Model version                  : 1.8
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Tue Feb 23 13:40:23 2021
+ * C/C++ source code generated on : Tue Mar 30 15:54:58 2021
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -17,11 +17,28 @@
 #include "ADCRawToIab_private.h"
 #include "div_s32_floor.h"
 
+volatile int16_t MAX_Ia=0;
+volatile int16_t MAX_Ib=0;
+volatile int16_t MIN_Ia=0;
+volatile int16_t MIN_Ib=0;
 /* Output and update for referenced model: 'ADCRawToIab' */
 void ADCRawToIab(int16_T *rty_Ia, int16_T *rty_Ib)
 {
-  int32_T tmp;
-  uint16_T tmp_0;
+  uint16_T tmp;
+  int32_T tmp_0;
+
+  /* Product: '<Root>/Divide2' incorporates:
+   *  Constant: '<Root>/Constant1'
+   *  Constant: '<Root>/Constant2'
+   */
+  tmp_0 = (DRV_GAIN * DRV_SHUNTR_OHM) >> 6;
+  if (tmp_0 > 32767) {
+    tmp_0 = 32767;
+  } else {
+    if (tmp_0 < -32768) {
+      tmp_0 = -32768;
+    }
+  }
 
   /* LookupNDDirect: '<Root>/Direct Lookup Table (n-D)' incorporates:
    *  Inport: '<Root>/adcBuffer'
@@ -30,43 +47,46 @@ void ADCRawToIab(int16_T *rty_Ia, int16_T *rty_Ib)
    *  1-dimensional Direct Look-Up returning a Scalar,
    */
   if (adcBuffer[0] < 4096) {
-    tmp_0 = adcBuffer[0];
+    tmp = adcBuffer[0];
   } else {
-    tmp_0 = 4096U;
+    tmp = 4096U;
   }
 
-  /* Product: '<Root>/Divide2' incorporates:
-   *  Constant: '<Root>/Constant2'
+  /* Product: '<Root>/Divide1' incorporates:
+   *  Constant: '<Root>/Constant'
    *  LookupNDDirect: '<Root>/Direct Lookup Table (n-D)'
+   *  Product: '<Root>/Divide2'
+   *  Sum: '<Root>/Add'
    *
    * About '<Root>/Direct Lookup Table (n-D)':
    *  1-dimensional Direct Look-Up returning a Scalar,
    */
-  tmp = div_s32_floor(RShunt_table_data_out[tmp_0] << 6, DRV_SHUNTR_OHM);
-  if (tmp > 32767) {
-    tmp = 32767;
+  tmp_0 = div_s32_floor((int16_T)((DRV_V_REF_Div2 << 5) - ADC_V_OUT[tmp]) << 8,
+                        tmp_0);
+  if (tmp_0 > 32767) {
+    tmp_0 = 32767;
   } else {
-    if (tmp < -32768) {
-      tmp = -32768;
+    if (tmp_0 < -32768) {
+      tmp_0 = -32768;
     }
   }
 
-  /* Product: '<Root>/Divide1' incorporates:
-   *  Constant: '<Root>/Constant1'
-   *  Product: '<Root>/Divide2'
-   */
-  tmp = div_s32_floor(tmp << 5, DRV_GAIN);
-  if (tmp > 32767) {
-    tmp = 32767;
-  } else {
-    if (tmp < -32768) {
-      tmp = -32768;
-    }
-  }
-
-  *rty_Ia = (int16_T)tmp;
+  *rty_Ia = (int16_T)tmp_0;
 
   /* End of Product: '<Root>/Divide1' */
+
+  /* Product: '<Root>/Divide4' incorporates:
+   *  Constant: '<Root>/Constant4'
+   *  Constant: '<Root>/Constant5'
+   */
+  tmp_0 = (DRV_GAIN * DRV_SHUNTR_OHM) >> 6;
+  if (tmp_0 > 32767) {
+    tmp_0 = 32767;
+  } else {
+    if (tmp_0 < -32768) {
+      tmp_0 = -32768;
+    }
+  }
 
   /* LookupNDDirect: '<Root>/Direct Lookup Table (n-D)1' incorporates:
    *  Inport: '<Root>/adcBuffer'
@@ -75,43 +95,38 @@ void ADCRawToIab(int16_T *rty_Ia, int16_T *rty_Ib)
    *  1-dimensional Direct Look-Up returning a Scalar,
    */
   if (adcBuffer[1] < 4096) {
-    tmp_0 = adcBuffer[1];
+    tmp = adcBuffer[1];
   } else {
-    tmp_0 = 4096U;
+    tmp = 4096U;
   }
 
-  /* Product: '<Root>/Divide5' incorporates:
-   *  Constant: '<Root>/Constant5'
+  /* Product: '<Root>/Divide3' incorporates:
+   *  Constant: '<Root>/Constant3'
    *  LookupNDDirect: '<Root>/Direct Lookup Table (n-D)1'
+   *  Product: '<Root>/Divide4'
+   *  Sum: '<Root>/Add1'
    *
    * About '<Root>/Direct Lookup Table (n-D)1':
    *  1-dimensional Direct Look-Up returning a Scalar,
    */
-  tmp = div_s32_floor(RShunt_table_data_out[tmp_0] << 6, DRV_SHUNTR_OHM);
-  if (tmp > 32767) {
-    tmp = 32767;
+  tmp_0 = div_s32_floor((int16_T)((DRV_V_REF_Div2 << 5) - ADC_V_OUT[tmp]) << 8,
+                        tmp_0);
+  if (tmp_0 > 32767) {
+    tmp_0 = 32767;
   } else {
-    if (tmp < -32768) {
-      tmp = -32768;
+    if (tmp_0 < -32768) {
+      tmp_0 = -32768;
     }
   }
 
-  /* Product: '<Root>/Divide4' incorporates:
-   *  Constant: '<Root>/Constant4'
-   *  Product: '<Root>/Divide5'
-   */
-  tmp = div_s32_floor(tmp << 5, DRV_GAIN);
-  if (tmp > 32767) {
-    tmp = 32767;
-  } else {
-    if (tmp < -32768) {
-      tmp = -32768;
-    }
-  }
+  *rty_Ib = (int16_T)tmp_0;
 
-  *rty_Ib = (int16_T)tmp;
+   if(*rty_Ia > MAX_Ia) {MAX_Ia=*rty_Ia;}
+   if(*rty_Ib > MAX_Ib) {MAX_Ib=*rty_Ib;}
+   if(*rty_Ia < MIN_Ia) {MIN_Ia=*rty_Ia;}
+   if(*rty_Ib < MIN_Ib) {MIN_Ib=*rty_Ib;}
 
-  /* End of Product: '<Root>/Divide4' */
+  /* End of Product: '<Root>/Divide3' */
 }
 
 /* Model initialize function */

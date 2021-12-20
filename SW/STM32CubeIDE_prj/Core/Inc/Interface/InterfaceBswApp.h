@@ -21,7 +21,7 @@ void set_PWM_C_DT(uint16_t a);
 #define  ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004)
 
 uint32_t rCpuClocks(void);
-
+volatile uint32_t *DebugCntr;
 uint16_t adcBuffer[3];
 
 uint32_t pwm_set_a_m;
@@ -32,10 +32,27 @@ extern volatile uint8_t NfaultState;
 extern volatile uint8_t NfaultStateRunningCnt;
 extern volatile uint16_t faultRegister1Value;
 extern volatile uint16_t faultRegister2Value;
+extern volatile uint16_t DRVConRegisterValue;
 
 extern uint8_t countInteruptsinOut;
 extern uint8_t StepFunctionisStillRunning;
 extern volatile uint32_t clocksNeededOfMAtlabFunc;
+volatile uint32_t clocksNeededOfMAtlabFuncMAX;
+volatile uint32_t clocksNeededOfMAtlabFuncMIN;
+volatile uint32_t clocksNeededOfMAtlabFunc_1;
+volatile uint32_t clocksNeededOfMAtlabFunc_2;
+volatile uint32_t clocksNeededOfMAtlabFunc_3;
+volatile uint32_t clocksNeededOfMAtlabFunc_4;
+volatile uint32_t clocksNeededOfMAtlabFunc_5;
+volatile uint32_t clocksNeededOfMAtlabFunc_6;
+volatile uint32_t clocksNeededOfMAtlabFunc_7;
+volatile uint32_t clocksNeededOfMAtlabFunc_8;
+volatile uint32_t clocksNeededOfMAtlabFunc_9;
+volatile uint32_t clocksNeededOfMAtlabFunc_10;
+volatile uint32_t clocksNeededOfMAtlabFunc_11;
+volatile uint32_t clocksNeededOfMAtlabFunc_12;
+volatile uint32_t clocksNeededOfMAtlabFunc_13;
+
 
 struct CPU_clocks {
   uint32_t StepFunctionClocks;

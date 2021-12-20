@@ -98,26 +98,26 @@ void MX_DRV8304_Init(void){
 	hdrv8304.State = SleepMode;
 
 	/* configure the parameters of drv8304*/
-	hdrv8304.Init.DIS_CPUV = DRV_Enable;
-	hdrv8304.Init.DIS_GDF = DRV_Enable;
+	hdrv8304.Init.DIS_CPUV = DRV_Disable;
+	hdrv8304.Init.DIS_GDF = DRV_Disable;
 	hdrv8304.Init.OTW_REP = NotReported;
 	hdrv8304.Init.PWM_MODE = X3Mode;
 	hdrv8304.Init.PWM_COM1 = Synchronous;
 	hdrv8304.Init.IDRIVEP_HS = IP105mA;
 	hdrv8304.Init.IDRIVEN_HS = IN120mA;
-	hdrv8304.Init.TDRIVE = T1000ns;
+	hdrv8304.Init.TDRIVE = T2000ns;
 	hdrv8304.Init.IDRIVEP_LS = IP105mA;
 	hdrv8304.Init.IDRIVEN_LS = IN120mA;
-	hdrv8304.Init.TRETRY = T4ms;
+	hdrv8304.Init.TRETRY = T50us;
 	hdrv8304.Init.DEAD_TIME = T100ns;
-	hdrv8304.Init.OCP_MODE = ONLRPRT;
-	hdrv8304.Init.OCP_ACT = AllShutdown;
-	hdrv8304.Init.VDS_LVL = V0_15V;
+	hdrv8304.Init.OCP_MODE = NOTHING;
+	hdrv8304.Init.OCP_ACT = OnlyAssociatedShutdown;
+	hdrv8304.Init.VDS_LVL = VDSDisabled;
 	hdrv8304.Init.VREF_DIV = VREF;
 	hdrv8304.Init.LS_REF= SHx_SPx;
 	hdrv8304.Init.CSA_GAIN = G10V_V;
 	hdrv8304.Init.DIS_SEN = DRV_Disable;
-	hdrv8304.Init.SPI_CAL = DRV_Enable;
+	hdrv8304.Init.SPI_CAL = DRV_Disable;
 	// AUTOCAL
 	hdrv8304.Init.SEN_LVL = OCP1V; /* don't clear*/
 
@@ -367,7 +367,7 @@ static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_
 	}
 
 }
-void MX_DRV8304_Report_Fault(uint16_t *faultReg1,uint16_t *faultReg2,DRV8304_HandleTypeDef *hdrv8304) {
+void MX_DRV8304_Report_Fault(uint16_t *faultReg1,uint16_t *faultReg2,uint16_t *faultReg3,DRV8304_HandleTypeDef *hdrv8304) {
 
 
 
@@ -375,9 +375,9 @@ void MX_DRV8304_Report_Fault(uint16_t *faultReg1,uint16_t *faultReg2,DRV8304_Han
 
 	*faultReg2 = LL_DRV8304_ReadRegister(hdrv8304,VGS_Status2_Adr);
 
-	/*temp= LL_DRV8304_ReadRegister(hdrv8304,Driver_Control_Adr);
+	*faultReg3 = LL_DRV8304_ReadRegister(hdrv8304,Driver_Control_Adr);
 
-	temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
+	/*temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
 
 	temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_LS_Adr);
 
