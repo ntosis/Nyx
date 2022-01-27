@@ -1,0 +1,5 @@
+#ignore all dependecy files in matlab
+*.slxc
+local_pmsm*
+MotorControlLibData.m
+slprj
