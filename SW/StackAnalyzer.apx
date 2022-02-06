@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.absint.com/dtd/a3-apx-21.10i.xsd" xmlns="http://www.absint.com/apx" build="10639778" target="arm" version="21.10i">
+ <files>
+  <executables>../../../../../STM32CubeIDE/workspace_1.7.0/NyxF446RE_1.7.0C/Debug/NyxF446RE_1.7.0C.elf</executables>
+ </files>
+ <analyses>
+  <analysis id="testTask500msFunc" type="stack_analysis" enabled="true">
+   <analysis_start>testTask500msFunc(void *)</analysis_start>
+   <enable_valueanalyzer_features>true</enable_valueanalyzer_features>
+  </analysis>
+  <analysis id="HAL_TIM_PeriodElapsedCallback" type="stack_analysis" enabled="true">
+   <analysis_start>HAL_TIM_PeriodElapsedCallback(struct *)</analysis_start>
+   <gdl>HAL_TIM_PeriodElapsedCallback.gdl</gdl>
+  </analysis>
+  <analysis id="ComputationINTfunc" type="stack_analysis" enabled="true">
+   <analysis_start>ComputationINTfunc(void *)</analysis_start>
+   <ais>ComputationINTfunc.ais</ais>
+   <gdl>ComputationINTfunc.gdl</gdl>
+  </analysis>
+ </analyses>
+ <options>
+  <general_options>
+   <include_path>..%2F..%2F..%2F..%2F..%2FTools%2FAbsint%2Fbin,STM32CubeIDE_prj</include_path>
+  </general_options>
+  <arm_options>
+   <general>
+    <target>Generic ARMv5</target>
+   </general>
+  </arm_options>
+  <analyses_options>
+   <read_volatile_variable_information_from_debug_information>true</read_volatile_variable_information_from_debug_information>
+   <read_constant_variable_information_from_debug_information>true</read_constant_variable_information_from_debug_information>
+   <extract_annotations_from_source_files>true</extract_annotations_from_source_files>
+  </analyses_options>
+ </options>
+</project>
