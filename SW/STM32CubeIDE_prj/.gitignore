@@ -4,4 +4,5 @@
 *.bin
 *.map
 *.list
+*.su
 !objects.list
