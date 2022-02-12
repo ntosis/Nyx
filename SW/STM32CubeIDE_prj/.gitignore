@@ -1,1 +1,7 @@
-/Debug/
+*.d
+*.o
+*.elf
+*.bin
+*.map
+*.list
+!objects.list

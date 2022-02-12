@@ -6,10 +6,13 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f1xx_hal.h"
+#include "stm32f4xx_hal.h"
 #include "main.h"
 #include "drv8304.h"
 #include "spi.h"
+#include "adc.h"
+#include "tim.h"
+
 
 DRV8304_HandleTypeDef hdrv8304;
 
@@ -46,6 +49,30 @@ const uint8_t GPIO_bit_Commutation_Vector[8][2] = \
 	{    8  ,  0b1011  }   /* align */
 };
 
+
+
+
+/* Declare variable using above structure and the function datapoints */
+/* These coordinates correspond to the points illustrated in the above graph */
+#ifdef UNIDIRECTMODE
+
+//static float comparator_value[] = {0.0, DRV_V_REF/2.0F, DRV_V_REF };
+static float voltage[] = {0.3, 0.00, -0.3  };
+
+#else
+
+static float sine_x[] = {0.0, 0.24, 0.64, 1.03, 1.43, M_PI_2};
+static float sine_y[] = {0.0, 0.24, 0.6,  0.87, 1.00, 1.00};
+
+#endif
+
+/*static struct table_1d comparator_tables = {
+    3,       Number of data points
+	comparator_value,  Array of x-coordinates
+	voltage   Array of y-coordinates
+};*/
+
+
 /* HAL Sensors fake
 const uint8_t GPIO_bit_Commutation_Vector[8][2] = \
 {
@@ -71,26 +98,26 @@ void MX_DRV8304_Init(void){
 	hdrv8304.State = SleepMode;
 
 	/* configure the parameters of drv8304*/
-	hdrv8304.Init.DIS_CPUV = DRV_Enable;
-	hdrv8304.Init.DIS_GDF = DRV_Enable;
+	hdrv8304.Init.DIS_CPUV = DRV_Disable;
+	hdrv8304.Init.DIS_GDF = DRV_Disable;
 	hdrv8304.Init.OTW_REP = NotReported;
-	hdrv8304.Init.PWM_MODE = X1Mode;
-	hdrv8304.Init.PWM_COM1 = Asynchronous;
-	hdrv8304.Init.IDRIVEP_HS = IP135mA;
+	hdrv8304.Init.PWM_MODE = X3Mode;
+	hdrv8304.Init.PWM_COM1 = Synchronous;
+	hdrv8304.Init.IDRIVEP_HS = IP105mA;
 	hdrv8304.Init.IDRIVEN_HS = IN120mA;
-	hdrv8304.Init.TDRIVE = T1000ns;
-	hdrv8304.Init.IDRIVEP_LS = IP135mA;
+	hdrv8304.Init.TDRIVE = T2000ns;
+	hdrv8304.Init.IDRIVEP_LS = IP105mA;
 	hdrv8304.Init.IDRIVEN_LS = IN120mA;
-	hdrv8304.Init.TRETRY = T4ms;
+	hdrv8304.Init.TRETRY = T50us;
 	hdrv8304.Init.DEAD_TIME = T100ns;
-	hdrv8304.Init.OCP_MODE = AUTRTR;
-	hdrv8304.Init.OCP_ACT = AllShutdown;
-	hdrv8304.Init.VDS_LVL = V0_15V;
+	hdrv8304.Init.OCP_MODE = NOTHING;
+	hdrv8304.Init.OCP_ACT = OnlyAssociatedShutdown;
+	hdrv8304.Init.VDS_LVL = VDSDisabled;
 	hdrv8304.Init.VREF_DIV = VREF;
 	hdrv8304.Init.LS_REF= SHx_SPx;
-	hdrv8304.Init.CSA_GAIN = G40V_V;
+	hdrv8304.Init.CSA_GAIN = G10V_V;
 	hdrv8304.Init.DIS_SEN = DRV_Disable;
-	hdrv8304.Init.SPI_CAL = DRV_Enable;
+	hdrv8304.Init.SPI_CAL = DRV_Disable;
 	// AUTOCAL
 	hdrv8304.Init.SEN_LVL = OCP1V; /* don't clear*/
 
@@ -168,7 +195,7 @@ DRVErrorStatus LL_DRV8304_Init(DRV8304_HandleTypeDef *hdrv8304){
 
 		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_RESET);
 
-		if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t *)pTxBuffPtr, (uint8_t *)pRxData,1,50)!=HAL_OK)
+		if(HAL_SPI_TransmitReceive(&hspi2, (uint8_t *)pTxBuffPtr, (uint8_t *)pRxData,1,50)!=HAL_OK)
 		{
 			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
 			/* Lock the registers again */
@@ -240,7 +267,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 				|UnlockRegisters << DRV_LOCK_Pos));
 
 		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_RESET);
-		if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
+		if(HAL_SPI_TransmitReceive(&hspi2, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
 		{
 			hdrv8304->Lock=DRV_Locked;
 			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
@@ -272,7 +299,7 @@ DRVErrorStatus LL_DRV8304_LockUnlock(DRV8304_HandleTypeDef *hdrv8304,LockRegiste
 				|LockRegisters << DRV_LOCK_Pos));
 
 		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_RESET);
-		if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
+		if(HAL_SPI_TransmitReceive(&hspi2, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
 		{
 			hdrv8304->Lock=DRV_Unlocked;
 			HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
@@ -324,7 +351,7 @@ static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_
 
 	HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_RESET);
 
-	if(HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
+	if(HAL_SPI_TransmitReceive(&hspi2, (uint8_t*)&RegValueTmp, (uint8_t *)pRxData,1,50)!=HAL_OK)
 	{
 		HAL_GPIO_WritePin(DRV_CS_GPIO_Port, DRV_CS_Pin, GPIO_PIN_SET);
 
@@ -340,23 +367,23 @@ static uint16_t LL_DRV8304_ReadRegister(DRV8304_HandleTypeDef *hdrv8304,DRV8304_
 	}
 
 }
-void MX_DRV8304_Request_Status(uint16_t *intermediateVar,DRV8304_HandleTypeDef *hdrv8304){
+void MX_DRV8304_Report_Fault(uint16_t *faultReg1,uint16_t *faultReg2,uint16_t *faultReg3,DRV8304_HandleTypeDef *hdrv8304) {
 
-	volatile uint16_t temp =0;
 
-	temp = LL_DRV8304_ReadRegister(hdrv8304,Fault_Status1_Adr);
 
-	temp= LL_DRV8304_ReadRegister(hdrv8304,VGS_Status2_Adr);
+	*faultReg1 = LL_DRV8304_ReadRegister(hdrv8304,Fault_Status1_Adr);
 
-	temp= LL_DRV8304_ReadRegister(hdrv8304,Driver_Control_Adr);
+	*faultReg2 = LL_DRV8304_ReadRegister(hdrv8304,VGS_Status2_Adr);
 
-	temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
+	*faultReg3 = LL_DRV8304_ReadRegister(hdrv8304,Driver_Control_Adr);
+
+	/*temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_HS_Adr);
 
 	temp = LL_DRV8304_ReadRegister(hdrv8304,Gate_Drive_LS_Adr);
 
 	temp = LL_DRV8304_ReadRegister(hdrv8304,OCP_Control_Adr);
 
-	temp = LL_DRV8304_ReadRegister(hdrv8304,CSA_Control_Adr);
+	temp = LL_DRV8304_ReadRegister(hdrv8304,CSA_Control_Adr);*/
 
 }
 
@@ -440,4 +467,94 @@ DRVErrorStatus MX_Change_Commutation_State(){
 
     return DRV_OK;
 }
+
+/**
+* Returns the interpolated y-value.
+* Saturates to y0 or y1 if x outside interval [x0, x1].
+*/
+float interpolate_segment(float x0, float y0, float x1, float y1, float x)
+{
+    float t;
+
+    if (x <= x0) { return y0; }
+    if (x >= x1) { return y1; }
+
+    t =  (x-x0);
+    t /= (x1-x0);
+
+    return y0 + t*(y1-y0);
+}
+
+
+float interpolate_table_1d(struct table_1d *table, float x)
+/* 1D Table lookup with interpolation */
+{
+    uint8_t segment;
+
+    /* Check input bounds and saturate if out-of-bounds */
+    if (x > (table->x_values[table->x_length-1])) {
+       /* x-value too large, saturate to max y-value */
+        return table->y_values[table->x_length-1];
+    }
+    else if (x < (table->x_values[0])) {
+       /* x-value too small, saturate to min y-value */
+        return table->y_values[0];
+    }
+
+    /* Find the segment that holds x */
+    for (segment = 0; segment<(table->x_length-1); segment++)
+    {
+        if ((table->x_values[segment]   <= x) &&
+            (table->x_values[segment+1] >= x))
+        {
+            /* Found the correct segment */
+            /* Interpolate */
+            return interpolate_segment(table->x_values[segment],   /* x0 */
+                                       table->y_values[segment],   /* y0 */
+                                       table->x_values[segment+1], /* x1 */
+                                       table->y_values[segment+1], /* y1 */
+                                       x);                         /* x  */
+        }
+    }
+
+    /* Something with the data was wrong if we get here */
+    /* Saturate to the max value */
+    return table->y_values[table->x_length-1];
+}
+void MX_DRV8304_CalculateIabc(DRV8304_HandleTypeDef *hdrv8304){
+
+	/*switch(hdrv8304->Init.CSA_GAIN) {
+
+	case G5V_V: TempGain = 5;
+	break;
+
+	case G10V_V: TempGain = 10;
+	break;
+
+	case G20V_V: TempGain = 20;
+	break;
+
+	case G40V_V: TempGain = 40;
+	break;
+
+	default: TempGain = 0;
+	break;
+
+	}*/
+
+	/*Convert ADC raw value to volt (12bit resolution)*/
+	/* adcBuffer[0]; //SOA Pin */
+	//TempRawVoltage = (DRV_V_REF * ((float)adcBuffer[0]) ) / ADC_RES ;
+
+
+
+/*	__disable_irq();
+	start = ARM_CM_DWT_CYCCNT;
+	test_step();
+	stop = ARM_CM_DWT_CYCCNT;
+	__enable_irq();
+	delta = stop - start;*/
+}
+
+
 
