@@ -66,15 +66,11 @@ void MX_FREERTOS_Init(void);
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 uint16_t adcBuffer[3]; // Buffer for store the results of the ADC conversion
-uint16_t DmaBuffer[3]; // Buffer for store the results of the ADC conversion
 int16_t autoCalADCVal[2];
-volatile uint16_t MAXadcBuffer[3];
-volatile uint16_t MINadcBuffer[3]={ UINT_MAX, UINT_MAX, UINT_MAX};
-volatile uint16_t Frequency,Duty;
+volatile uint16_t Duty;
 uint32_t PWMICTimerSpeed;
 volatile uint8_t switch_dca_input=0;
 RCC_ClkInitTypeDef ClockInfos;
-uint32_t flashInfo;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -125,7 +121,6 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
-  /* HAL_TIM_Base_Start_IT(&htim3); Moved to FreeRTOS Task*/
   MotorControlLibNEWFixedP_FULL19b_initialize();
   //PWMICTimerSpeed = CalculateTimerSpeedForPWMInput(&htim8); /* Todo check the correct clock to be used for pwm IC*/
 
@@ -267,7 +262,7 @@ static void MX_NVIC_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
-	int16_t tmp=0;
+
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM1) {
     HAL_IncTick();

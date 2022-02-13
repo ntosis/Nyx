@@ -211,9 +211,8 @@ void ComputationINTfunc(void *argument)
 	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint16_t)250);
 	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint16_t)250);
 
-	  /* Caution Start Timer to trigger ADC and after start ADC!!! */
-	  //HAL_ADC_Start_DMA(&hadc1,(uint32_t*) adcBuffer, 1); // Start ADC in DMA mode and declare the buffer where store the results
-	  HAL_ADCEx_InjectedStart(&hadc1); //copied from Task routine.
+
+	  HAL_ADCEx_InjectedStart(&hadc1);
 	  HAL_ADCEx_InjectedStart(&hadc2);
 
 	  /*  Start DRV8304 Calibration always after ADC is working and will be triggered! */
@@ -226,10 +225,8 @@ void ComputationINTfunc(void *argument)
 	  /* Start DAC for Debugging */
 	  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
 	  HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
-	//HAL_ADC_Start_DMA(&hadc1,(uint32_t*) DmaBuffer, 1); // Start ADC in DMA mode and declare the buffer where store the results
-//	HAL_ADCEx_InjectedStart(&hadc1);
-//
-	HAL_TIM_Base_Start_IT(&htim3);
+
+	  HAL_TIM_Base_Start_IT(&htim3);
 
   /* Infinite loop */
   for(;;)
