@@ -21,6 +21,7 @@ OBJCOPY_BIN :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Core/Src/ADCRawToIab \
+Core/Src/CalcSpinSpeednDir \
 Core/Src/DRV8304 \
 Core/Src/FOC \
 Core/Src/FOC/_sharedutils \

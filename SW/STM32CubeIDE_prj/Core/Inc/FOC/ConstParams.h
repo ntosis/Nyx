@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'MotorControlLibNEWFixedP_FULL19b'.
  *
- * Model version                  : 1.44
+ * Model version                  : 1.0
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Fri Apr 30 10:12:45 2021
+ * C/C++ source code generated on : Fri Feb  4 14:26:17 2022
  */
 
 #ifndef RTW_HEADER_ConstParams_h_
@@ -46,7 +46,9 @@ extern const int16_T TqToIqConst;
 extern const int8_T dSoll;
 
 /* int8 */
-extern const uint8_T p;
+extern const int32_T p;
+
+/* fixdt(1,32,2^-22,0) */
 extern const uint16_T pwmTableData[3];
 
 #endif                                 /* RTW_HEADER_ConstParams_h_ */

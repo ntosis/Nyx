@@ -21,6 +21,7 @@ RM := rm -rf
 -include Core/Src/FOC/_sharedutils/subdir.mk
 -include Core/Src/FOC/subdir.mk
 -include Core/Src/DRV8304/subdir.mk
+-include Core/Src/CalcSpinSpeednDir/subdir.mk
 -include Core/Src/ADCRawToIab/subdir.mk
 -include Core/Src/subdir.mk
 -include subdir.mk

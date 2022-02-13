@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'MotorControlLibNEWFixedP_FULL19b'.
  *
- * Model version                  : 1.1
+ * Model version                  : 1.0
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Fri Jan 14 16:15:29 2022
+ * C/C++ source code generated on : Fri Feb  4 14:26:17 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -340,15 +340,17 @@ const real32_T EMFobsLdGain = 50000.0F;
 const real32_T EMFobsRS = 0.34F;
 
 /* fixdt(1,16,2^-8,0) */
-const int16_T TqToIqConst = 256;//todo change to 1(256) for testing. 25024(old val);
+const int16_T TqToIqConst = 256;
 
 /* fixdt(1,16,2^-8,0)
    Val=2/(3*p*psim)=2/3*Kt
-   old=44.44 */
+   old=97.75 */
 const int8_T dSoll = 0;
 
 /* int8 */
-const uint8_T p = 4U;
+const int32_T p = 16777216;
+
+/* fixdt(1,32,2^-22,0) */
 const uint16_T pwmTableData[3] = { 0U, 250U, 500U } ;
 
 /*

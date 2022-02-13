@@ -1,4 +1,5 @@
 "./Core/Src/ADCRawToIab/ADCRawToIab.o"
+"./Core/Src/CalcSpinSpeednDir/CalcSpinSpeednDir.o"
 "./Core/Src/DRV8304/drv8304.o"
 "./Core/Src/FOC/ConstParams.o"
 "./Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b.o"

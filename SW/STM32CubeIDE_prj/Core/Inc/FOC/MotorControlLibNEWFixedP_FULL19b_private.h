@@ -5,7 +5,7 @@
  *
  * Model version                  : 1.0
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Thu Jan 27 21:39:22 2022
+ * C/C++ source code generated on : Fri Feb  4 14:26:17 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -73,13 +73,13 @@ extern const int16_T rtCP_pooled_s8cmtSV5mIIg[502];
 extern const boolean_T rtCP_pooled_h9SS684EhrQx[16];
 
 #define rtCP_sine_table_values_Value   rtCP_pooled_s8cmtSV5mIIg  /* Computed Parameter: rtCP_sine_table_values_Value
-                                                                  * Referenced by: '<S16>/sine_table_values'
+                                                                  * Referenced by: '<S11>/sine_table_values'
                                                                   */
 #define rtCP_Logic_table               rtCP_pooled_h9SS684EhrQx  /* Computed Parameter: rtCP_Logic_table
-                                                                  * Referenced by: '<S147>/Logic'
+                                                                  * Referenced by: '<S142>/Logic'
                                                                   */
 #define rtCP_Logic_table_m             rtCP_pooled_h9SS684EhrQx  /* Computed Parameter: rtCP_Logic_table_m
-                                                                  * Referenced by: '<S148>/Logic'
+                                                                  * Referenced by: '<S143>/Logic'
                                                                   */
 
 extern void MotorControlLibNEWFi_DQ_Limiter(int16_T rtu_Vd_ref, int16_T

@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'ADCRawToIab'.
  *
- * Model version                  : 1.0
+ * Model version                  : 1.1
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Thu Jan 27 21:24:27 2022
+ * C/C++ source code generated on : Fri Feb  4 14:22:14 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Intel->x86-64 (Windows64)
@@ -19,20 +19,21 @@
 #include "div_s32_floor.h"
 
 /* Output and update for referenced model: 'ADCRawToIab' */
-void ADCRawToIab(const uint16_T rtu_adcBuffer[2], const int16_T
-                 rtu_autoCalADCVal[2], int16_T *rty_Ia, int16_T *rty_Ib)
+void ADCRawToIab(int16_T *rty_Ia, int16_T *rty_Ib)
 {
   int32_T tmp;
   uint16_T tmp_0;
   int32_T tmp_1;
 
   /* LookupNDDirect: '<Root>/Direct Lookup Table (n-D)' incorporates:
+   *  Inport: '<Root>/adcBuffer'
+   *  Inport: '<Root>/autoCalADCVal'
    *  Sum: '<Root>/Add2'
    *
    * About '<Root>/Direct Lookup Table (n-D)':
    *  1-dimensional Direct Look-Up returning a Scalar,
    */
-  tmp = rtu_adcBuffer[0] + rtu_autoCalADCVal[0];
+  tmp = adcBuffer[0] + autoCalADCVal[0];
   if (tmp < 0) {
     tmp = 0;
   } else {
@@ -60,10 +61,10 @@ void ADCRawToIab(const uint16_T rtu_adcBuffer[2], const int16_T
    * About '<Root>/Direct Lookup Table (n-D)':
    *  1-dimensional Direct Look-Up returning a Scalar,
    */
-  if ((uint16_T)tmp < 4096) {
+  if ((uint16_T)tmp < 4095) {
     tmp_0 = (uint16_T)tmp;
   } else {
-    tmp_0 = 4096U;
+    tmp_0 = 4095U;
   }
 
   /* Product: '<Root>/Divide1' incorporates:
@@ -90,12 +91,14 @@ void ADCRawToIab(const uint16_T rtu_adcBuffer[2], const int16_T
   /* End of Product: '<Root>/Divide1' */
 
   /* LookupNDDirect: '<Root>/Direct Lookup Table (n-D)1' incorporates:
+   *  Inport: '<Root>/adcBuffer'
+   *  Inport: '<Root>/autoCalADCVal'
    *  Sum: '<Root>/Add3'
    *
    * About '<Root>/Direct Lookup Table (n-D)1':
    *  1-dimensional Direct Look-Up returning a Scalar,
    */
-  tmp = rtu_adcBuffer[1] + rtu_autoCalADCVal[1];
+  tmp = adcBuffer[1] + autoCalADCVal[1];
   if (tmp < 0) {
     tmp = 0;
   } else {
@@ -123,10 +126,10 @@ void ADCRawToIab(const uint16_T rtu_adcBuffer[2], const int16_T
    * About '<Root>/Direct Lookup Table (n-D)1':
    *  1-dimensional Direct Look-Up returning a Scalar,
    */
-  if ((uint16_T)tmp < 4096) {
+  if ((uint16_T)tmp < 4095) {
     tmp_0 = (uint16_T)tmp;
   } else {
-    tmp_0 = 4096U;
+    tmp_0 = 4095U;
   }
 
   /* Product: '<Root>/Divide3' incorporates:
