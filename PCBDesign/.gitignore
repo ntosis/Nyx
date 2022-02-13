@@ -1,3 +1,8 @@
 *.s#*
 *.b#*
 *.zip
+*.silk
+*.txt
+*.csv
+*.pdf
+/NyxEagle/**/*
