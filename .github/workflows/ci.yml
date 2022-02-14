@@ -2,9 +2,9 @@ name: Nyx C code CI
 
 on:
   push:
-    branches: [ main ] # set the trigger and the name of the bracnh
+    branches: [ master ] # set the trigger and the name of the bracnh
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
