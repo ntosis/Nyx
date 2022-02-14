@@ -1,0 +1,47 @@
+name: Nyx C code CI
+
+on:
+  push:
+    branches: [ main ] # set the trigger and the name of the bracnh
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Create ELF file
+    # use Ubuntu on the runner
+    runs-on: ubuntu-18.04 
+    defaults:
+      run:
+        # set the working directory optional, 'eq. to cd /folder'
+        working-directory: ./Debug
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: arm-none-eabi-gcc
+      uses: fiam/arm-none-eabi-gcc@v1.0.2
+      with:
+        release: '9-2020-q2'
+      env:
+        #this is a special option because the gcc arm instalation is not correctly.
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+    
+    - name: "Print home folder"
+      run: echo "Folder -> $GITHUB_WORKSPACE"
+    - name: "Make command. "
+      run: make -j8 all
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: all artifacts
+        path: |
+         ./Debug
+         !./Debug/**/*.mk
+         !./Debug/**/*.su
+        retention-days: 5
+    - name: artifact ELF File
+      uses: actions/upload-artifact@v2
+      with:
+        name: only-ELF-file
+        path: ./Debug/**/*.elf
+        retention-days: 15
