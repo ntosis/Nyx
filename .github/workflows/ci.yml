@@ -14,7 +14,7 @@ jobs:
     defaults:
       run:
         # set the working directory optional, 'eq. to cd /folder'
-        working-directory: ./Debug
+        working-directory: ./SW/STM32CubeIDE_prj/Debug
 
     steps:
     - uses: actions/checkout@v2
