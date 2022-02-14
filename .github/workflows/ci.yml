@@ -35,13 +35,13 @@ jobs:
       with:
         name: all artifacts
         path: |
-         ./Debug
-         !./Debug/**/*.mk
-         !./Debug/**/*.su
+         ./SW/STM32CubeIDE_prj/Debug
+         !./SW/STM32CubeIDE_prj/Debug/**/*.mk
+         !./SW/STM32CubeIDE_prj/Debug/**/*.su
         retention-days: 5
     - name: artifact ELF File
       uses: actions/upload-artifact@v2
       with:
         name: only-ELF-file
-        path: ./Debug/**/*.elf
+        path: ./SW/STM32CubeIDE_prj/Debug/**/*.elf
         retention-days: 15
