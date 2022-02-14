@@ -73,8 +73,8 @@ all: main-build
 main-build: NyxF446RE.elf secondary-outputs
 
 # Tool invocations
-NyxF446RE.elf: $(OBJS) $(USER_OBJS) /home/unix/MyCODE/GitProjects/Nyx/Nyx/SW/STM32CubeIDE_prj/STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "NyxF446RE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/unix/MyCODE/GitProjects/Nyx/Nyx/SW/STM32CubeIDE_prj/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NyxF446RE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+NyxF446RE.elf: $(OBJS) $(USER_OBJS) ../STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "NyxF446RE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"../STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NyxF446RE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
