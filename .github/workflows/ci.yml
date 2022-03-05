@@ -16,8 +16,12 @@ jobs:
         # set the working directory optional, 'eq. to cd /folder'
         working-directory: ./SW/STM32CubeIDE_prj/Debug
 
+  
     steps:
+    - name: Checkout repository and submodules
     - uses: actions/checkout@v2
+      with:
+       submodules: recursive
     - name: arm-none-eabi-gcc
       uses: fiam/arm-none-eabi-gcc@v1.0.2
       with:
