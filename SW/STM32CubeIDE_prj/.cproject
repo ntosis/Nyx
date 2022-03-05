@@ -85,7 +85,7 @@
 									<listOptionValue builtIn="false" value="appSimulink"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.option.directories.211271956" name="Library search path (-L)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.option.directories" useByScannerDiscovery="false" valueType="libPaths">
-									<listOptionValue builtIn="false" value="../Libs"/>
+									<listOptionValue builtIn="false" value="../Libs/Nyx_Simulink/SimulinkLib"/>
 								</option>
 								<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.option.cref.470676477" name="Add symbol cross reference table to map file (-Wl,--cref)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.option.cref" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.option.verbose.671219003" name="Verbose (-Wl,--verbose)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.option.verbose" useByScannerDiscovery="false" value="false" valueType="boolean"/>
