@@ -15,14 +15,8 @@ RM := rm -rf
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
--include Core/Src/SafetyChecks/subdir.mk
--include Core/Src/PWMtoAngle/subdir.mk
 -include Core/Src/Interface/subdir.mk
--include Core/Src/FOC/_sharedutils/subdir.mk
--include Core/Src/FOC/subdir.mk
 -include Core/Src/DRV8304/subdir.mk
--include Core/Src/CalcSpinSpeednDir/subdir.mk
--include Core/Src/ADCRawToIab/subdir.mk
 -include Core/Src/subdir.mk
 -include subdir.mk
 -include objects.mk
@@ -74,7 +68,7 @@ main-build: NyxF446RE.elf secondary-outputs
 
 # Tool invocations
 NyxF446RE.elf: $(OBJS) $(USER_OBJS) ../STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "NyxF446RE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"../STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NyxF446RE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "NyxF446RE.elf" @"objects.list" $(USER_OBJS) -Wl,--start-group $(LIBS) -Wl,--end-group -mcpu=cortex-m4 -T"../STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NyxF446RE.map" -Wl,--cref -Wl,--gc-sections -static -L../Libs --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

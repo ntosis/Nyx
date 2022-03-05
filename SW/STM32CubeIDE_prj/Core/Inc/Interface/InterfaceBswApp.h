@@ -23,14 +23,14 @@ void set_PWM_C_DT(uint16_t a);
 uint32_t rCpuClocks(void);
 void emergency_disable_hardware(uint8_t in);
 
-volatile uint32_t *DebugCntr;
+extern volatile uint32_t *DebugCntr;
 extern uint16_t adcBuffer[3];
-uint16_t DmaBuffer[3];
-int16_t autoCalADCVal[2];
+extern uint16_t DmaBuffer[3];
+extern int16_t autoCalADCVal[2];
 
-uint32_t pwm_set_a_m;
-uint32_t pwm_set_b_m;
-uint32_t pwm_set_c_m;
+extern uint32_t pwm_set_a_m;
+extern uint32_t pwm_set_b_m;
+extern uint32_t pwm_set_c_m;
 
 extern volatile uint8_t NfaultState;
 extern volatile uint8_t NfaultStateRunningCnt;
@@ -41,21 +41,9 @@ extern volatile uint16_t DRVConRegisterValue;
 extern uint8_t countInteruptsinOut;
 extern uint8_t StepFunctionisStillRunning;
 extern volatile uint32_t clocksNeededOfMAtlabFunc;
-volatile uint32_t clocksNeededOfMAtlabFuncMAX;
-volatile uint32_t clocksNeededOfMAtlabFuncMIN;
-volatile uint32_t clocksNeededOfMAtlabFunc_1;
-volatile uint32_t clocksNeededOfMAtlabFunc_2;
-volatile uint32_t clocksNeededOfMAtlabFunc_3;
-volatile uint32_t clocksNeededOfMAtlabFunc_4;
-volatile uint32_t clocksNeededOfMAtlabFunc_5;
-volatile uint32_t clocksNeededOfMAtlabFunc_6;
-volatile uint32_t clocksNeededOfMAtlabFunc_7;
-volatile uint32_t clocksNeededOfMAtlabFunc_8;
-volatile uint32_t clocksNeededOfMAtlabFunc_9;
-volatile uint32_t clocksNeededOfMAtlabFunc_10;
-volatile uint32_t clocksNeededOfMAtlabFunc_11;
-volatile uint32_t clocksNeededOfMAtlabFunc_12;
-volatile uint32_t clocksNeededOfMAtlabFunc_13;
+extern volatile uint32_t clocksNeededOfMAtlabFuncMAX;
+extern volatile uint32_t clocksNeededOfMAtlabFuncMIN;
+
 
 
 struct CPU_clocks {

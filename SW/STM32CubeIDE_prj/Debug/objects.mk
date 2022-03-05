@@ -5,5 +5,5 @@
 
 USER_OBJS :=
 
-LIBS :=
+LIBS := -lappSimulink
 

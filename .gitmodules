@@ -1,0 +1,4 @@
+[submodule "SW/STM32CubeIDE_prj/Libs/Nyx_Simulink"]
+	path = SW/STM32CubeIDE_prj/Libs/Nyx_Simulink
+	url = https://github.com/ntosis/Nyx_Simulink.git
+	branch = artifacts

@@ -503,14 +503,15 @@ void MotorControlLibNE_PI_Controller(int8_T rtu_dRef, int16_T rtu_qRef, int16_T
    *  Constant: '<S30>/Constant8'
    *  UnitDelay: '<S30>/Unit Delay'
    */
+  if(localDW->UnitDelay_DSTATE < 1500) {
   localDW->UnitDelay_DSTATE++;
-
+  }
   /* Logic: '<S6>/OR' incorporates:
    *  Constant: '<S119>/Constant'
    *  RelationalOperator: '<S119>/Compare'
    *  UnitDelay: '<S30>/Unit Delay'
    */
-  rtb_OR = ((localDW->UnitDelay_DSTATE < 255) || rtu_Inport6);
+  rtb_OR = ((localDW->UnitDelay_DSTATE < 1500) || rtu_Inport6);
 
   /* DiscreteIntegrator: '<S104>/Integrator' */
   if (rtb_OR || (localDW->Integrator_PrevResetState != 0)) {

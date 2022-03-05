@@ -7,20 +7,17 @@
 C_SRCS += \
 ../Core/Src/FOC/ConstParams.c \
 ../Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b.c \
-../Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b_data.c \
-../Core/Src/FOC/ReadMotorAngle.c 
+../Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b_data.c 
 
 OBJS += \
 ./Core/Src/FOC/ConstParams.o \
 ./Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b.o \
-./Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b_data.o \
-./Core/Src/FOC/ReadMotorAngle.o 
+./Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b_data.o 
 
 C_DEPS += \
 ./Core/Src/FOC/ConstParams.d \
 ./Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b.d \
-./Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b_data.d \
-./Core/Src/FOC/ReadMotorAngle.d 
+./Core/Src/FOC/MotorControlLibNEWFixedP_FULL19b_data.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
