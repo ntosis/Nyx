@@ -86,12 +86,17 @@ void emergency_disable_hardware(uint8_t in){
 	/*After critical error detaction you can call this function to disable all mosfet bridges.
 	 * For DRV8304 is enough to set the ENABLE pin to low and the device suspends all Mosfets.
 	*/
+	static char debounce_count=0;
+	
 	if (in) {
-	__disable_irq();
-	HAL_GPIO_WritePin(DRV_ENABLE_GPIO_Port,DRV_ENABLE_Pin, GPIO_PIN_RESET);
-		while(1) {
+	 debounce_count++;
+		if(debounce_count>3) {
+		  __disable_irq();
+		  HAL_GPIO_WritePin(DRV_ENABLE_GPIO_Port,DRV_ENABLE_Pin, GPIO_PIN_RESET);
+		  while(1) {
 
-		}
+		           }
+		    }
 	}
 }
 
