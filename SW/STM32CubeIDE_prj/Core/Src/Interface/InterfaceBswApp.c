@@ -90,7 +90,7 @@ void emergency_disable_hardware(uint8_t in){
 	
 	if (in) {
 	 debounce_count++;
-		if(debounce_count>3) {
+		if(debounce_count>6) {
 		  __disable_irq();
 		  HAL_GPIO_WritePin(DRV_ENABLE_GPIO_Port,DRV_ENABLE_Pin, GPIO_PIN_RESET);
 		  while(1) {
