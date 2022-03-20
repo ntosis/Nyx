@@ -23,6 +23,7 @@ void set_PWM_C_DT(uint16_t a);
 uint32_t rCpuClocks(void);
 void emergency_disable_hardware(uint8_t in);
 
+extern int16_t qSoll;
 extern volatile uint32_t *DebugCntr;
 extern uint16_t adcBuffer[3];
 extern uint16_t DmaBuffer[3];

@@ -31,7 +31,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "MotorControlLib.h"
+
 #include "InterfaceBswApp.h"
 #include "limits.h"
 /* USER CODE END Includes */
