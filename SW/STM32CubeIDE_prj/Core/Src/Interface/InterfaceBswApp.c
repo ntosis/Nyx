@@ -7,7 +7,6 @@
 
 #include "InterfaceBswApp.h"
 #include "tim.h"
-#include "MotorControlLib.h"
 
 uint32_t pwm_set_a_m=0;
 uint32_t pwm_set_b_m=0;
