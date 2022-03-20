@@ -31,7 +31,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "MotorControlLibNEWFixedP_FULL19b.h"
+#include "MotorControlLib.h"
 #include "InterfaceBswApp.h"
 #include "limits.h"
 /* USER CODE END Includes */

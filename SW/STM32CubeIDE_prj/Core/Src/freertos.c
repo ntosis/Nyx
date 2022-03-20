@@ -302,7 +302,7 @@ void ComputationINTfunc(void *argument)
 
 
 	  	start = rCpuClocks();
-	  	MotorControlLibNEWFixedP_FULL19b_step();
+	  	MotorControlLib_step();
 	  	stop = rCpuClocks();
 
 	  	clocksNeededOfMAtlabFunc = stop - start;
