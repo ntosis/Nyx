@@ -121,7 +121,7 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
-  MotorControlLibNEWFixedP_FULL19b_initialize();
+  MotorControlLib_initialize();
   //PWMICTimerSpeed = CalculateTimerSpeedForPWMInput(&htim8); /* Todo check the correct clock to be used for pwm IC*/
 
 
