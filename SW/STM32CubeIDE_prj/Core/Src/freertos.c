@@ -31,6 +31,7 @@
 #include "adc.h"
 #include "InterfaceBswApp.h"
 #include "dac.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -298,7 +299,7 @@ void ComputationINTfunc(void *argument)
 	          default:
 	               break;
 	      }
-	    if(dbg_obj.k>511) {dbg_obj.k=0;}
+	    if(dbg_obj.k>(MAX_DBG_BUFFERSIZE-1)) {dbg_obj.k=0;}
 	    dbg_obj.dbgadcBuffer_0[dbg_obj.k] = adcBuffer[0];
 	    dbg_obj.dbgadcBuffer_1[dbg_obj.k] = adcBuffer[1];
 	    dbg_obj.dbgSig_Ia_m[dbg_obj.k]= Sig_Ia_m;
@@ -320,6 +321,29 @@ void ComputationINTfunc(void *argument)
 			set_PWM_A_DT(250U);
 			set_PWM_B_DT(250U);
 			set_PWM_C_DT(250U);
+			FILE *fid;
+			  char* pMessage;
+			  char* pFilename;
+			  pFilename = "NyxOutput.csv";  // Set Filename
+			  pMessage = "Hello Segger!";  // Set message
+			  //
+			  // Open file for writing at pPath and write pMessage into it
+			  // then close file.
+			  //
+			  fid = fopen(pFilename, "w+");
+			  //fwrite(pMessage, sizeof(char), strlen(pMessage), fid);
+			  fprintf(fid, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n","index", "adcBuffer_0", "adcBuffer_1", "Sig_Ia_m", "Sig_Ib_m","Sig_Va_m","Sig_Vb_m","Sig_Valpha_m","Sig_Vbeta_m"
+					  ,"Sig_Vgamma_m","Sig_Vqsatu_m","Sig_Vdsatu_m","Sig_qAxis_m","Sig_dAxis_PI_out","Sig_qAxis_PI_out","Sig_theta_el_m");
+			  for(int k=dbg_obj.k; k<=(MAX_DBG_BUFFERSIZE-1); k++) {
+				  fprintf(fid, "%i,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",((k-dbg_obj.k)+((uint8_t)1U)), dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
+				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k]);
+			  }
+			  for(int k=0;k<dbg_obj.k; k++) {
+			  				  fprintf(fid, "%i,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",((k+dbg_obj.k)+((uint8_t)1U)), dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
+			  				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k]);
+			  			  }
+
+			  fclose(fid);
 			while(1) {}
 		}
 		dbg_obj.k++;
