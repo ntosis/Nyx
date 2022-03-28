@@ -28,7 +28,6 @@
 /* USER CODE BEGIN Includes */
 #include "portmacro.h"
 #include "tim.h"
-#include "MotorControlLibNEWFixedP_FULL19b.h"
 #include "adc.h"
 #include "InterfaceBswApp.h"
 #include "dac.h"
@@ -299,8 +298,31 @@ void ComputationINTfunc(void *argument)
 	          default:
 	               break;
 	      }
-
-
+	    if(dbg_obj.k>511) {dbg_obj.k=0;}
+	    dbg_obj.dbgadcBuffer_0[dbg_obj.k] = adcBuffer[0];
+	    dbg_obj.dbgadcBuffer_1[dbg_obj.k] = adcBuffer[1];
+	    dbg_obj.dbgSig_Ia_m[dbg_obj.k]= Sig_Ia_m;
+		dbg_obj.dbgSig_Ib_m[dbg_obj.k]=Sig_Ib_m;
+		dbg_obj.dbgSig_Va_m[dbg_obj.k]=Sig_Va_m;
+		dbg_obj.dbgSig_Vb_m[dbg_obj.k]=Sig_Vb_m;
+		dbg_obj.dbgSig_Valpha_m[dbg_obj.k]=Sig_Valpha_m;
+		dbg_obj.dbgSig_Vbeta_m[dbg_obj.k]=Sig_Vbeta_m;
+		dbg_obj.dbgSig_Vgamma_m[dbg_obj.k]=Sig_Vgamma_m;
+		dbg_obj.dbgSig_Vqsatu_m[dbg_obj.k]=Sig_Vqsatu_m;
+		dbg_obj.dbgSig_Vdsatu_m[dbg_obj.k]=Sig_Vdsatu_m;
+		dbg_obj.dbgSig_qAxis_m[dbg_obj.k]=Sig_qAxis_m;
+		dbg_obj.dbgSig_dAxis_m[dbg_obj.k]=Sig_dAxis_m;
+		dbg_obj.dbgSig_dAxis_PI_out[dbg_obj.k]=Sig_dAxis_PI_out;
+		dbg_obj.dbgSig_qAxis_PI_out[dbg_obj.k]=Sig_qAxis_PI_out;
+		dbg_obj.dbgSig_theta_el_m[dbg_obj.k]=Sig_theta_el_m;
+		if(adcBuffer[1]>2500) {
+			qSoll=0;
+			set_PWM_A_DT(250U);
+			set_PWM_B_DT(250U);
+			set_PWM_C_DT(250U);
+			while(1) {}
+		}
+		dbg_obj.k++;
 	  	start = rCpuClocks();
 	  	MotorControlLib_step();
 	  	stop = rCpuClocks();

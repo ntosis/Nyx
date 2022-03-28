@@ -36,7 +36,7 @@ volatile uint16_t faultRegister1Value=0;
 volatile uint16_t faultRegister2Value=0;
 volatile uint16_t DRVConRegisterValue=0;
 volatile struct CPU_clocks CPU_clocks_ins;
-
+volatile struct Debug_signals dbg_obj;
 volatile uint32_t *DebugCntr;
 
 

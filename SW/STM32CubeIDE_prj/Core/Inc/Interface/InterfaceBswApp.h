@@ -44,7 +44,26 @@ extern uint8_t StepFunctionisStillRunning;
 extern volatile uint32_t clocksNeededOfMAtlabFunc;
 extern volatile uint32_t clocksNeededOfMAtlabFuncMAX;
 extern volatile uint32_t clocksNeededOfMAtlabFuncMIN;
-
+extern float Sig_theta_el_m;        /* '<Root>/Delay' */
+extern float Sig_Ia_m;              /* '<Root>/ADCRAwToCurrent(Iabc)' */
+extern float Sig_Ib_m;              /* '<Root>/ADCRAwToCurrent(Iabc)' */
+extern float Sig_cos_m;             /* '<S12>/Sum6' */
+extern float Sig_Ibeta_m;           /* '<S1>/one_by_sqrt3' */
+extern float Sig_sin_m;             /* '<S12>/Sum4' */
+extern float Sig_Iq_Soll;           /* '<Root>/Tq--> iqRef' */
+extern float Sig_dAxis_m;           /* '<Root>/Gain2' */
+extern float Sig_qAxis_m;           /* '<Root>/Gain3' */
+extern float Sig_Vqsatu_m;          /* '<Root>/DQ_Limiter' */
+extern float Sig_Vdsatu_m;          /* '<Root>/DQ_Limiter' */
+extern float Sig_Va_m;              /* '<Root>/Gain' */
+extern float Sig_Vb_m;              /* '<Root>/Gain1' */
+extern float Sig_Valpha_m;          /* '<S7>/Switch' */
+extern float Sig_Vbeta_m;           /* '<S7>/Switch1' */
+extern float Sig_Vgamma_m;          /* '<S7>/Switch2' */
+extern float Sig_dAxis_PI_out;      /* '<S111>/Saturation' */
+extern float Sig_qAxis_PI_out;      /* '<S67>/Saturation' */
+extern float Sig_dAxis_errorSum_m;  /* '<S6>/Add' */
+extern float Sig_qAxis_errorSum_m;  /* '<S6>/Add1' */
 
 
 struct CPU_clocks {
@@ -60,5 +79,26 @@ struct CPU_clocks {
   uint32_t Step8;
   uint32_t Step9;
 };
+struct Debug_signals {
+	float dbgSig_theta_el_m[512];               /* '<Root>/Delay' */
+	float dbgSig_Ia_m[512];                     /* '<Root>/ADCRAwToCurrent(Iabc)' */
+	float dbgSig_Ib_m[512];                     /* '<Root>/ADCRAwToCurrent(Iabc)' */
+	float dbgSig_dAxis_m[512];                  /* '<Root>/Gain2' */
+	float dbgSig_qAxis_m[512];                  /* '<Root>/Gain3' */
+	float dbgSig_Vqsatu_m[512];                 /* '<Root>/DQ_Limiter' */
+	float dbgSig_Vdsatu_m[512];                 /* '<Root>/DQ_Limiter' */
+	float dbgSig_Va_m[512];                     /* '<Root>/Gain' */
+	float dbgSig_Vb_m[512];                     /* '<Root>/Gain1' */
+	float dbgSig_Valpha_m[512];                 /* '<S7>/Switch' */
+	float dbgSig_Vbeta_m[512];                  /* '<S7>/Switch1' */
+	float dbgSig_Vgamma_m[512];                 /* '<S7>/Switch2' */
+	float dbgSig_dAxis_PI_out[512];             /* '<S111>/Saturation' */
+	float dbgSig_qAxis_PI_out[512];
+  uint16_t dbgadcBuffer_0[512];
+  uint16_t dbgadcBuffer_1[512];
+  uint16_t k;
+};
+
 extern volatile struct CPU_clocks CPU_clocks_ins;
+extern volatile struct Debug_signals dbg_obj;
 #endif /* INC_INTERFACE_INTERFACEBSWAPP_H_ */
