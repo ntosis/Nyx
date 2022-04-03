@@ -40,7 +40,6 @@ volatile struct Debug_signals dbg_obj;
 volatile uint32_t *DebugCntr;
 
 
-
 void set_PWM_A_DT(uint16_t a){
 
 	if(qSoll==0) {

@@ -43,6 +43,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+volatile uint16_t ICValueFalling=0;
+volatile uint16_t ICValueRising=0;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -123,8 +125,8 @@ int main(void)
 
   MotorControlLib_initialize();
   //PWMICTimerSpeed = CalculateTimerSpeedForPWMInput(&htim8); /* Todo check the correct clock to be used for pwm IC*/
-  initialise_monitor_handles();
-
+  initialise_monitor_handles(); /* Semihosting specific*/
+  qSoll=0;
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -207,7 +209,6 @@ static void MX_NVIC_Init(void)
 /* USER CODE BEGIN 4 */
  void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-	 static uint16_t ICValueFalling,ICValueRising;
 
 	 if (htim->Instance == TIM8) {
 
@@ -225,7 +226,16 @@ static void MX_NVIC_Init(void)
 
 				 // calculate the Duty Cycle +
 				 Duty = (((uint16_t)4096) * (ICValueRising-ICValueFalling))  / (ICValueRising);
+				 /*if(Duty>4096) {
+					 qSoll=0;
+					 set_PWM_A_DT(250U);
+					 set_PWM_B_DT(250U);
+					 set_PWM_C_DT(250U);
+					 portDISABLE_INTERRUPTS(); //cmsis Code
+					 while(1) {
 
+					 }
+				 }*/
 				/* float tmp = (float)(1.0f/PWMICTimerSpeed);
 				 float denom = (ICValueRising) * (tmp);
 				 Frequency = (uint16_t)(1.0f / denom); //in seconds*/

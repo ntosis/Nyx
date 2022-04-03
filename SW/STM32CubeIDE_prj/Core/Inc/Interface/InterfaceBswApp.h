@@ -38,6 +38,10 @@ extern volatile uint8_t NfaultStateRunningCnt;
 extern volatile uint16_t faultRegister1Value;
 extern volatile uint16_t faultRegister2Value;
 extern volatile uint16_t DRVConRegisterValue;
+extern volatile uint16_t Duty;
+
+volatile uint16_t ICValueFalling;
+volatile uint16_t ICValueRising;
 
 extern uint8_t countInteruptsinOut;
 extern uint8_t StepFunctionisStillRunning;
@@ -64,7 +68,8 @@ extern float Sig_dAxis_PI_out;      /* '<S111>/Saturation' */
 extern float Sig_qAxis_PI_out;      /* '<S67>/Saturation' */
 extern float Sig_dAxis_errorSum_m;  /* '<S6>/Add' */
 extern float Sig_qAxis_errorSum_m;  /* '<S6>/Add1' */
-
+extern float PI_q_Integrator;
+extern float PI_d_Integrator;
 
 struct CPU_clocks {
   uint32_t StepFunctionClocks;
@@ -95,11 +100,33 @@ struct Debug_signals {
 	float dbgSig_Vgamma_m[MAX_DBG_BUFFERSIZE];                 /* '<S7>/Switch2' */
 	float dbgSig_dAxis_PI_out[MAX_DBG_BUFFERSIZE];             /* '<S111>/Saturation' */
 	float dbgSig_qAxis_PI_out[MAX_DBG_BUFFERSIZE];
+	float dbgPI_d_Integrator[MAX_DBG_BUFFERSIZE];
+	float dbgPI_q_Integrator[MAX_DBG_BUFFERSIZE];
+	uint16_t dbgDuty[MAX_DBG_BUFFERSIZE];
   uint16_t dbgadcBuffer_0[MAX_DBG_BUFFERSIZE];
   uint16_t dbgadcBuffer_1[MAX_DBG_BUFFERSIZE];
   uint16_t k;
 };
 
+/* Forward declaration for rtModel */
+typedef struct tag_RTM_MotorControlLib_T RT_MODEL_MotorControlLib_T;
+/* Real-time Model Data Structure */
+struct tag_RTM_MotorControlLib_T {
+  const char * volatile errorStatus;
+
+  /*
+   * Timing:
+   * The following substructure contains information regarding
+   * the timing information for the model.
+   */
+  struct {
+    struct {
+      uint32_t TID[3];
+    } TaskCounters;
+  } Timing;
+};
+/* Real-time Model object */
+extern RT_MODEL_MotorControlLib_T *const MotorControlLib_M;
 extern volatile struct CPU_clocks CPU_clocks_ins;
 extern volatile struct Debug_signals dbg_obj;
 #endif /* INC_INTERFACE_INTERFACEBSWAPP_H_ */

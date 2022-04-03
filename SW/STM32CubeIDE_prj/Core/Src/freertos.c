@@ -247,7 +247,9 @@ void ComputationINTfunc(void *argument)
 
 			  adcBuffer[1] = (int16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
 
-
+			  start = rCpuClocks();
+			  MotorControlLib_step();
+			  stop = rCpuClocks();
 
 	      switch (switch_dca_input) {
 	          case 0:
@@ -299,6 +301,7 @@ void ComputationINTfunc(void *argument)
 	          default:
 	               break;
 	      }
+	      if (MotorControlLib_M->Timing.TaskCounters.TID[2] == 0) {
 	    if(dbg_obj.k>(MAX_DBG_BUFFERSIZE-1)) {dbg_obj.k=0;}
 	    dbg_obj.dbgadcBuffer_0[dbg_obj.k] = adcBuffer[0];
 	    dbg_obj.dbgadcBuffer_1[dbg_obj.k] = adcBuffer[1];
@@ -316,7 +319,13 @@ void ComputationINTfunc(void *argument)
 		dbg_obj.dbgSig_dAxis_PI_out[dbg_obj.k]=Sig_dAxis_PI_out;
 		dbg_obj.dbgSig_qAxis_PI_out[dbg_obj.k]=Sig_qAxis_PI_out;
 		dbg_obj.dbgSig_theta_el_m[dbg_obj.k]=Sig_theta_el_m;
-		if(adcBuffer[1]>2500) {
+		dbg_obj.dbgPI_q_Integrator[dbg_obj.k]=PI_q_Integrator;
+		dbg_obj.dbgPI_d_Integrator[dbg_obj.k]=PI_d_Integrator;
+		dbg_obj.dbgDuty[dbg_obj.k]=Duty;
+		dbg_obj.k++;
+	      }
+
+		if(adcBuffer[1]>40000) { /* 2500 old value*/
 			qSoll=0;
 			set_PWM_A_DT(250U);
 			set_PWM_B_DT(250U);
@@ -332,24 +341,23 @@ void ComputationINTfunc(void *argument)
 			  //
 			  fid = fopen(pFilename, "w+");
 			  //fwrite(pMessage, sizeof(char), strlen(pMessage), fid);
-			  fprintf(fid, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n","Ki","index","time", "adcBuffer_0", "adcBuffer_1", "Sig_Ia_m", "Sig_Ib_m","Sig_Va_m","Sig_Vb_m","Sig_Valpha_m","Sig_Vbeta_m"
-					  ,"Sig_Vgamma_m","Sig_Vqsatu_m","Sig_Vdsatu_m","Sig_qAxis_m","Sig_dAxis_m","Sig_dAxis_PI_out","Sig_qAxis_PI_out","Sig_theta_el_m");
+			  fprintf(fid, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n","Ki","index","time", "adcBuffer_0", "adcBuffer_1", "Sig_Ia_m", "Sig_Ib_m","Sig_Va_m","Sig_Vb_m","Sig_Valpha_m","Sig_Vbeta_m"
+					  ,"Sig_Vgamma_m","Sig_Vqsatu_m","Sig_Vdsatu_m","Sig_qAxis_m","Sig_dAxis_m","Sig_dAxis_PI_out","Sig_qAxis_PI_out","Sig_theta_el_m","Q_Integ","D_Integ","adcCalV0","adcCalV1","Duty");
 			  for(int k=dbg_obj.k+1; k<=(MAX_DBG_BUFFERSIZE-1); k++) {
-				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",k,index++,time+=0.0002, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
-				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k]);
+				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
+				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],autoCalADCVal[0],autoCalADCVal[1],dbg_obj.dbgDuty[k]);
+				  time+=0.0002;
 			  }
 			  for(int k=0;k<=dbg_obj.k; k++) {
-			  				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",k,index++,time+=0.0002, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
-			  				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k]);
-			  			  }
+			  				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
+			  				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],0,0,dbg_obj.dbgDuty[k]);
+			  	  time+=0.0002;
+			  }
 
 			  fclose(fid);
 			while(1) {}
 		}
-		dbg_obj.k++;
-	  	start = rCpuClocks();
-	  	MotorControlLib_step();
-	  	stop = rCpuClocks();
+
 
 	  	clocksNeededOfMAtlabFunc = stop - start;
 	  	countInteruptsinOut--;
