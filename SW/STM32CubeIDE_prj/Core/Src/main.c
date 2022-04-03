@@ -126,7 +126,6 @@ int main(void)
   MotorControlLib_initialize();
   //PWMICTimerSpeed = CalculateTimerSpeedForPWMInput(&htim8); /* Todo check the correct clock to be used for pwm IC*/
   initialise_monitor_handles(); /* Semihosting specific*/
-  qSoll=0;
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -215,17 +214,13 @@ static void MX_NVIC_Init(void)
 		 if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)  // channel 2 rising edge ir
 		    {
 
-			 ICValueFalling = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); //check if it is the first read
+			 ICValueRising = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); //measures all the pulse time on + off,add on for the first clock
+			 __HAL_TIM_SET_COUNTER(htim,(uint32_t)0U);
 
 			 if(ICValueFalling != 0) {
 
-				 ICValueRising = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1)+ 1; //measures all the pulse time on + off,add on for the first clock
-
-				 __HAL_TIM_SET_COMPARE(htim,TIM_CHANNEL_1,(uint16_t)0);
-				 __HAL_TIM_SET_COMPARE(htim,TIM_CHANNEL_2,(uint16_t)0);
-
 				 // calculate the Duty Cycle +
-				 Duty = (((uint16_t)4096) * (ICValueRising-ICValueFalling))  / (ICValueRising);
+				 Duty = (((uint16_t)4096) * ICValueFalling)  / (ICValueRising);
 				 /*if(Duty>4096) {
 					 qSoll=0;
 					 set_PWM_A_DT(250U);
@@ -248,8 +243,9 @@ static void MX_NVIC_Init(void)
 
 		    }
 
-		 else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  { // channel 2 falling edge ir
-			 //nothing to do
+		 else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)  { // channel 2 falling edge interuppt
+
+			 ICValueFalling = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); //check if it is the first read
 		 }
 
 	 }

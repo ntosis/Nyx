@@ -325,7 +325,7 @@ void ComputationINTfunc(void *argument)
 		dbg_obj.k++;
 	      }
 
-		if(adcBuffer[1]>40000) { /* 2500 old value*/
+		if(adcBuffer[1]>2500) {
 			qSoll=0;
 			set_PWM_A_DT(250U);
 			set_PWM_B_DT(250U);
