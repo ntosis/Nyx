@@ -125,7 +125,9 @@ int main(void)
 
   MotorControlLib_initialize();
   //PWMICTimerSpeed = CalculateTimerSpeedForPWMInput(&htim8); /* Todo check the correct clock to be used for pwm IC*/
+#ifdef SEMIHOSTING
   initialise_monitor_handles(); /* Semihosting specific*/
+#endif
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -217,10 +219,10 @@ static void MX_NVIC_Init(void)
 			 ICValueRising = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); //measures all the pulse time on + off,add on for the first clock
 			 __HAL_TIM_SET_COUNTER(htim,(uint32_t)0U);
 
-			 if(ICValueFalling != 0) {
+			 if(ICValueRising != 0) {
 
 				 // calculate the Duty Cycle +
-				 Duty = (((uint16_t)4096) * ICValueFalling)  / (ICValueRising);
+				 Duty = ((uint32_t)((uint16_t)4096) * ICValueFalling)  / (ICValueRising);
 				 /*if(Duty>4096) {
 					 qSoll=0;
 					 set_PWM_A_DT(250U);
@@ -236,7 +238,7 @@ static void MX_NVIC_Init(void)
 				 Frequency = (uint16_t)(1.0f / denom); //in seconds*/
 			 }
 			 else {
-				 //nothing to do
+				 Duty = (uint16_t)0U;
 			 }
 
 
