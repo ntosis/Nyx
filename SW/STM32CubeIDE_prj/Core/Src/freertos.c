@@ -64,6 +64,7 @@ typedef StaticTask_t osStaticThreadDef_t;
 osThreadId_t defaultTaskHandle;
 uint32_t defaultTaskBuffer[ 128 ];
 osStaticThreadDef_t defaultTaskControlBlock;
+volatile char manualBreak=0;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .cb_mem = &defaultTaskControlBlock,
@@ -212,45 +213,46 @@ void ComputationINTfunc(void *argument)
 	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint16_t)250);
 
 
-	  HAL_ADCEx_InjectedStart(&hadc1);
-	  HAL_ADCEx_InjectedStart(&hadc2);
+	HAL_ADCEx_InjectedStart(&hadc1);
+	HAL_ADCEx_InjectedStart(&hadc2);
 
-	  /*  Start DRV8304 Calibration always after ADC is working and will be triggered! */
-	  HAL_GPIO_WritePin(CAL_PIN_GPIO_Port, CAL_PIN_Pin, GPIO_PIN_SET);
-	  HAL_Delay(10);
-	  autoCalADCVal[1] = 2048 - HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
-	  autoCalADCVal[0] = 2048 - HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1); //DMA measurment
-	  HAL_GPIO_WritePin(CAL_PIN_GPIO_Port, CAL_PIN_Pin, GPIO_PIN_RESET);
-	  /*  Stop DRV8304 Calibration */
-	  /* Start DAC for Debugging */
-	  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-	  HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
+	/*  Start DRV8304 Calibration always after ADC is working and will be triggered! */
 
-	  HAL_TIM_Base_Start_IT(&htim3);
+	autoCalADCVal[1] = 2048 - HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+	autoCalADCVal[0] = 2048 - HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1); //DMA measurment
 
-  /* Infinite loop */
-  for(;;)
-  {
-	  volatile uint32_t start=0,stop=0;
-	  /* Will be woken up by timer interrupt*/
-	  ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
-	  countInteruptsinOut++;
+	/*  Stop DRV8304 Calibration */
 
-	  if(StepFunctionisStillRunning==0) {
+	/* Start DAC for Debugging */
+	HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
+	HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
 
-		  portDISABLE_INTERRUPTS(); //cmsis Code
-		  HAL_GPIO_WritePin(TestINT_GPIO_Port, TestINT_Pin,GPIO_PIN_SET);
-		  StepFunctionisStillRunning = 1;
+	HAL_TIM_Base_Start_IT(&htim3);
+
+	/* Infinite loop */
+	for(;;)
+	  {
+		  volatile uint32_t start=0,stop=0;
+		  /* Will be woken up by timer interrupt*/
+		  ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
+		  countInteruptsinOut++;
+
+		  if(StepFunctionisStillRunning==0) {
+
+			  portDISABLE_INTERRUPTS(); //cmsis Code
+			  HAL_GPIO_WritePin(TestINT_GPIO_Port, TestINT_Pin,GPIO_PIN_SET);
+			  StepFunctionisStillRunning = 1;
 
 
-			  adcBuffer[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+				  adcBuffer[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
 
-			  adcBuffer[1] = (int16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+				  adcBuffer[1] = (int16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
 
-			  start = rCpuClocks();
-			  MotorControlLib_step();
-			  stop = rCpuClocks();
+				  start = rCpuClocks();
+				  MotorControlLib_step();
+				  stop = rCpuClocks();
 
+#ifdef EXTENDED_DEBUG
 	      switch (switch_dca_input) {
 	          case 0:
 	        	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, adcBuffer[0]);
@@ -301,63 +303,82 @@ void ComputationINTfunc(void *argument)
 	          default:
 	               break;
 	      }
-	      if (MotorControlLib_M->Timing.TaskCounters.TID[2] == 0) {
-	    if(dbg_obj.k>(MAX_DBG_BUFFERSIZE-1)) {dbg_obj.k=0;}
-	    dbg_obj.dbgadcBuffer_0[dbg_obj.k] = adcBuffer[0];
-	    dbg_obj.dbgadcBuffer_1[dbg_obj.k] = adcBuffer[1];
-	    dbg_obj.dbgSig_Ia_m[dbg_obj.k]= Sig_Ia_m;
-		dbg_obj.dbgSig_Ib_m[dbg_obj.k]=Sig_Ib_m;
-		dbg_obj.dbgSig_Va_m[dbg_obj.k]=Sig_Va_m;
-		dbg_obj.dbgSig_Vb_m[dbg_obj.k]=Sig_Vb_m;
-		dbg_obj.dbgSig_Valpha_m[dbg_obj.k]=Sig_Valpha_m;
-		dbg_obj.dbgSig_Vbeta_m[dbg_obj.k]=Sig_Vbeta_m;
-		dbg_obj.dbgSig_Vgamma_m[dbg_obj.k]=Sig_Vgamma_m;
-		dbg_obj.dbgSig_Vqsatu_m[dbg_obj.k]=Sig_Vqsatu_m;
-		dbg_obj.dbgSig_Vdsatu_m[dbg_obj.k]=Sig_Vdsatu_m;
-		dbg_obj.dbgSig_qAxis_m[dbg_obj.k]=Sig_qAxis_m;
-		dbg_obj.dbgSig_dAxis_m[dbg_obj.k]=Sig_dAxis_m;
-		dbg_obj.dbgSig_dAxis_PI_out[dbg_obj.k]=Sig_dAxis_PI_out;
-		dbg_obj.dbgSig_qAxis_PI_out[dbg_obj.k]=Sig_qAxis_PI_out;
-		dbg_obj.dbgSig_theta_el_m[dbg_obj.k]=Sig_theta_el_m;
-		dbg_obj.dbgPI_q_Integrator[dbg_obj.k]=PI_q_Integrator;
-		dbg_obj.dbgPI_d_Integrator[dbg_obj.k]=PI_d_Integrator;
-		dbg_obj.dbgDuty[dbg_obj.k]=Duty;
-		dbg_obj.k++;
-	      }
+#endif
 
-		if(adcBuffer[1]>2500) {
+
+#ifdef EXTENDED_DEBUG
+	  if (MotorControlLib_M->Timing.TaskCounters.TID[2] == 0) {
+				if(dbg_obj.k>(MAX_DBG_BUFFERSIZE-1)) {
+					dbg_obj.k=0;
+					}
+
+					dbg_obj.dbgadcBuffer_0[dbg_obj.k] = adcBuffer[0];
+					dbg_obj.dbgadcBuffer_1[dbg_obj.k] = adcBuffer[1];
+					dbg_obj.dbgSig_Ia_m[dbg_obj.k]= Sig_Ia_m;
+					dbg_obj.dbgSig_Ib_m[dbg_obj.k]=Sig_Ib_m;
+					dbg_obj.dbgSig_Va_m[dbg_obj.k]=Sig_Va_m;
+					dbg_obj.dbgSig_Vb_m[dbg_obj.k]=Sig_Vb_m;
+					dbg_obj.dbgSig_Valpha_m[dbg_obj.k]=Sig_Valpha_m;
+					dbg_obj.dbgSig_Vbeta_m[dbg_obj.k]=Sig_Vbeta_m;
+					dbg_obj.dbgSig_Vgamma_m[dbg_obj.k]=Sig_Vgamma_m;
+					dbg_obj.dbgSig_Vqsatu_m[dbg_obj.k]=Sig_Vqsatu_m;
+					dbg_obj.dbgSig_Vdsatu_m[dbg_obj.k]=Sig_Vdsatu_m;
+					dbg_obj.dbgSig_qAxis_m[dbg_obj.k]=Sig_qAxis_m;
+					dbg_obj.dbgSig_dAxis_m[dbg_obj.k]=Sig_dAxis_m;
+					dbg_obj.dbgSig_dAxis_PI_out[dbg_obj.k]=Sig_dAxis_PI_out;
+					dbg_obj.dbgSig_qAxis_PI_out[dbg_obj.k]=Sig_qAxis_PI_out;
+					dbg_obj.dbgSig_theta_el_m[dbg_obj.k]=Sig_theta_el_m;
+					dbg_obj.dbgPI_q_Integrator[dbg_obj.k]=PI_q_Integrator;
+					dbg_obj.dbgPI_d_Integrator[dbg_obj.k]=PI_d_Integrator;
+					dbg_obj.dbgICValueRising[dbg_obj.k]=ICValueRising;
+					dbg_obj.dbgICValueFalling[dbg_obj.k]=ICValueFalling;
+					dbg_obj.dbgDuty[dbg_obj.k]=Duty;
+					dbg_obj.k++;
+	      }
+#endif
+
+#ifdef SEMIHOSTING // Log data in file
+
+		if(manualBreak>0) {/*2500 old*/
+
 			qSoll=0;
 			set_PWM_A_DT(250U);
 			set_PWM_B_DT(250U);
 			set_PWM_C_DT(250U);
+
 			FILE *fid;
-			  char* pFilename;
-			  float time = 0.0f;
-			  uint16_t index=0;
-			  pFilename = "NyxOutput.csv";  // Set Filename
-			  //
-			  // Open file for writing at pPath and write pMessage into it
-			  // then close file.
-			  //
-			  fid = fopen(pFilename, "w+");
-			  //fwrite(pMessage, sizeof(char), strlen(pMessage), fid);
-			  fprintf(fid, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n","Ki","index","time", "adcBuffer_0", "adcBuffer_1", "Sig_Ia_m", "Sig_Ib_m","Sig_Va_m","Sig_Vb_m","Sig_Valpha_m","Sig_Vbeta_m"
-					  ,"Sig_Vgamma_m","Sig_Vqsatu_m","Sig_Vdsatu_m","Sig_qAxis_m","Sig_dAxis_m","Sig_dAxis_PI_out","Sig_qAxis_PI_out","Sig_theta_el_m","Q_Integ","D_Integ","adcCalV0","adcCalV1","Duty");
-			  for(int k=dbg_obj.k+1; k<=(MAX_DBG_BUFFERSIZE-1); k++) {
-				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
-				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],autoCalADCVal[0],autoCalADCVal[1],dbg_obj.dbgDuty[k]);
+			char* pFilename;
+			float time = 0.0f;
+			uint16_t index=0;
+			pFilename = "NyxOutput.csv";  // Set Filename
+			//
+			// Open file for writing at pPath and write pMessage into it
+			// then close file.
+			//
+			fid = fopen(pFilename, "w+");
+			//fwrite(pMessage, sizeof(char), strlen(pMessage), fid);
+			fprintf(fid, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n","Ki","index","time", "adcBuffer_0", "adcBuffer_1", "Sig_Ia_m", "Sig_Ib_m","Sig_Va_m","Sig_Vb_m","Sig_Valpha_m","Sig_Vbeta_m"
+					  ,"Sig_Vgamma_m","Sig_Vqsatu_m","Sig_Vdsatu_m","Sig_qAxis_m","Sig_dAxis_m","Sig_dAxis_PI_out","Sig_qAxis_PI_out","Sig_theta_el_m","Q_Integ","D_Integ","adcCalV0","adcCalV1","Duty","FallingEdg","RisingEdg");
+
+			for(int k=dbg_obj.k+1; k<=(MAX_DBG_BUFFERSIZE-1); k++) {
+				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
+				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],autoCalADCVal[0],autoCalADCVal[1],dbg_obj.dbgDuty[k],dbg_obj.dbgICValueFalling[k],dbg_obj.dbgICValueRising[k]);
 				  time+=0.0002;
 			  }
-			  for(int k=0;k<=dbg_obj.k; k++) {
-			  				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
-			  				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],0,0,dbg_obj.dbgDuty[k]);
+
+			for(int k=0;k<=dbg_obj.k; k++) {
+			  				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
+			  				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],0,0,dbg_obj.dbgDuty[k],dbg_obj.dbgICValueFalling[k],dbg_obj.dbgICValueRising[k]);
 			  	  time+=0.0002;
 			  }
 
-			  fclose(fid);
-			while(1) {}
+			fclose(fid);
+
+			while(1) { /* Trap software after logging data */ }
+
 		}
 
+#endif
 
 	  	clocksNeededOfMAtlabFunc = stop - start;
 	  	countInteruptsinOut--;

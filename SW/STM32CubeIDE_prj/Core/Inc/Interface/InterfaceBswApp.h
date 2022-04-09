@@ -20,6 +20,9 @@ void set_PWM_C_DT(uint16_t a);
 
 #define  ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004)
 
+#define SEMIHOSTING     //Enable Semihostig Functions
+#define EXTENDED_DEBUG  //Enable DAC Debugging and data logging
+
 uint32_t rCpuClocks(void);
 void emergency_disable_hardware(uint8_t in);
 
@@ -84,35 +87,45 @@ struct CPU_clocks {
   uint32_t Step8;
   uint32_t Step9;
 };
-#define MAX_DBG_BUFFERSIZE ((uint16_t)512U)
-struct Debug_signals {
-	float dbgSig_theta_el_m[MAX_DBG_BUFFERSIZE];               /* '<Root>/Delay' */
-	float dbgSig_Ia_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/ADCRAwToCurrent(Iabc)' */
-	float dbgSig_Ib_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/ADCRAwToCurrent(Iabc)' */
-	float dbgSig_dAxis_m[MAX_DBG_BUFFERSIZE];                  /* '<Root>/Gain2' */
-	float dbgSig_qAxis_m[MAX_DBG_BUFFERSIZE];                  /* '<Root>/Gain3' */
-	float dbgSig_Vqsatu_m[MAX_DBG_BUFFERSIZE];                 /* '<Root>/DQ_Limiter' */
-	float dbgSig_Vdsatu_m[MAX_DBG_BUFFERSIZE];                 /* '<Root>/DQ_Limiter' */
-	float dbgSig_Va_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/Gain' */
-	float dbgSig_Vb_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/Gain1' */
-	float dbgSig_Valpha_m[MAX_DBG_BUFFERSIZE];                 /* '<S7>/Switch' */
-	float dbgSig_Vbeta_m[MAX_DBG_BUFFERSIZE];                  /* '<S7>/Switch1' */
-	float dbgSig_Vgamma_m[MAX_DBG_BUFFERSIZE];                 /* '<S7>/Switch2' */
-	float dbgSig_dAxis_PI_out[MAX_DBG_BUFFERSIZE];             /* '<S111>/Saturation' */
-	float dbgSig_qAxis_PI_out[MAX_DBG_BUFFERSIZE];
-	float dbgPI_d_Integrator[MAX_DBG_BUFFERSIZE];
-	float dbgPI_q_Integrator[MAX_DBG_BUFFERSIZE];
-	uint16_t dbgDuty[MAX_DBG_BUFFERSIZE];
-  uint16_t dbgadcBuffer_0[MAX_DBG_BUFFERSIZE];
-  uint16_t dbgadcBuffer_1[MAX_DBG_BUFFERSIZE];
-  uint16_t k;
-};
 
-/* Forward declaration for rtModel */
-typedef struct tag_RTM_MotorControlLib_T RT_MODEL_MotorControlLib_T;
-/* Real-time Model Data Structure */
-struct tag_RTM_MotorControlLib_T {
+#ifdef EXTENDED_DEBUG
+
+	#define MAX_DBG_BUFFERSIZE ((uint16_t)512U)
+
+	struct Debug_signals {
+		float dbgSig_theta_el_m[MAX_DBG_BUFFERSIZE];               /* '<Root>/Delay' */
+		float dbgSig_Ia_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/ADCRAwToCurrent(Iabc)' */
+		float dbgSig_Ib_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/ADCRAwToCurrent(Iabc)' */
+		float dbgSig_dAxis_m[MAX_DBG_BUFFERSIZE];                  /* '<Root>/Gain2' */
+		float dbgSig_qAxis_m[MAX_DBG_BUFFERSIZE];                  /* '<Root>/Gain3' */
+		float dbgSig_Vqsatu_m[MAX_DBG_BUFFERSIZE];                 /* '<Root>/DQ_Limiter' */
+		float dbgSig_Vdsatu_m[MAX_DBG_BUFFERSIZE];                 /* '<Root>/DQ_Limiter' */
+		float dbgSig_Va_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/Gain' */
+		float dbgSig_Vb_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/Gain1' */
+		float dbgSig_Valpha_m[MAX_DBG_BUFFERSIZE];                 /* '<S7>/Switch' */
+		float dbgSig_Vbeta_m[MAX_DBG_BUFFERSIZE];                  /* '<S7>/Switch1' */
+		float dbgSig_Vgamma_m[MAX_DBG_BUFFERSIZE];                 /* '<S7>/Switch2' */
+		float dbgSig_dAxis_PI_out[MAX_DBG_BUFFERSIZE];             /* '<S111>/Saturation' */
+		float dbgSig_qAxis_PI_out[MAX_DBG_BUFFERSIZE];
+		float dbgPI_d_Integrator[MAX_DBG_BUFFERSIZE];
+		float dbgPI_q_Integrator[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgDuty[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgadcBuffer_0[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgadcBuffer_1[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgICValueFalling[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgICValueRising[MAX_DBG_BUFFERSIZE];
+		uint16_t k;
+	};
+
+
+  /* Forward declaration for rtModel */
+  typedef struct tag_RTM_MotorControlLib_T RT_MODEL_MotorControlLib_T;
+
+  /* Real-time Model Data Structure */
+  struct tag_RTM_MotorControlLib_T {
   const char * volatile errorStatus;
+
+
 
   /*
    * Timing:
@@ -122,11 +135,15 @@ struct tag_RTM_MotorControlLib_T {
   struct {
     struct {
       uint32_t TID[3];
-    } TaskCounters;
-  } Timing;
-};
-/* Real-time Model object */
-extern RT_MODEL_MotorControlLib_T *const MotorControlLib_M;
+    	} TaskCounters;
+  	  } Timing;
+  };
+
+  /* Real-time Model object */
+  extern RT_MODEL_MotorControlLib_T *const MotorControlLib_M;
+
+#endif
+
 extern volatile struct CPU_clocks CPU_clocks_ins;
 extern volatile struct Debug_signals dbg_obj;
 #endif /* INC_INTERFACE_INTERFACEBSWAPP_H_ */
