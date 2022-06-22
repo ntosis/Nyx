@@ -97,6 +97,8 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 #define DRV_INLC_Pin GPIO_PIN_5
 #define DRV_INLC_GPIO_Port GPIOB
+#define PWM_INHC_Pin GPIO_PIN_6
+#define PWM_INHC_GPIO_Port GPIOB
 #define DRV_INLB_Pin GPIO_PIN_7
 #define DRV_INLB_GPIO_Port GPIOB
 #define PWM_INHA_Pin GPIO_PIN_8
