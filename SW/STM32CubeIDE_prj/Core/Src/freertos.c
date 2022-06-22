@@ -64,7 +64,6 @@ typedef StaticTask_t osStaticThreadDef_t;
 osThreadId_t defaultTaskHandle;
 uint32_t defaultTaskBuffer[ 128 ];
 osStaticThreadDef_t defaultTaskControlBlock;
-volatile char manualBreak=0;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .cb_mem = &defaultTaskControlBlock,
@@ -200,8 +199,9 @@ void ComputationINTfunc(void *argument)
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(DRV_INLB_GPIO_Port, DRV_INLC_Pin|DRV_INLB_Pin, GPIO_PIN_SET);
 
-	HAL_TIM_IC_Start_IT(&htim8, TIM_CHANNEL_1);   // main channel
+	HAL_TIM_IC_Start_IT(&htim8, TIM_CHANNEL_1);   // enable falling and rising edge int
 	HAL_TIM_IC_Start_IT(&htim8, TIM_CHANNEL_2);
+    __HAL_TIM_ENABLE_IT(&htim8,TIM_IT_UPDATE);    // enable timer overflow int.
 
 	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
@@ -308,77 +308,45 @@ void ComputationINTfunc(void *argument)
 
 #ifdef EXTENDED_DEBUG
 	  if (MotorControlLib_M->Timing.TaskCounters.TID[2] == 0) {
+
 				if(dbg_obj.k>(MAX_DBG_BUFFERSIZE-1)) {
+
 					dbg_obj.k=0;
+
 					}
 
-					dbg_obj.dbgadcBuffer_0[dbg_obj.k] = adcBuffer[0];
-					dbg_obj.dbgadcBuffer_1[dbg_obj.k] = adcBuffer[1];
-					dbg_obj.dbgSig_Ia_m[dbg_obj.k]= Sig_Ia_m;
-					dbg_obj.dbgSig_Ib_m[dbg_obj.k]=Sig_Ib_m;
-					dbg_obj.dbgSig_Va_m[dbg_obj.k]=Sig_Va_m;
-					dbg_obj.dbgSig_Vb_m[dbg_obj.k]=Sig_Vb_m;
-					dbg_obj.dbgSig_Valpha_m[dbg_obj.k]=Sig_Valpha_m;
-					dbg_obj.dbgSig_Vbeta_m[dbg_obj.k]=Sig_Vbeta_m;
-					dbg_obj.dbgSig_Vgamma_m[dbg_obj.k]=Sig_Vgamma_m;
-					dbg_obj.dbgSig_Vqsatu_m[dbg_obj.k]=Sig_Vqsatu_m;
-					dbg_obj.dbgSig_Vdsatu_m[dbg_obj.k]=Sig_Vdsatu_m;
-					dbg_obj.dbgSig_qAxis_m[dbg_obj.k]=Sig_qAxis_m;
-					dbg_obj.dbgSig_dAxis_m[dbg_obj.k]=Sig_dAxis_m;
-					dbg_obj.dbgSig_dAxis_PI_out[dbg_obj.k]=Sig_dAxis_PI_out;
-					dbg_obj.dbgSig_qAxis_PI_out[dbg_obj.k]=Sig_qAxis_PI_out;
-					dbg_obj.dbgSig_theta_el_m[dbg_obj.k]=Sig_theta_el_m;
-					dbg_obj.dbgPI_q_Integrator[dbg_obj.k]=PI_q_Integrator;
-					dbg_obj.dbgPI_d_Integrator[dbg_obj.k]=PI_d_Integrator;
-					dbg_obj.dbgICValueRising[dbg_obj.k]=ICValueRising;
-					dbg_obj.dbgICValueFalling[dbg_obj.k]=ICValueFalling;
-					dbg_obj.dbgDuty[dbg_obj.k]=Duty;
-					dbg_obj.k++;
+				dbg_obj.dbgadcBuffer_0[dbg_obj.k] = adcBuffer[0];
+				dbg_obj.dbgadcBuffer_1[dbg_obj.k] = adcBuffer[1];
+				dbg_obj.dbgSig_Ia_m[dbg_obj.k]= Sig_Ia_m;
+				dbg_obj.dbgSig_Ib_m[dbg_obj.k]=Sig_Ib_m;
+				dbg_obj.dbgSig_Va_m[dbg_obj.k]=Sig_Va_m;
+				dbg_obj.dbgSig_Vb_m[dbg_obj.k]=Sig_Vb_m;
+				dbg_obj.dbgSig_Valpha_m[dbg_obj.k]=Sig_Valpha_m;
+				dbg_obj.dbgSig_Vbeta_m[dbg_obj.k]=Sig_Vbeta_m;
+				dbg_obj.dbgSig_Vgamma_m[dbg_obj.k]=Sig_Vgamma_m;
+				dbg_obj.dbgSig_Vqsatu_m[dbg_obj.k]=Sig_Vqsatu_m;
+				dbg_obj.dbgSig_Vdsatu_m[dbg_obj.k]=Sig_Vdsatu_m;
+				dbg_obj.dbgSig_qAxis_m[dbg_obj.k]=Sig_qAxis_m;
+				dbg_obj.dbgSig_dAxis_m[dbg_obj.k]=Sig_dAxis_m;
+				dbg_obj.dbgSig_dAxis_PI_out[dbg_obj.k]=Sig_dAxis_PI_out;
+				dbg_obj.dbgSig_qAxis_PI_out[dbg_obj.k]=Sig_qAxis_PI_out;
+				dbg_obj.dbgSig_theta_el_m[dbg_obj.k]=Sig_theta_el_m;
+				dbg_obj.dbgPI_q_Integrator[dbg_obj.k]=PI_q_Integrator;
+				dbg_obj.dbgPI_d_Integrator[dbg_obj.k]=PI_d_Integrator;
+				dbg_obj.dbgICValueRising[dbg_obj.k]=ICValueRising;
+				dbg_obj.dbgICValueFalling[dbg_obj.k]=ICValueFalling;
+				dbg_obj.dbgDuty[dbg_obj.k]=Duty;
+				dbg_obj.dbgPWM_C[dbg_obj.k] = PWMdbg[0];
+				dbg_obj.dbgPWM_A[dbg_obj.k] = PWMdbg[1];
+				dbg_obj.dbgPWM_B[dbg_obj.k] = PWMdbg[2];
+				dbg_obj.k++;
 	      }
 #endif
 
-#ifdef SEMIHOSTING // Log data in file
 
-		if(manualBreak>0) {/*2500 old*/
-
-			qSoll=0;
-			set_PWM_A_DT(250U);
-			set_PWM_B_DT(250U);
-			set_PWM_C_DT(250U);
-
-			FILE *fid;
-			char* pFilename;
-			float time = 0.0f;
-			uint16_t index=0;
-			pFilename = "NyxOutput.csv";  // Set Filename
-			//
-			// Open file for writing at pPath and write pMessage into it
-			// then close file.
-			//
-			fid = fopen(pFilename, "w+");
-			//fwrite(pMessage, sizeof(char), strlen(pMessage), fid);
-			fprintf(fid, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n","Ki","index","time", "adcBuffer_0", "adcBuffer_1", "Sig_Ia_m", "Sig_Ib_m","Sig_Va_m","Sig_Vb_m","Sig_Valpha_m","Sig_Vbeta_m"
-					  ,"Sig_Vgamma_m","Sig_Vqsatu_m","Sig_Vdsatu_m","Sig_qAxis_m","Sig_dAxis_m","Sig_dAxis_PI_out","Sig_qAxis_PI_out","Sig_theta_el_m","Q_Integ","D_Integ","adcCalV0","adcCalV1","Duty","FallingEdg","RisingEdg");
-
-			for(int k=dbg_obj.k+1; k<=(MAX_DBG_BUFFERSIZE-1); k++) {
-				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
-				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],autoCalADCVal[0],autoCalADCVal[1],dbg_obj.dbgDuty[k],dbg_obj.dbgICValueFalling[k],dbg_obj.dbgICValueRising[k]);
-				  time+=0.0002;
-			  }
-
-			for(int k=0;k<=dbg_obj.k; k++) {
-			  				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgSig_Valpha_m[k],dbg_obj.dbgSig_Vbeta_m[k]
-			  				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],0,0,dbg_obj.dbgDuty[k],dbg_obj.dbgICValueFalling[k],dbg_obj.dbgICValueRising[k]);
-			  	  time+=0.0002;
-			  }
-
-			fclose(fid);
-
-			while(1) { /* Trap software after logging data */ }
-
-		}
-
-#endif
+	  	if(adcBuffer[1]<700) {
+	  		writeInFile();
+	  	}
 
 	  	clocksNeededOfMAtlabFunc = stop - start;
 	  	countInteruptsinOut--;
@@ -409,11 +377,17 @@ void testTask500msFunc(void *argument)
   const portTickType xDelay = 500 / portTICK_RATE_MS;
   // Initialise the xLastWakeTime variable with the current time.
   xLastWakeTime = xTaskGetTickCount ();
-
+  CalcSpinSpeednDir_initialize();
+  static uint8_t OneSecCnt=0;
 
   /* Infinite loop */
   for(;;)
   {
+	  if (OneSecCnt==1) { //1 sec period
+		  CalcSpinSpeednDir_step();
+	  }
+	  OneSecCnt++;
+	  if(OneSecCnt>1) {OneSecCnt = 0; }
 	  //uint16_t intermediateVar[2]={0,0};
 	  //MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
 	  //HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET); //INLB connected
@@ -444,7 +418,48 @@ void testTask500msFunc(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+#ifdef SEMIHOSTING // Log data in file
+void writeInFile(void) {
+		/*2500 old*/
 
+			qSoll=0;
+			set_PWM_A_DT(250U);
+			set_PWM_B_DT(250U);
+			set_PWM_C_DT(250U);
+
+			FILE *fid;
+			char* pFilename;
+			float time = 0.0f;
+			uint16_t index=0;
+			pFilename = "NyxOutput_negativeTorque.csv";  // Set Filename
+			//
+			// Open file for writing at pPath and write pMessage into it
+			// then close file.
+			//
+			fid = fopen(pFilename, "w+");
+			//fwrite(pMessage, sizeof(char), strlen(pMessage), fid);
+			fprintf(fid, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n","Ki","index","time", "adcBuffer_0", "adcBuffer_1", "Sig_Ia_m", "Sig_Ib_m","Sig_Va_m","Sig_Vb_m","Rising","Falling"
+					  ,"Sig_Vgamma_m","Sig_Vqsatu_m","Sig_Vdsatu_m","Sig_qAxis_m","Sig_dAxis_m","Sig_dAxis_PI_out","Sig_qAxis_PI_out","Sig_theta_el_m","Q_Integ","D_Integ","adcCalV0","adcCalV1","Duty","PWM_A","PWM_B","PWM_C");
+
+			for(int k=dbg_obj.k+1; k<=(MAX_DBG_BUFFERSIZE-1); k++) {
+				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgICValueRising[k],dbg_obj.dbgICValueFalling[k]
+				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],autoCalADCVal[0],autoCalADCVal[1],dbg_obj.dbgDuty[k],dbg_obj.dbgPWM_A[k],dbg_obj.dbgPWM_B[k],dbg_obj.dbgPWM_C[k]);
+				  time+=0.0002;
+			  }
+
+			for(int k=0;k<=dbg_obj.k; k++) {
+			  				  fprintf(fid, "%i,%i,%f,%i,%i,%f,%f,%f,%f,%i,%i,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%i,%i,%i,%i,%i,%i\n",k,index++,time, dbg_obj.dbgadcBuffer_0[k], dbg_obj.dbgadcBuffer_1[k], dbg_obj.dbgSig_Ia_m[k], dbg_obj.dbgSig_Ib_m[k],dbg_obj.dbgSig_Va_m[k],dbg_obj.dbgSig_Vb_m[k],dbg_obj.dbgICValueRising[k],dbg_obj.dbgICValueFalling[k]
+			  				  					  ,dbg_obj.dbgSig_Vgamma_m[k],dbg_obj.dbgSig_Vqsatu_m[k],dbg_obj.dbgSig_Vdsatu_m[k],dbg_obj.dbgSig_qAxis_m[k],dbg_obj.dbgSig_dAxis_m[k],dbg_obj.dbgSig_dAxis_PI_out[k],dbg_obj.dbgSig_qAxis_PI_out[k],dbg_obj.dbgSig_theta_el_m[k],dbg_obj.dbgPI_q_Integrator[k],dbg_obj.dbgPI_d_Integrator[k],0,0,dbg_obj.dbgDuty[k],dbg_obj.dbgPWM_A[k],dbg_obj.dbgPWM_B[k],dbg_obj.dbgPWM_C[k]);
+			  	  time+=0.0002;
+			  }
+
+			fclose(fid);
+
+			while(1) { /* Trap software after logging data */ }
+
+
+}
+#endif
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

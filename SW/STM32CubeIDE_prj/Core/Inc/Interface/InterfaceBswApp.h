@@ -13,6 +13,7 @@
 void set_PWM_A_DT(uint16_t a);
 void set_PWM_B_DT(uint16_t a);
 void set_PWM_C_DT(uint16_t a);
+void writeInFile(void);
 
 #define  ARM_CM_DEMCR      (*(uint32_t *)0xE000EDFC)
 
@@ -31,10 +32,14 @@ extern volatile uint32_t *DebugCntr;
 extern uint16_t adcBuffer[3];
 extern uint16_t DmaBuffer[3];
 extern int16_t autoCalADCVal[2];
-
+extern volatile uint16_t PWMdbg[3];
 extern uint32_t pwm_set_a_m;
 extern uint32_t pwm_set_b_m;
 extern uint32_t pwm_set_c_m;
+
+extern uint8_t hasTimer8Overflowed;
+extern uint8_t hasMathOverflowed_PWMin;
+extern uint8_t NoSignal_PWMin;
 
 extern volatile uint8_t NfaultState;
 extern volatile uint8_t NfaultStateRunningCnt;
@@ -43,8 +48,15 @@ extern volatile uint16_t faultRegister2Value;
 extern volatile uint16_t DRVConRegisterValue;
 extern volatile uint16_t Duty;
 
+/* Model entry point functions */
+extern void CalcSpinSpeednDir_initialize(void);
+extern void CalcSpinSpeednDir_step(void);
+extern void CalcSpinSpeednDir_terminate(void);
+
 volatile uint16_t ICValueFalling;
 volatile uint16_t ICValueRising;
+
+extern uint8_t Sig_qSollIsNegative;
 
 extern uint8_t countInteruptsinOut;
 extern uint8_t StepFunctionisStillRunning;
@@ -114,6 +126,9 @@ struct CPU_clocks {
 		uint16_t dbgadcBuffer_1[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgICValueFalling[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgICValueRising[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgPWM_A[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgPWM_B[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgPWM_C[MAX_DBG_BUFFERSIZE];
 		uint16_t k;
 	};
 

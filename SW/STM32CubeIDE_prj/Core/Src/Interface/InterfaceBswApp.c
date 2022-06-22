@@ -38,7 +38,11 @@ volatile uint16_t DRVConRegisterValue=0;
 volatile struct CPU_clocks CPU_clocks_ins;
 volatile struct Debug_signals dbg_obj;
 volatile uint32_t *DebugCntr;
+volatile uint16_t PWMdbg[3];
 
+uint8_t hasTimer8Overflowed;
+uint8_t hasMathOverflowed_PWMin;
+uint8_t NoSignal_PWMin;
 
 void set_PWM_A_DT(uint16_t a){
 
@@ -49,7 +53,19 @@ void set_PWM_A_DT(uint16_t a){
 		pwm_set_a_m = (uint32_t)a;
 	}
 
-	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,pwm_set_a_m);
+	/* Check if torque is negative to change direction. */
+	if (Sig_qSollIsNegative==5) {
+
+		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)pwm_set_a_m);
+
+	}
+
+	else {
+
+		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)pwm_set_a_m);
+	}
+
+	PWMdbg[1] = pwm_set_a_m;
 
 }
 void set_PWM_B_DT(uint16_t a){
@@ -60,10 +76,19 @@ void set_PWM_B_DT(uint16_t a){
 	else {
 	pwm_set_b_m = (uint32_t)a;
 		}
+	/* Check if torque is negative to change direction. */
+	if (Sig_qSollIsNegative==5) {
 
+		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)pwm_set_b_m);
 
-	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)pwm_set_b_m);
+	}
+	else {
 
+	   __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)pwm_set_b_m);
+
+	}
+
+	PWMdbg[2] = pwm_set_b_m;
 }
 void set_PWM_C_DT(uint16_t a){
 
@@ -76,6 +101,8 @@ void set_PWM_C_DT(uint16_t a){
 
 
 	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint32_t)pwm_set_c_m);
+
+	PWMdbg[0] = pwm_set_c_m;
 
 }
 
@@ -91,6 +118,7 @@ void emergency_disable_hardware(uint8_t in){
 		if(debounce_count>6) {
 		  __disable_irq();
 		  HAL_GPIO_WritePin(DRV_ENABLE_GPIO_Port,DRV_ENABLE_Pin, GPIO_PIN_RESET);
+		  //writeInFile();
 		  while(1) {
 
 		           }
