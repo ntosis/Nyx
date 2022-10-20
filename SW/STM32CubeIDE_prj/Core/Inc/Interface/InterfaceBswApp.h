@@ -23,13 +23,14 @@ void writeInFile(void);
 
 #define SEMIHOSTING     //Enable Semihostig Functions
 #define EXTENDED_DEBUG  //Enable DAC Debugging and data logging
-
+extern float Iabc[3];
+extern char Flags[2];
 uint32_t rCpuClocks(void);
 void emergency_disable_hardware(uint8_t in);
 
 extern int16_t qSoll;
 extern volatile uint32_t *DebugCntr;
-extern uint16_t adcBuffer[3];
+extern volatile uint16_t adcBuffer[3];
 extern uint16_t DmaBuffer[3];
 extern int16_t autoCalADCVal[2];
 extern volatile uint16_t PWMdbg[3];
@@ -47,7 +48,7 @@ extern volatile uint16_t faultRegister1Value;
 extern volatile uint16_t faultRegister2Value;
 extern volatile uint16_t DRVConRegisterValue;
 extern volatile uint16_t Duty;
-
+extern uint32_t countWrongSignals;
 /* Model entry point functions */
 extern void CalcSpinSpeednDir_initialize(void);
 extern void CalcSpinSpeednDir_step(void);
@@ -85,7 +86,13 @@ extern float Sig_dAxis_errorSum_m;  /* '<S6>/Add' */
 extern float Sig_qAxis_errorSum_m;  /* '<S6>/Add1' */
 extern float PI_q_Integrator;
 extern float PI_d_Integrator;
-
+extern int16_t d_q_Voltage_Limiter_sat_neg;
+extern int16_t d_q_Voltage_Limiter_sat_pos;
+extern char Flags[2];
+extern uint16_t Kp_qAxis;
+extern uint16_t Kp_dAxis;
+extern uint16_t Ki_qAxis;
+extern uint16_t Ki_dAxis;
 struct CPU_clocks {
   uint32_t StepFunctionClocks;
   uint32_t FluxObserverClocks;
@@ -121,14 +128,20 @@ struct CPU_clocks {
 		float dbgSig_qAxis_PI_out[MAX_DBG_BUFFERSIZE];
 		float dbgPI_d_Integrator[MAX_DBG_BUFFERSIZE];
 		float dbgPI_q_Integrator[MAX_DBG_BUFFERSIZE];
+		char dbgFlag_0[MAX_DBG_BUFFERSIZE];
+		char dbgFlag_1[MAX_DBG_BUFFERSIZE];
+		float dbgSig_Ic[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgDuty[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgadcBuffer_0[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgadcBuffer_1[MAX_DBG_BUFFERSIZE];
-		uint16_t dbgICValueFalling[MAX_DBG_BUFFERSIZE];
-		uint16_t dbgICValueRising[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgKpq[MAX_DBG_BUFFERSIZE];
+		uint16_t dbgKpd[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgPWM_A[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgPWM_B[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgPWM_C[MAX_DBG_BUFFERSIZE];
+		int16_t  dbgQSoll[MAX_DBG_BUFFERSIZE];
+		int16_t  dbgKiq[MAX_DBG_BUFFERSIZE];
+		int16_t  dbgKid[MAX_DBG_BUFFERSIZE];
 		uint16_t k;
 	};
 
@@ -160,5 +173,8 @@ struct CPU_clocks {
 #endif
 
 extern volatile struct CPU_clocks CPU_clocks_ins;
+#ifdef EXTENDED_DEBUG
 extern volatile struct Debug_signals dbg_obj;
+#endif
+
 #endif /* INC_INTERFACE_INTERFACEBSWAPP_H_ */

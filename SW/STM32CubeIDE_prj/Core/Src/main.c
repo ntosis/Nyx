@@ -67,12 +67,13 @@ void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
-uint16_t adcBuffer[3]; // Buffer for store the results of the ADC conversion
+volatile uint16_t adcBuffer[3]; // Buffer for store the results of the ADC conversion
 int16_t autoCalADCVal[2];
 volatile uint16_t Duty;
 uint32_t PWMICTimerSpeed;
 volatile uint8_t switch_dca_input=0;
 RCC_ClkInitTypeDef ClockInfos;
+uint8_t zero=0;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -124,6 +125,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   SET_BIT(htim8.Instance->CR1,TIM_CR1_URS); //Set timer overflow as interrupt source.
   MotorControlLib_initialize();
+  ConvertPWMtoAngle(&zero);
   //PWMICTimerSpeed = CalculateTimerSpeedForPWMInput(&htim8); /* Todo check the correct clock to be used for pwm IC*/
 #ifdef SEMIHOSTING
   initialise_monitor_handles(); /* Semihosting specific*/
@@ -214,7 +216,10 @@ static void MX_NVIC_Init(void)
 	 if (htim->Instance == TIM8) {
 
 		 static uint8_t isTheFirstRisingEdgeAfterReset=1U;
-		 static uint32_t res=0U;
+		 float resDiv=0.0f;
+		 uint16_t Dutytmp;
+
+		 Dutytmp = Duty; //store old value for more security.
 
 		 if ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)&(isTheFirstRisingEdgeAfterReset))  //rising edge after reset
 		 	 {
@@ -230,47 +235,73 @@ static void MX_NVIC_Init(void)
 			ICValueRising = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); //measures all the pulse time on + off,add on for the first clock
 			ICValueFalling = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); //check if it is the first read
 
-			/* eq : Duty = ((ICValueRising - ICValueFalling) * 100)/4096;
-			 * uint32 is a long integer in this configuration. */
-			if (__builtin_usubl_overflow(ICValueRising,ICValueFalling,&res))  {
-				// overflowed
-				Duty = 0U;
+			if(ICValueRising < ICValueFalling) {
+
+				// pwm input is not valid, set a pulse to see it in logic analyser.
+			  	HAL_GPIO_WritePin(TestINT_GPIO_Port, TestINT_Pin,GPIO_PIN_SET);
+				Duty = Dutytmp; //use the old value
 				hasMathOverflowed_PWMin = 1U;
+				countWrongSignals++;
+				for (int i=0;i<50;i++){
+					asm("nop");
+				}
+				HAL_GPIO_WritePin(TestINT_GPIO_Port, TestINT_Pin,GPIO_PIN_RESET);
+				return;
 			}
 			else {
-			/*if (__builtin_umull_overflow(res,100,&res)) {
-			    // overflowed
-			    Duty = 0;
-			    hasMathOverflowed_PWMin = 1;
-			}*/
+			//signal is valid
 
-			Duty = (uint16_t)res; // res/4096;
+				if(ICValueRising != 0) {
+				//avoid divion with zero
+				   resDiv = ((float)ICValueFalling)/((float)ICValueRising);
+				   Duty = (uint16_t)(resDiv * 4096.0f);
+
+				}
+				else {
+					// division with zero could occurred
+
+					hasMathOverflowed_PWMin = 1U;
+					Duty = Dutytmp; //use the old value
+					return;
+				}
+
 			}
+
 		}
 
-		else if ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)&(!(isTheFirstRisingEdgeAfterReset))) { // falling edge
-
-			ICValueRising = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); //measures all the pulse time on + off,add on for the first clock
+		else if ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)&(!(isTheFirstRisingEdgeAfterReset))) {// falling edge
+			/* ICValueRising = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); //measures all the pulse time on + off,add on for the first clock
 			ICValueFalling = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); //check if it is the first read
 
-			/* eq : Duty = ((ICValueRising - ICValueFalling) * 100)/4096;
-			* uint32 is a long integer in this configuration. */
-			if (__builtin_usubl_overflow(ICValueRising,ICValueFalling,&res))  {
+			 eq : Duty = ((ICValueRising - ICValueFalling) * 100)/4096;
+			* uint32 is a long integer in this configuration.
+			if (__builtin_usubl_overflow(ICValueRising,ICValueFalling,&resSub))  {
 			    // overflowed
 			    Duty = 0;
 			    hasMathOverflowed_PWMin = 1;
 			}
 			else {
-			/*if (__builtin_umull_overflow(res,100,&res)) {
-			    // overflowed
-			    Duty = 0;
-			    hasMathOverflowed_PWMin = 1;
-			}*/
 
-			Duty = (uint16_t)res; //res/4096;
+				if (__builtin_umull_overflow(resSub,4096,&resMul)) {
+					// overflowed
+					Duty = 0;
+					hasMathOverflowed_PWMin = 1;
+				}
+				else {
+					// if we reach this, we have the correct result.
+					Duty = (uint16_t)(resMul/ICValueRising);
+				}
+
 			}
-		}
-
+		*/}
+		 // trap, should never occur
+		 if(Duty>4096) {
+			 qSoll=0;
+			 set_PWM_A_DT(250U);
+			 set_PWM_B_DT(250U);
+			 set_PWM_C_DT(250U);
+			 while(1){}
+		 }
 	 }
 	 else { // not TIM8
 
@@ -307,6 +338,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if(htim->Instance==TIM8) {
 
 	  static uint32_t res=0U;
+	  float resDiv=0.0f;
 
 	  if (hasTimer8Overflowed < UINT8_MAX) {
 		    hasTimer8Overflowed ++;
@@ -326,7 +358,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		}
 		else {
 
-			Duty = (uint16_t)res; //res/4096;
+			if(ICValueRising != 0) {
+				//avoid divion with zero
+				resDiv = ((float)ICValueFalling)/((float)ICValueRising);
+				Duty = (uint16_t)(resDiv * 4096.0f);
+			}
+			else {
+				//do nothing
+			}
 		}
 
 		if (hasTimer8Overflowed > 10) { // too many overflows, signal is not present.
