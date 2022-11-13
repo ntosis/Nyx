@@ -31,7 +31,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-
+#include "MotorControlLib.h"
+#include "MotorControlLib_types.h"
 #include "InterfaceBswApp.h"
 #include "limits.h"
 /* USER CODE END Includes */
@@ -119,13 +120,16 @@ int main(void)
   MX_DAC_Init();
   MX_TIM4_Init();
   MX_SPI2_Init();
+  MX_TIM5_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
   SET_BIT(htim8.Instance->CR1,TIM_CR1_URS); //Set timer overflow as interrupt source.
+  SET_BIT(htim5.Instance->CR1,TIM_CR1_URS); //Set timer overflow as interrupt source.
+  SET_BIT(htim5.Instance->DIER,TIM_DIER_UIE); //Enable interrupt.
   MotorControlLib_initialize();
-  ConvertPWMtoAngle(&zero);
+  //ConvertPWMtoAngle(&zero);
   //PWMICTimerSpeed = CalculateTimerSpeedForPWMInput(&htim8); /* Todo check the correct clock to be used for pwm IC*/
 #ifdef SEMIHOSTING
   initialise_monitor_handles(); /* Semihosting specific*/
@@ -207,6 +211,9 @@ static void MX_NVIC_Init(void)
   /* TIM8_CC_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(TIM8_CC_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
+  /* TIM5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(TIM5_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(TIM5_IRQn);
 }
 
 /* USER CODE BEGIN 4 */
@@ -237,15 +244,11 @@ static void MX_NVIC_Init(void)
 
 			if(ICValueRising < ICValueFalling) {
 
-				// pwm input is not valid, set a pulse to see it in logic analyser.
-			  	HAL_GPIO_WritePin(TestINT_GPIO_Port, TestINT_Pin,GPIO_PIN_SET);
+				// pwm input is not valid
 				Duty = Dutytmp; //use the old value
 				hasMathOverflowed_PWMin = 1U;
 				countWrongSignals++;
-				for (int i=0;i<50;i++){
-					asm("nop");
-				}
-				HAL_GPIO_WritePin(TestINT_GPIO_Port, TestINT_Pin,GPIO_PIN_RESET);
+
 				return;
 			}
 			else {
@@ -255,7 +258,7 @@ static void MX_NVIC_Init(void)
 				//avoid divion with zero
 				   resDiv = ((float)ICValueFalling)/((float)ICValueRising);
 				   Duty = (uint16_t)(resDiv * 4096.0f);
-
+				   hasPWMSignalbeenread = 1;
 				}
 				else {
 					// division with zero could occurred
@@ -322,7 +325,27 @@ static void MX_NVIC_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
+	if(htim->Instance==TIM5)
+	  {
+		static char firstCall=0; /* After Reset the uC calls the routine without reason TODO */
+		if(firstCall!=0) {
+			/* this is the interrupt routine when the timer 5 overflows in encoder mode. TIM5 is the sensor for the motor rotation   */
+			if (EncoderCounterHasOverflowed==1) {
+				/* set error, this is not normal */
+				EncoderCounterHasOverflowedErrorFlag = 1;
+			}
+			else {
+				/* the timer has overflowed */
+				EncoderCounterHasOverflowed = 1;
+			}
+		}
+		else if (firstCall==0){
+			/* skip first call after reset */
+			firstCall=1;
+		}
 
+		//__HAL_TIM_GET_COUNTER
+	  }
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM1) {
     HAL_IncTick();
@@ -330,9 +353,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 1 */
   if(htim->Instance==TIM3)
   {
+	  	  if(hasPWMSignalbeenread==1) {  /*Start the FOC code when the PWM input interrupt has been called first */
+
 	  	  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	  	  vTaskNotifyGiveFromISR(ComputationINTHandle,&xHigherPriorityTaskWoken);
 	  	  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+
+	  	  }
   }
 
   if(htim->Instance==TIM8) {
@@ -344,37 +371,42 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		    hasTimer8Overflowed ++;
 	  }
 
-		ICValueRising = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); //measures all the pulse time on + off,add on for the first clock
-		ICValueFalling = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); //check if it is the first read
+	  if (hasTimer8Overflowed > 10) { // too many overflows, signal is not present.
+			Duty = 0;
+			NoSignal_PWMin = 1;
+			return;
+	  }
+	  else if(hasTimer8Overflowed < 10) {
+			NoSignal_PWMin = 0;
+	  }
 
-		/* eq : Duty = ((ICValueRising - ICValueFalling) * 100)/4096;
-		* uint32 is a long integer in this configuration. */
-		if (__builtin_usubl_overflow(ICValueRising,ICValueFalling,&res))  {
+	  ICValueRising = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); //measures all the pulse time on + off,add on for the first clock
+	  ICValueFalling = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); //check if it is the first read
+
+	  /* eq : Duty = ((ICValueRising - ICValueFalling) * 100)/4096;
+	  * uint32 is a long integer in this configuration. */
+	  if (__builtin_usubl_overflow(ICValueRising,ICValueFalling,&res))  {
 			// overflowed
 
-			Duty = 0;
+		Duty = 0;
 
-			hasMathOverflowed_PWMin = 1;
-		}
-		else {
+		hasMathOverflowed_PWMin = 1;
+
+	  }
+	  else {
 
 			if(ICValueRising != 0) {
 				//avoid divion with zero
 				resDiv = ((float)ICValueFalling)/((float)ICValueRising);
 				Duty = (uint16_t)(resDiv * 4096.0f);
+				hasPWMSignalbeenread = 1;
 			}
 			else {
 				//do nothing
 			}
 		}
 
-		if (hasTimer8Overflowed > 10) { // too many overflows, signal is not present.
-			Duty = 0;
-			NoSignal_PWMin = 1;
-		}
-		else if(hasTimer8Overflowed < 10) {
-			NoSignal_PWMin = 0;
-		}
+
 
   }
   /* USER CODE END Callback 1 */

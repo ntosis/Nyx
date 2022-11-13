@@ -13,6 +13,10 @@ uint32_t pwm_set_b_m=0;
 uint32_t pwm_set_c_m=0;
 uint8_t countInteruptsinOut=0;
 uint8_t StepFunctionisStillRunning=0;
+uint8_t EncoderCounterHasOverflowed=0;
+uint8_t EncoderCounterHasOverflowedErrorFlag=0;
+uint32_t EncoderCounter = 0;
+
 volatile uint32_t clocksNeededOfMAtlabFunc = 0;
 volatile uint32_t clocksNeededOfMAtlabFuncMAX = 0;
 volatile uint32_t clocksNeededOfMAtlabFuncMIN = UINT32_MAX;
@@ -42,10 +46,11 @@ volatile struct Debug_signals dbg_obj;
 volatile uint32_t *DebugCntr;
 volatile uint16_t PWMdbg[3];
 
-uint8_t hasTimer8Overflowed;
-uint8_t hasMathOverflowed_PWMin;
-uint8_t NoSignal_PWMin;
-uint32_t countWrongSignals;
+uint8_t hasTimer8Overflowed=0;
+uint8_t hasMathOverflowed_PWMin=0;
+uint8_t NoSignal_PWMin=0;
+uint32_t countWrongSignals=0;
+char hasPWMSignalbeenread=0;
 
 void set_PWM_A_DT(uint16_t a){
 
@@ -56,18 +61,9 @@ void set_PWM_A_DT(uint16_t a){
 		pwm_set_a_m = (uint32_t)a;
 	}
 
-	/* Check if torque is negative to change direction. */
-	if (Sig_qSollIsNegative==5) {
-
-		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)pwm_set_a_m);
-
-	}
-
-	else {
-
 		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)pwm_set_a_m);
 		//__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint32_t)pwm_set_a_m);
-	}
+
 
 	PWMdbg[1] = pwm_set_a_m;
 
@@ -80,18 +76,12 @@ void set_PWM_B_DT(uint16_t a){
 	else {
 		pwm_set_b_m = (uint32_t)a;
 		}
-	/* Check if torque is negative to change direction. */
-	if (Sig_qSollIsNegative==5) {
 
-		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)pwm_set_b_m);
-
-	}
-	else {
 
 	   __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)pwm_set_b_m);
 		//__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)pwm_set_b_m);
 
-	}
+
 
 	PWMdbg[2] = pwm_set_b_m;
 }
@@ -117,20 +107,15 @@ void emergency_disable_hardware(uint8_t in){
 	/*After critical error detaction you can call this function to disable all mosfet bridges.
 	 * For DRV8304 is enough to set the ENABLE pin to low and the device suspends all Mosfets.
 	*/
-	static char debounce_count=0;
-	
-	if (in) {
-	 debounce_count++;
-	 Flags[1]=debounce_count;
-		if(debounce_count>6) {
-		  __disable_irq();
-		  HAL_GPIO_WritePin(DRV_ENABLE_GPIO_Port,DRV_ENABLE_Pin, GPIO_PIN_RESET);
-		  writeInFile();
-		  while(1) {
 
-		           }
+	if (in) {
+	
+		__disable_irq();
+		HAL_GPIO_WritePin(DRV_ENABLE_GPIO_Port,DRV_ENABLE_Pin, GPIO_PIN_RESET);
+		writeInFile();
+		while(1) { }
+
 		    }
-	}
 }
 
 uint32_t rCpuClocks(void){
@@ -146,4 +131,23 @@ uint32_t rCpuClocks(void){
 		  	}*/
 
 	 return ARM_CM_DWT_CYCCNT;
+}
+
+void disablePWMInputTimer(void){
+
+	static char isDisabled=0;
+
+	if(qSoll!=0) {
+
+		HAL_NVIC_DisableIRQ(TIM8_CC_IRQn);
+		isDisabled=1;
+
+	}
+	else if((qSoll==0)&(isDisabled==1))
+	{
+		HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
+		isDisabled=0;
+
+	}
+
 }

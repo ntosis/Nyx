@@ -14,6 +14,7 @@ void set_PWM_A_DT(uint16_t a);
 void set_PWM_B_DT(uint16_t a);
 void set_PWM_C_DT(uint16_t a);
 void writeInFile(void);
+void disablePWMInputTimer(void);
 
 #define  ARM_CM_DEMCR      (*(uint32_t *)0xE000EDFC)
 
@@ -41,6 +42,7 @@ extern uint32_t pwm_set_c_m;
 extern uint8_t hasTimer8Overflowed;
 extern uint8_t hasMathOverflowed_PWMin;
 extern uint8_t NoSignal_PWMin;
+extern char hasPWMSignalbeenread;
 
 extern volatile uint8_t NfaultState;
 extern volatile uint8_t NfaultStateRunningCnt;
@@ -61,6 +63,10 @@ extern uint8_t Sig_qSollIsNegative;
 
 extern uint8_t countInteruptsinOut;
 extern uint8_t StepFunctionisStillRunning;
+extern uint8_t EncoderCounterHasOverflowed;
+extern uint8_t EncoderCounterHasOverflowedErrorFlag;
+extern uint32_t EncoderCounter;
+
 extern volatile uint32_t clocksNeededOfMAtlabFunc;
 extern volatile uint32_t clocksNeededOfMAtlabFuncMAX;
 extern volatile uint32_t clocksNeededOfMAtlabFuncMIN;
@@ -129,6 +135,7 @@ struct CPU_clocks {
 		float dbgPI_d_Integrator[MAX_DBG_BUFFERSIZE];
 		float dbgPI_q_Integrator[MAX_DBG_BUFFERSIZE];
 		char dbgFlag_0[MAX_DBG_BUFFERSIZE];
+		int16_t dbgqSoll[MAX_DBG_BUFFERSIZE];
 		char dbgFlag_1[MAX_DBG_BUFFERSIZE];
 		float dbgSig_Ic[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgDuty[MAX_DBG_BUFFERSIZE];
@@ -139,36 +146,12 @@ struct CPU_clocks {
 		uint16_t dbgPWM_A[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgPWM_B[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgPWM_C[MAX_DBG_BUFFERSIZE];
-		int16_t  dbgQSoll[MAX_DBG_BUFFERSIZE];
+		uint32_t  dbgEncoder[MAX_DBG_BUFFERSIZE];
 		int16_t  dbgKiq[MAX_DBG_BUFFERSIZE];
 		int16_t  dbgKid[MAX_DBG_BUFFERSIZE];
 		uint16_t k;
 	};
 
-
-  /* Forward declaration for rtModel */
-  typedef struct tag_RTM_MotorControlLib_T RT_MODEL_MotorControlLib_T;
-
-  /* Real-time Model Data Structure */
-  struct tag_RTM_MotorControlLib_T {
-  const char * volatile errorStatus;
-
-
-
-  /*
-   * Timing:
-   * The following substructure contains information regarding
-   * the timing information for the model.
-   */
-  struct {
-    struct {
-      uint32_t TID[3];
-    	} TaskCounters;
-  	  } Timing;
-  };
-
-  /* Real-time Model object */
-  extern RT_MODEL_MotorControlLib_T *const MotorControlLib_M;
 
 #endif
 

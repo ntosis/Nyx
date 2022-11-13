@@ -77,6 +77,10 @@ void Error_Handler(void);
 #define CAL_PIN_GPIO_Port GPIOC
 #define TestINT_Pin GPIO_PIN_1
 #define TestINT_GPIO_Port GPIOC
+#define Sensor_in1_Pin GPIO_PIN_0
+#define Sensor_in1_GPIO_Port GPIOA
+#define Sensor_in2_Pin GPIO_PIN_1
+#define Sensor_in2_GPIO_Port GPIOA
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
