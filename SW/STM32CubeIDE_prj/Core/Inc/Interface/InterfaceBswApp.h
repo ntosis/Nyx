@@ -32,7 +32,7 @@ void emergency_disable_hardware(uint8_t in);
 extern int16_t qSoll;
 extern volatile uint32_t *DebugCntr;
 extern volatile uint16_t adcBuffer[3];
-extern uint16_t DmaBuffer[3];
+extern volatile uint16_t DmaBuffer[3];
 extern int16_t autoCalADCVal[2];
 extern volatile uint16_t PWMdbg[3];
 extern uint32_t pwm_set_a_m;

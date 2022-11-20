@@ -69,6 +69,7 @@ void MX_FREERTOS_Init(void);
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 volatile uint16_t adcBuffer[3]; // Buffer for store the results of the ADC conversion
+volatile uint16_t DmaBuffer[3]; // Buffer for store the results of the ADC-DMA conversion
 int16_t autoCalADCVal[2];
 volatile uint16_t Duty;
 uint32_t PWMICTimerSpeed;
@@ -105,7 +106,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  //MX_DMA_Init();
+  MX_DMA_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -113,14 +114,15 @@ int main(void)
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
-  MX_TIM3_Init();
-  MX_DMA_Init();
+  //MX_DMA_Init();
   MX_TIM8_Init();
   MX_ADC2_Init();
   MX_DAC_Init();
-  MX_TIM4_Init();
   MX_SPI2_Init();
   MX_TIM5_Init();
+  MX_TIM10_Init();
+  MX_TIM1_Init();
+  MX_TIM4_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
@@ -205,9 +207,6 @@ void SystemClock_Config(void)
   */
 static void MX_NVIC_Init(void)
 {
-  /* TIM3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(TIM3_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(TIM3_IRQn);
   /* TIM8_CC_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(TIM8_CC_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
@@ -316,7 +315,7 @@ static void MX_NVIC_Init(void)
 
 /**
   * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM1 interrupt took place, inside
+  * @note   This function is called  when TIM6 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
   * a global variable "uwTick" used as application time base.
   * @param  htim : TIM handle
@@ -347,11 +346,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		//__HAL_TIM_GET_COUNTER
 	  }
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
+  if (htim->Instance == TIM6) {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-  if(htim->Instance==TIM3)
+  if(htim->Instance==TIM10)
   {
 	  	  if(hasPWMSignalbeenread==1) {  /*Start the FOC code when the PWM input interrupt has been called first */
 

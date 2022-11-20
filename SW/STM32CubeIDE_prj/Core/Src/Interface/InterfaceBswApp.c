@@ -61,7 +61,7 @@ void set_PWM_A_DT(uint16_t a){
 		pwm_set_a_m = (uint32_t)a;
 	}
 
-		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)pwm_set_a_m);
+		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint32_t)pwm_set_a_m);
 		//__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint32_t)pwm_set_a_m);
 
 
@@ -78,7 +78,7 @@ void set_PWM_B_DT(uint16_t a){
 		}
 
 
-	   __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)pwm_set_b_m);
+	   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint32_t)pwm_set_b_m);
 		//__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint32_t)pwm_set_b_m);
 
 

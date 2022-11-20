@@ -71,10 +71,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define CAL_PIN_Pin GPIO_PIN_0
-#define CAL_PIN_GPIO_Port GPIOC
+#define Blue_Button_Pin GPIO_PIN_13
+#define Blue_Button_GPIO_Port GPIOC
 #define TestINT_Pin GPIO_PIN_1
 #define TestINT_GPIO_Port GPIOC
 #define Sensor_in1_Pin GPIO_PIN_0
@@ -89,9 +87,13 @@ void Error_Handler(void);
 #define DRV_CS_GPIO_Port GPIOA
 #define DRV_ENABLE_Pin GPIO_PIN_7
 #define DRV_ENABLE_GPIO_Port GPIOA
+#define SOA_AI_Pin GPIO_PIN_0
+#define SOA_AI_GPIO_Port GPIOB
 #define SOB_AI_Pin GPIO_PIN_1
 #define SOB_AI_GPIO_Port GPIOB
-#define DRV_INLA_Pin GPIO_PIN_10
+#define UpSetBtn_Pin GPIO_PIN_9
+#define UpSetBtn_GPIO_Port GPIOC
+#define DRV_INLA_Pin GPIO_PIN_9
 #define DRV_INLA_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA

@@ -204,23 +204,29 @@ void ComputationINTfunc(void *argument)
 	HAL_TIM_IC_Start_IT(&htim8, TIM_CHANNEL_2);
     __HAL_TIM_ENABLE_IT(&htim8,TIM_IT_UPDATE);    // enable timer overflow int.
 
-	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
+    //Start PWM on CH1 and CH1N
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
+
+    //Start PWM on CH3 and CH3N
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3);
+
 	HAL_TIM_PWM_Start(&htim4,TIM_CHANNEL_1);
 
 
-	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,(uint16_t)250);
-	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint16_t)250);
+	__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)250);
+	__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)250);
 	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint16_t)250);
 
 
-	HAL_ADCEx_InjectedStart(&hadc1);
+	//HAL_ADCEx_InjectedStart(&hadc1);
 	HAL_ADCEx_InjectedStart(&hadc2);
-
+	HAL_ADC_Start_DMA(&hadc1,(uint32_t*) DmaBuffer, 1); // Start ADC in DMA mode and declare the buffer where store the results
 	/*  Start DRV8304 Calibration always after ADC is working and will be triggered! */
-
-	autoCalADCVal[1] = 2048 - HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
-	autoCalADCVal[0] = 2048 - HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1); //DMA measurment
+	HAL_Delay(5); //wait 5ms to start DMA from ADC1 value transfer
+	autoCalADCVal[1] = (int16_t)(2048 - DmaBuffer[0]);//HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+	autoCalADCVal[0] = (int16_t)(2048 - HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1)); //DMA measurment
 
 	/*  Stop DRV8304 Calibration */
 
@@ -228,8 +234,9 @@ void ComputationINTfunc(void *argument)
 	HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
 	HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
 
-	HAL_TIM_Base_Start_IT(&htim3);
 	HAL_TIM_Encoder_Start(&htim5,TIM_CHANNEL_ALL);
+	HAL_TIM_Base_Start_IT(&htim10);
+
 	//__HAL_TIM_ENABLE_IT(&htim8,TIM_IT_UPDATE);    // enable timer overflow int.
 
 	/* Infinite loop */
@@ -248,13 +255,14 @@ void ComputationINTfunc(void *argument)
 
 			  	  disablePWMInputTimer();
 				  adcBuffer[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-
-				  adcBuffer[1] = (int16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+				  HAL_ADC_Stop_DMA(&hadc1);
+				  adcBuffer[1] = DmaBuffer[0];// (int16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
 
 				  start = rCpuClocks();
 				  d_q_Voltage_Limiter_sat_neg = -1 * d_q_Voltage_Limiter_sat_pos;
 				  EncoderCounter = __HAL_TIM_GET_COUNTER(&htim5);
 				  MotorControlLib_step();
+				  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) DmaBuffer, 1);
 				  stop = rCpuClocks();
 
 #ifdef EXTENDED_DEBUG
@@ -385,17 +393,32 @@ void testTask500msFunc(void *argument)
 {
   /* USER CODE BEGIN testTask500msFunc */
   portTickType xLastWakeTime;
-  const portTickType xDelay = 500 / portTICK_RATE_MS;
+  const portTickType xDelay = 300 / portTICK_RATE_MS;
   // Initialise the xLastWakeTime variable with the current time.
   xLastWakeTime = xTaskGetTickCount ();
   CalcSpinSpeednDir_initialize();
   static uint8_t OneSecCnt=0;
+  static uint8_t ChangeKpiCircle=0;
   /* Infinite loop */
   for(;;)
   {
+	  if (!HAL_GPIO_ReadPin(GPIOC,Blue_Button_Pin)) {
+		  ChangeKpiCircle++;
+		  if(ChangeKpiCircle>3) { ChangeKpiCircle =0; }
+	  }
+
+	  if(!HAL_GPIO_ReadPin(GPIOC,UpSetBtn_Pin)) {
+		  switch (ChangeKpiCircle) {
+		  case 0: Kp_qAxis++; break;
+		  case 1: Kp_dAxis++; break;
+		  case 2: Ki_qAxis++; break;
+		  case 3: Ki_dAxis++; break;
+		  default: break;
+		  }
+	  }
 
 	  if (OneSecCnt==1) { //1 sec period
-		  CalcSpinSpeednDir_step();
+		  //CalcSpinSpeednDir_step();
 	  }
 	  OneSecCnt++;
 	  if(OneSecCnt>1) {OneSecCnt = 0; }
