@@ -21,7 +21,6 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
-#include "dac.h"
 #include "dma.h"
 #include "spi.h"
 #include "tim.h"
@@ -117,7 +116,6 @@ int main(void)
   //MX_DMA_Init();
   MX_TIM8_Init();
   MX_ADC2_Init();
-  MX_DAC_Init();
   MX_SPI2_Init();
   MX_TIM5_Init();
   MX_TIM10_Init();

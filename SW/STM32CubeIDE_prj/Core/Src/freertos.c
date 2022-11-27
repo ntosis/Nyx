@@ -31,7 +31,6 @@
 #include "adc.h"
 #include "InterfaceBswApp.h"
 #include "MotorControlLib.h"
-#include "dac.h"
 #include <stdio.h>
 /* USER CODE END Includes */
 
@@ -230,9 +229,6 @@ void ComputationINTfunc(void *argument)
 
 	/*  Stop DRV8304 Calibration */
 
-	/* Start DAC for Debugging */
-	HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-	HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
 
 	HAL_TIM_Encoder_Start(&htim5,TIM_CHANNEL_ALL);
 	HAL_TIM_Base_Start_IT(&htim10);
