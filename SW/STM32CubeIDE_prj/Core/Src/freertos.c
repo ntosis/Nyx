@@ -266,61 +266,7 @@ void ComputationINTfunc(void *argument)
 				  stop = rCpuClocks();
 
 #ifdef EXTENDED_DEBUG
-	      switch (switch_dca_input) {
-	          case 0:
-	        	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, adcBuffer[0]);
-	        	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, adcBuffer[1]);
-	          break;
-
-	          case 1:
-	        	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_Ia_m));
-	        	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(Sig_Ib_m));
-	          break;
-
-	          case 2:
-	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_Ia_m));
-	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(Sig_Ibeta_m));
-	          break;
-
-	          case 3:
-	          	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_dAxis_m));
-	          	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(Sig_qAxis_m));
-	          	          break;
-
-	          case 4:
-	          	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_Vqsatu_m));
-	          	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(Sig_Vdsatu_m));
-	          	          break;
-
-	          case 5:
-	         	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_Va_m));
-	         	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(Sig_Vb_m));
-	         	          break;
-	          case 6:
-	         	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_Valpha_m));
-	         	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(Sig_Vbeta_m));
-	         	          break;
-	          case 7:
-	          	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_cos_m));
-	          	           	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(Sig_sin_m));
-	          	          break;
-	          case 8:
-	          	          	 HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_dAxis_m));
-	          	          	 HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(Sig_Iq_Soll));
-	          	          break;
-
-	          case 9:      	 HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, linear_equation(Sig_qAxis_m));
-	          	           	 HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, linear_equation(0));
-	          	          break;
-
-	          default:
-	               break;
-	      }
-#endif
-
-
-#ifdef EXTENDED_DEBUG
-	  if (MotorControlLib_M->Timing.TaskCounters.TID[2] == 0) {
+	  if ((MotorControlLib_M->Timing.TaskCounters.TID[2] == 0)&&(qSoll!=0)&&(dbg_obj.k<=(MAX_DBG_BUFFERSIZE-1))) {
 
 				if(dbg_obj.k>(MAX_DBG_BUFFERSIZE-1)) {
 
