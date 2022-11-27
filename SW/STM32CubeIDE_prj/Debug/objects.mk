@@ -5,5 +5,5 @@
 
 USER_OBJS :=
 
-LIBS := -lappSimulink
+LIBS := -lappSimulink -lrdimon
 

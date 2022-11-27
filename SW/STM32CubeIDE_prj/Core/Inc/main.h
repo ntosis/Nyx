@@ -71,12 +71,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define CAL_PIN_Pin GPIO_PIN_0
-#define CAL_PIN_GPIO_Port GPIOC
+#define Blue_Button_Pin GPIO_PIN_13
+#define Blue_Button_GPIO_Port GPIOC
 #define TestINT_Pin GPIO_PIN_1
 #define TestINT_GPIO_Port GPIOC
+#define Sensor_in1_Pin GPIO_PIN_0
+#define Sensor_in1_GPIO_Port GPIOA
+#define Sensor_in2_Pin GPIO_PIN_1
+#define Sensor_in2_GPIO_Port GPIOA
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
@@ -85,9 +87,13 @@ void Error_Handler(void);
 #define DRV_CS_GPIO_Port GPIOA
 #define DRV_ENABLE_Pin GPIO_PIN_7
 #define DRV_ENABLE_GPIO_Port GPIOA
+#define SOA_AI_Pin GPIO_PIN_0
+#define SOA_AI_GPIO_Port GPIOB
 #define SOB_AI_Pin GPIO_PIN_1
 #define SOB_AI_GPIO_Port GPIOB
-#define DRV_INLA_Pin GPIO_PIN_10
+#define UpSetBtn_Pin GPIO_PIN_9
+#define UpSetBtn_GPIO_Port GPIOC
+#define DRV_INLA_Pin GPIO_PIN_9
 #define DRV_INLA_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
@@ -97,6 +103,8 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 #define DRV_INLC_Pin GPIO_PIN_5
 #define DRV_INLC_GPIO_Port GPIOB
+#define PWM_INHC_Pin GPIO_PIN_6
+#define PWM_INHC_GPIO_Port GPIOB
 #define DRV_INLB_Pin GPIO_PIN_7
 #define DRV_INLB_GPIO_Port GPIOB
 #define PWM_INHA_Pin GPIO_PIN_8

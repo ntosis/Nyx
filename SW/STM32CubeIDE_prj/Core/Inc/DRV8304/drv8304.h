@@ -523,7 +523,7 @@ const uint8_t DRV_Commutation_Vector[8][4] ;
 
 const uint8_t GPIO_bit_Commutation_Vector[8][2];
 
-extern uint16_t adcBuffer[3];
+extern volatile uint16_t adcBuffer[3];
 
 void MX_DRV8304_Init(void);
 DRVErrorStatus LL_DRV8304_Init(DRV8304_HandleTypeDef *hdrv8304);

@@ -582,14 +582,6 @@ uint32_t HAL_ADCEx_InjectedGetValue(ADC_HandleTypeDef* hadc, uint32_t InjectedRa
     default:
     break;  
   }
-  if(tmp>4096) {
-  	   	   __disable_irq();
-  	   		//Configure GPIO pin Output Level
-  	   		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7, GPIO_PIN_RESET);
-  	   	   while(1) {
-  	   		   asm("nop");
-  	   	   }
-  	      }
   return tmp;
 }
 
