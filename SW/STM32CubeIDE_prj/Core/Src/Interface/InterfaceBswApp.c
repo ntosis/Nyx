@@ -55,26 +55,26 @@ char hasPWMSignalbeenread=0;
 void set_PWM_A_DT(uint16_t a){
 
 	if(qSoll==0) {
-		pwm_set_a_m = 250u;
+		pwm_set_a_m = 250U;
 	}
 	else {
-		pwm_set_a_m = (uint32_t)a;
+		pwm_set_a_m = (uint32_t)500U - (uint32_t)a;
 	}
 
 		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint32_t)pwm_set_a_m);
 		//__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint32_t)pwm_set_a_m);
 
 
-	PWMdbg[1] = pwm_set_a_m;
+	PWMdbg[0] = pwm_set_a_m;
 
 }
 void set_PWM_B_DT(uint16_t a){
 
 	if(qSoll==0) {
-		pwm_set_b_m = 250u;
+		pwm_set_b_m = 250U;
 	}
 	else {
-		pwm_set_b_m = (uint32_t)a;
+		pwm_set_b_m = (uint32_t)500U - (uint32_t)a;;
 		}
 
 
@@ -83,28 +83,28 @@ void set_PWM_B_DT(uint16_t a){
 
 
 
-	PWMdbg[2] = pwm_set_b_m;
+	PWMdbg[1] = pwm_set_b_m;
 }
 void set_PWM_C_DT(uint16_t a){
 
 	if(qSoll==0) {
-		pwm_set_c_m = 250u;
+		pwm_set_c_m = 250U;
 	}
 	else {
-		pwm_set_c_m = (uint32_t)a;
+		pwm_set_c_m = (uint32_t)500U - (uint32_t)a;;
 		}
 
 
 	__HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_1,(uint32_t)pwm_set_c_m);
 	//__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,(uint32_t)pwm_set_c_m);
 
-	PWMdbg[0] = pwm_set_c_m;
+	PWMdbg[2] = pwm_set_c_m;
 
 }
 
 void emergency_disable_hardware(uint8_t in){
 
-	/*After critical error detaction you can call this function to disable all mosfet bridges.
+	/*After critical error detection you can call this function to disable all mosfet bridges.
 	 * For DRV8304 is enough to set the ENABLE pin to low and the device suspends all Mosfets.
 	*/
 

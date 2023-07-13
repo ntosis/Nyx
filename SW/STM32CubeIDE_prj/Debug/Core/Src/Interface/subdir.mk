@@ -5,13 +5,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Core/Src/Interface/InterfaceBswApp.c 
+../Core/Src/Interface/InterfaceBswApp.c \
+../Core/Src/Interface/convertSingleTo12bit.c \
+../Core/Src/Interface/convertSingleTo12bit_data.c 
 
 OBJS += \
-./Core/Src/Interface/InterfaceBswApp.o 
+./Core/Src/Interface/InterfaceBswApp.o \
+./Core/Src/Interface/convertSingleTo12bit.o \
+./Core/Src/Interface/convertSingleTo12bit_data.o 
 
 C_DEPS += \
-./Core/Src/Interface/InterfaceBswApp.d 
+./Core/Src/Interface/InterfaceBswApp.d \
+./Core/Src/Interface/convertSingleTo12bit.d \
+./Core/Src/Interface/convertSingleTo12bit_data.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

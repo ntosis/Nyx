@@ -30,6 +30,7 @@ uint32_t rCpuClocks(void);
 void emergency_disable_hardware(uint8_t in);
 
 extern int16_t qSoll;
+extern int16_t rpmSoll;
 extern volatile uint32_t *DebugCntr;
 extern volatile uint16_t adcBuffer[3];
 extern volatile uint16_t DmaBuffer[3];
@@ -95,9 +96,8 @@ extern float PI_d_Integrator;
 extern int16_t d_q_Voltage_Limiter_sat_neg;
 extern int16_t d_q_Voltage_Limiter_sat_pos;
 extern char Flags[2];
-extern uint16_t Kp_qAxis;
 extern uint16_t Kp_dAxis;
-extern uint16_t Ki_qAxis;
+
 extern uint16_t Ki_dAxis;
 struct CPU_clocks {
   uint32_t StepFunctionClocks;
@@ -121,8 +121,8 @@ struct CPU_clocks {
 		float dbgSig_theta_el_m[MAX_DBG_BUFFERSIZE];               /* '<Root>/Delay' */
 		float dbgSig_Ia_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/ADCRAwToCurrent(Iabc)' */
 		float dbgSig_Ib_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/ADCRAwToCurrent(Iabc)' */
-		float dbgSig_dAxis_m[MAX_DBG_BUFFERSIZE];                  /* '<Root>/Gain2' */
-		float dbgSig_qAxis_m[MAX_DBG_BUFFERSIZE];                  /* '<Root>/Gain3' */
+		float dbgSig_dAxis_error[MAX_DBG_BUFFERSIZE];                  /* '<Root>/Gain2' */
+		float dbgSig_qAxis_error[MAX_DBG_BUFFERSIZE];                  /* '<Root>/Gain3' */
 		float dbgSig_Vqsatu_m[MAX_DBG_BUFFERSIZE];                 /* '<Root>/DQ_Limiter' */
 		float dbgSig_Vdsatu_m[MAX_DBG_BUFFERSIZE];                 /* '<Root>/DQ_Limiter' */
 		float dbgSig_Va_m[MAX_DBG_BUFFERSIZE];                     /* '<Root>/Gain' */
@@ -137,7 +137,8 @@ struct CPU_clocks {
 		char dbgFlag_0[MAX_DBG_BUFFERSIZE];
 		int16_t dbgqSoll[MAX_DBG_BUFFERSIZE];
 		char dbgFlag_1[MAX_DBG_BUFFERSIZE];
-		float dbgSig_Ic[MAX_DBG_BUFFERSIZE];
+		float dbg_Id_axis_meas[MAX_DBG_BUFFERSIZE];
+		float dbg_Iq_axis_meas[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgDuty[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgadcBuffer_0[MAX_DBG_BUFFERSIZE];
 		uint16_t dbgadcBuffer_1[MAX_DBG_BUFFERSIZE];

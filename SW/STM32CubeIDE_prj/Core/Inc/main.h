@@ -87,10 +87,8 @@ void Error_Handler(void);
 #define DRV_CS_GPIO_Port GPIOA
 #define DRV_ENABLE_Pin GPIO_PIN_7
 #define DRV_ENABLE_GPIO_Port GPIOA
-#define SOA_AI_Pin GPIO_PIN_0
-#define SOA_AI_GPIO_Port GPIOB
-#define SOB_AI_Pin GPIO_PIN_1
-#define SOB_AI_GPIO_Port GPIOB
+#define SOB_AI_Pin GPIO_PIN_5
+#define SOB_AI_GPIO_Port GPIOC
 #define UpSetBtn_Pin GPIO_PIN_9
 #define UpSetBtn_GPIO_Port GPIOC
 #define DRV_INLA_Pin GPIO_PIN_9
@@ -107,10 +105,6 @@ void Error_Handler(void);
 #define PWM_INHC_GPIO_Port GPIOB
 #define DRV_INLB_Pin GPIO_PIN_7
 #define DRV_INLB_GPIO_Port GPIOB
-#define PWM_INHA_Pin GPIO_PIN_8
-#define PWM_INHA_GPIO_Port GPIOB
-#define PWM_INHB_Pin GPIO_PIN_9
-#define PWM_INHB_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

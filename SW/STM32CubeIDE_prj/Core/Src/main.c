@@ -21,7 +21,6 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
-#include "dma.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -105,22 +104,20 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  MX_DMA_Init();
+  //MX_DMA_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
-  MX_TIM2_Init();
-  //MX_DMA_Init();
   MX_TIM8_Init();
-  MX_ADC2_Init();
   MX_SPI2_Init();
   MX_TIM5_Init();
   MX_TIM10_Init();
   MX_TIM1_Init();
   MX_TIM4_Init();
+  MX_TIM2_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
@@ -350,7 +347,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 1 */
   if(htim->Instance==TIM10)
   {
-	  	  if(hasPWMSignalbeenread==1) {  /*Start the FOC code when the PWM input interrupt has been called first */
+	  	  if( 1/*hasPWMSignalbeenread==1 (Todo removed for testing)*/) {  /*Start the FOC code when the PWM input interrupt has been called first */
 
 	  	  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	  	  vTaskNotifyGiveFromISR(ComputationINTHandle,&xHigherPriorityTaskWoken);
