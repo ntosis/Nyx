@@ -54,7 +54,7 @@ char hasPWMSignalbeenread=0;
 
 void set_PWM_A_DT(uint16_t a){
 
-	if(qSoll==0) {
+	if(Sig_requestMotorBreak==0) {
 		pwm_set_a_m = 250U;
 	}
 	else {
@@ -70,7 +70,7 @@ void set_PWM_A_DT(uint16_t a){
 }
 void set_PWM_B_DT(uint16_t a){
 
-	if(qSoll==0) {
+	if(Sig_requestMotorBreak==0) {
 		pwm_set_b_m = 250U;
 	}
 	else {
@@ -87,7 +87,7 @@ void set_PWM_B_DT(uint16_t a){
 }
 void set_PWM_C_DT(uint16_t a){
 
-	if(qSoll==0) {
+	if(Sig_requestMotorBreak==0) {
 		pwm_set_c_m = 250U;
 	}
 	else {
