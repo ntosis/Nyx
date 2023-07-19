@@ -22,15 +22,15 @@ void disablePWMInputTimer(void);
 
 #define  ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004)
 
-#define SEMIHOSTING     //Enable Semihostig Functions
-#define EXTENDED_DEBUG  //Enable DAC Debugging and data logging
+//#define SEMIHOSTING     //Enable Semihostig Functions
+//#define EXTENDED_DEBUG  //Enable DAC Debugging and data logging
 extern float Iabc[3];
 extern char Flags[2];
 uint32_t rCpuClocks(void);
 void emergency_disable_hardware(uint8_t in);
 
 extern int16_t qSoll;
-extern int16_t rpmSoll;
+extern uint16_t rpmSoll;
 extern volatile uint32_t *DebugCntr;
 extern volatile uint16_t adcBuffer[3];
 extern volatile uint16_t DmaBuffer[3];

@@ -263,46 +263,47 @@ void ComputationINTfunc(void *argument)
 	for(;;)
 	  {
 		  volatile uint32_t start=0,stop=0;
+		  static uint8_t scheduler_200us=0; /* this variable will be incremented every ca. 50 us */
 		  /* Will be woken up by timer interrupt*/
 		  ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
 		  countInteruptsinOut++;
 
-		  if(StepFunctionisStillRunning==0) {
+		  if((StepFunctionisStillRunning==0)&(scheduler_200us==3)) {
 
+			  portDISABLE_INTERRUPTS(); //cmsis Code
+			  //HAL_GPIO_WritePin(TestINT_GPIO_Port, TestINT_Pin,GPIO_PIN_SET);
+			  StepFunctionisStillRunning = 1;
+			  /* Reset Scheduler*/
+			  scheduler_200us = 0;
+
+			  /* Debug Variables start */
 			  Q_P = (real32_T) Kp_qAxis * 0.00390625;
 			  Q_I = (real32_T) Ki_qAxis * 0.00390625;//2^-8
 			  D_P = (real32_T) Kp_dAxis * 0.00390625;
 			  D_I = (real32_T) Ki_dAxis * 0.00390625;//2^-8
 			  RPM_P = (real32_T) Kp_rpm * 0.00048828125;
 			  RPM_I = (real32_T) Ki_rpm * 0.00048828125;//2^-11
+			  /* Debug Variables end */
 
+			  disablePWMInputTimer();
+			  adcBuffer[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2);
+			  //HAL_ADC_Stop_DMA(&hadc1);
+			  adcBuffer[1] = (int16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
 
-			  portDISABLE_INTERRUPTS(); //cmsis Code
-			  //HAL_GPIO_WritePin(TestINT_GPIO_Port, TestINT_Pin,GPIO_PIN_SET);
-			  StepFunctionisStillRunning = 1;
-			  if(qSoll==1){
-			  Sig_qAxis_PI_out = sinf(test_angle)*GainTest; //1.0F;
-			  test_angle += AngleDVDT;
-			  }
-			  	  disablePWMInputTimer();
-				  adcBuffer[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2);
-				  //HAL_ADC_Stop_DMA(&hadc1);
-				  adcBuffer[1] = (int16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
-
-				  start = rCpuClocks();
-				  d_q_Voltage_Limiter_sat_neg = -1 * d_q_Voltage_Limiter_sat_pos;
-				  EncoderCounter = __HAL_TIM_GET_COUNTER(&htim5);
-				  MotorControlLib_step();
+			  start = rCpuClocks();
+			  d_q_Voltage_Limiter_sat_neg = -1 * d_q_Voltage_Limiter_sat_pos;
+			  EncoderCounter = __HAL_TIM_GET_COUNTER(&htim5);
+			  MotorControlLib_step1();
 				  /*static uint16_t a;
 				  a=look1_iflftu16Df_binlcpw(Sig_theta_el_m,
 					      convertSingleTo12bit_ConstP.nDLookupTable_bp01Data,
 					      convertSingleTo12bit_ConstP.nDLookupTable_tableData, 1U);
 		          __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,a);*/
-				  stop = rCpuClocks();
+			  stop = rCpuClocks();
 
 #ifdef EXTENDED_DEBUG
 	  //if ((MotorControlLib_M->Timing.TaskCounters.TID[1] == 0)&&(qSoll!=0)&&(dbg_obj.k<=(MAX_DBG_BUFFERSIZE-1))) { /* this is to write only the start */
-	  if ((MotorControlLib_M->Timing.TaskCounters.TID[1] == 0)) {
+	  if (scheduler_200us == 0) {
 
 				if(dbg_obj.k>(MAX_DBG_BUFFERSIZE-1)) {
 
@@ -328,7 +329,7 @@ void ComputationINTfunc(void *argument)
 				dbg_obj.dbgSig_theta_el_m[dbg_obj.k]=Sig_theta_el_m;
 				dbg_obj.dbgqSoll[dbg_obj.k]=qSoll;
 				dbg_obj.dbg_Iq_axis_meas[dbg_obj.k]=Sig_Iq_axis_meas;
-				dbg_obj.dbgPI_q_Integrator[dbg_obj.k]=PI_q_Integrator;
+				dbg_obj.dbgPI_q_Integrator[dbg_obj.k]=0;
 				dbg_obj.dbgKpq[dbg_obj.k]=Kp_qAxis;
 				dbg_obj.dbgKiq[dbg_obj.k]=Ki_qAxis;
 				dbg_obj.dbgDuty[dbg_obj.k]=Duty;
@@ -343,11 +344,11 @@ void ComputationINTfunc(void *argument)
 				dbg_obj.k++;
 	      }
 #endif
-	   	if (!HAL_GPIO_ReadPin(GPIOC,UpSetBtn_Pin) > l) {
+	   	if (!(HAL_GPIO_ReadPin(GPIOC,UpSetBtn_Pin) > l)) {
 	   		t=0;
 	   		rpmSoll = GainTest;
 	   	}
-	   	else if(!HAL_GPIO_ReadPin(GPIOC,UpSetBtn_Pin) <l) {
+	   	else if(!(HAL_GPIO_ReadPin(GPIOC,UpSetBtn_Pin) <l)) {
 	   		rpmSoll =0;
 	   	}
 	  	if(!HAL_GPIO_ReadPin(GPIOC,UpSetBtn_Pin)) {
@@ -355,14 +356,22 @@ void ComputationINTfunc(void *argument)
 	  		if (t>511U) {
 	  			t=0;
 	  			if(automaticBreak) {
-	  			writeInFile();
+
+#ifdef SEMIHOSTING
+
+		writeInFile();
+#endif
+
 	  			}
 	  		}
 
 	  	}
+
 	  	if(manualBreak) {
+
 #ifdef SEMIHOSTING
-	  		writeInFile();
+
+	  	writeInFile();
 #endif
 	  	}
 
@@ -392,63 +401,15 @@ void testTask500msFunc(void *argument)
 {
   /* USER CODE BEGIN testTask500msFunc */
   portTickType xLastWakeTime;
-  const portTickType xDelay = 500 / portTICK_RATE_MS;
+  const portTickType xDelay = 10 / portTICK_RATE_MS;
   // Initialise the xLastWakeTime variable with the current time.
   xLastWakeTime = xTaskGetTickCount ();
-  CalcSpinSpeednDir_initialize();
-  static uint8_t OneSecCnt=0;
-  static uint8_t ChangeKpiCircle=0;
+
   /* Infinite loop */
   for(;;)
   {
-	  /*if (!HAL_GPIO_ReadPin(GPIOC,Blue_Button_Pin)) {
-		  ChangeKpiCircle++;
-		  if(ChangeKpiCircle>3) { ChangeKpiCircle =0; }
-	  }
 
-	  if(!HAL_GPIO_ReadPin(GPIOC,UpSetBtn_Pin)) {
-		  Sig_qAxis_PI_out =2.0F*GainTest;
-		  switch (ChangeKpiCircle) {
-		  case 0: Kp_qAxis++; break;
-		  case 1: Kp_dAxis++;
-		  	  Sig_dAxis_PI_out =2.0F*GainTest;
-		  	  Sig_qAxis_PI_out =0;
-		  break;
-		  case 2: Ki_qAxis++; break;
-		  case 3: Ki_dAxis++; break;
-		  default: break;
-		  }
-	  } else {
-		  Sig_qAxis_PI_out = 0.0F;
-		  Sig_dAxis_PI_out =0.0F;
-	  }*/
-
-	  if (OneSecCnt==1) { //1 sec period
-		  CalcSpinSpeednDir_step();
-	  }
-	  OneSecCnt++;
-	  if(OneSecCnt>1) {OneSecCnt = 0; }
-	  //uint16_t intermediateVar[2]={0,0};
-	  //MX_DRV8304_Request_Status(intermediateVar,&hdrv8304);
-	  //HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET); //INLB connected
-	  //MX_DRV8304_CalculateIabc(&hdrv8304);
-	 /* uint16_t intermediateVar[2]={0,0};
-
-#if __PWM1==0
-	  __HAL_TIM_SET_COMPARE(&htim4,TIM_CHANNEL_4,(uint16_t)700);
-	  HAL_GPIO_WritePin(GPIOB,DRV_INLC_Pin, GPIO_PIN_SET); //INLA connected
-	  HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_RESET); //INLB connected
-	  HAL_GPIO_TogglePin(GPIOB,DRV_INHC_Pin); //INHB Connected
-#else
-	  HAL_GPIO_WritePin(GPIOB,DRV_INLB_Pin, GPIO_PIN_SET); //INLB connected
-	  HAL_GPIO_TogglePin(GPIOB,DRV_INHC_Pin); //INHB Connected
-#endif
-*/
-	  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_SET);
-	 // NfaultState = HAL_GPIO_ReadPin(DRV_NFAULT_GPIO_Port,DRV_NFAULT_Pin);
-	 // NfaultStateRunningCnt++;
-	  //MX_DRV8304_Report_Fault(&faultRegister1Value,&faultRegister2Value,&DRVConRegisterValue,&hdrv8304);
-	  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14,GPIO_PIN_RESET);
+	  MotorControlLib_step2();
 	  // Wait for the next cycle.
 	  vTaskDelayUntil( &xLastWakeTime, xDelay );
 
