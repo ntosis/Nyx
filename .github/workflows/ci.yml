@@ -10,7 +10,7 @@ jobs:
   build:
     name: Create ELF file
     # use Ubuntu on the runner
-    runs-on: ubuntu-18.04 
+    runs-on: ubuntu-20.04 
     defaults:
       run:
         # set the working directory optional, 'eq. to cd /folder'
