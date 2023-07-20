@@ -39,7 +39,7 @@ extern volatile uint16_t PWMdbg[3];
 extern uint32_t pwm_set_a_m;
 extern uint32_t pwm_set_b_m;
 extern uint32_t pwm_set_c_m;
-
+extern uint8_t Sig_requestMotorBreak;
 extern uint8_t hasTimer8Overflowed;
 extern uint8_t hasMathOverflowed_PWMin;
 extern uint8_t NoSignal_PWMin;
