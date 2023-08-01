@@ -267,6 +267,7 @@ void ComputationINTfunc(void *argument)
 		  /* Will be woken up by timer interrupt*/
 		  ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
 		  countInteruptsinOut++;
+		  scheduler_200us++;
 
 		  if((StepFunctionisStillRunning==0)&(scheduler_200us==3)) {
 

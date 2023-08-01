@@ -54,7 +54,7 @@ char hasPWMSignalbeenread=0;
 
 void set_PWM_A_DT(uint16_t a){
 
-	if(Sig_requestMotorBreak==0) {
+	if(Sig_requestMotorBreak==1) {
 		pwm_set_a_m = 250U;
 	}
 	else {
@@ -70,7 +70,7 @@ void set_PWM_A_DT(uint16_t a){
 }
 void set_PWM_B_DT(uint16_t a){
 
-	if(Sig_requestMotorBreak==0) {
+	if(Sig_requestMotorBreak==1) {
 		pwm_set_b_m = 250U;
 	}
 	else {
@@ -87,7 +87,7 @@ void set_PWM_B_DT(uint16_t a){
 }
 void set_PWM_C_DT(uint16_t a){
 
-	if(Sig_requestMotorBreak==0) {
+	if(Sig_requestMotorBreak==1) {
 		pwm_set_c_m = 250U;
 	}
 	else {
@@ -139,13 +139,13 @@ void disablePWMInputTimer(void){
 
 	static char isDisabled=0;
 
-	if(qSoll!=0) {
+	if(Sig_requestMotorBreak==0) { /* user has requested input */
 
 		HAL_NVIC_DisableIRQ(TIM8_CC_IRQn);
 		isDisabled=1;
 
 	}
-	else if((qSoll==0)&(isDisabled==1))
+	else if((Sig_requestMotorBreak==1)&(isDisabled==1)) /* user has requested NULL input, get ready to read the initial Angle*/
 	{
 		HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
 		isDisabled=0;
